@@ -94,8 +94,6 @@ public class AngleRatioCreator {
 
 			ratioFile.write("#ifndef " + fileName.replace(".h", "_H") + "\n");
 			ratioFile.write("#define " + fileName.replace(".h", "_H") + "\n");
-//			ratioFile.write("#ifndef sliplessSteeringRatios_" + this.angleRange + "_H\n");
-//			ratioFile.write("#define sliplessSteeringRatios_" + this.angleRange + "_H\n\n");
 
 			ratioFile.write("const int SLIPRATIOS[" + this.angleRange + "][3] = {\n");
 
@@ -141,8 +139,8 @@ public class AngleRatioCreator {
 			vrl = 1 - ((widthLengthRatio*0.5)*myTan(-i));
 			vrr = 1 + ((widthLengthRatio*0.5)*myTan(-i));
 
-			frontRatio = Math.rint(256 * (vfl/vfr));
-			rearRatio = Math.rint(256 * (vrl/vrr));
+			frontRatio = 256 * (vfl/vfr);
+			rearRatio = 256 * (vrl/vrr);
 
 			this.ratioSets.add(new RatioStore(512, 
 				frontRatio.intValue(), rearRatio.intValue()));
@@ -163,8 +161,8 @@ public class AngleRatioCreator {
 			vrl = 1 + ((widthLengthRatio*0.5)*myTan(i));
 			vrr = 1 - ((widthLengthRatio*0.5)*myTan(i));
 
-			frontRatio = Math.rint(256 * (vfl/vfr));
-			rearRatio = Math.rint(256 * (vrl/vrr));
+			frontRatio = 256 * (vfl/vfr);
+			rearRatio = 256 * (vrl/vrr);
 
 			this.ratioSets.add(new RatioStore(512, 
 				frontRatio.intValue(), rearRatio.intValue()));

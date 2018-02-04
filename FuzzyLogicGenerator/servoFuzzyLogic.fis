@@ -1,0 +1,79 @@
+[System]
+Name='servoFuzzyLogic'
+Type='mamdani'
+Version=2.0
+NumInputs=2
+NumOutputs=5
+NumRules=9
+AndMethod='prod'
+OrMethod='max'
+ImpMethod='min'
+AggMethod='max'
+DefuzzMethod='centroid'
+
+[Input1]
+Name='vfl/vfr'
+Range=[-1 1]
+NumMFs=3
+MF1='lessThan':'trapmf',[-1 -1 -0.3 0]
+MF2='zero':'trapmf',[-0.3 0 0 0.3]
+MF3='greaterThan':'trapmf',[0 0.3 1 1]
+
+[Input2]
+Name='vrl/vrr'
+Range=[-1 1]
+NumMFs=3
+MF1='lessThan':'trapmf',[-1 -1 -0.3 0]
+MF2='zero':'trapmf',[-0.3 0 0 0.3]
+MF3='greaterThan':'trapmf',[0 0.3 1 1]
+
+[Output1]
+Name='FL'
+Range=[-1 1]
+NumMFs=3
+MF1='decreases':'trapmf',[-1 -1 -0.7 -0.3]
+MF2='neutral':'trapmf',[-0.7 -0.3 0.3 0.7]
+MF3='increases':'trapmf',[0.3 0.7 1 1]
+
+[Output2]
+Name='FR'
+Range=[-1 1]
+NumMFs=3
+MF1='decreases':'trapmf',[-1 -1 -0.7 -0.3]
+MF2='neutral':'trapmf',[-0.7 -0.3 0.3 0.7]
+MF3='increases':'trapmf',[0.3 0.7 1 1]
+
+[Output3]
+Name='RL'
+Range=[-1 1]
+NumMFs=3
+MF1='deceases':'trapmf',[-1 -1 -0.7 -0.3]
+MF2='neutral':'trapmf',[-0.7 -0.3 0.3 0.7]
+MF3='increases':'trapmf',[0.3 0.7 1 1]
+
+[Output4]
+Name='RR'
+Range=[-1 1]
+NumMFs=3
+MF1='decreases':'trapmf',[-1 -1 -0.7 -0.3]
+MF2='neutral':'trapmf',[-0.7 -0.3 0.3 0.7]
+MF3='increases':'trapmf',[0.3 0.7 1 1]
+
+[Output5]
+Name='Angle'
+Range=[-25 25]
+NumMFs=3
+MF1='left':'trapmf',[-25 -25 -5 0]
+MF2='noMove':'trapmf',[-5 0 0 5]
+MF3='right':'trapmf',[0 5 25 25]
+
+[Rules]
+2 2, 1 1 1 1 1 (1) : 1
+2 1, 2 2 1 1 3 (1) : 1
+2 3, 2 2 2 3 3 (1) : 1
+1 2, 3 2 2 2 1 (1) : 1
+1 1, 3 2 3 2 1 (1) : 1
+1 3, 3 2 2 3 2 (1) : 1
+3 2, 2 3 2 2 1 (1) : 1
+3 1, 2 3 3 2 2 (1) : 1
+3 3, 2 3 2 3 3 (1) : 1
