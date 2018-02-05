@@ -1,0 +1,3 @@
+Pupose: Recive an integer from -127 to 127 and translate that into a PWM and direction signal
+Status: Executed or otherwise demonstrated
+Results: see the report
