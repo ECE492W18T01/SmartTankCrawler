@@ -8,7 +8,8 @@
 --
 --   Copyright (C) 2007 Free Software Foundation, Inc. <http://fsf.org/>
 --   Article on Servo motor control with PWM and VHDL   
---
+--   https://www.codeproject.com/Articles/513169/Servomotor-Control-with-PWM-and-VHDL
+-- 
 --   Version History
 --   Version 1.0 12/20/2012 Carl A. Ramos
 --     Initial Public Release
