@@ -7,8 +7,8 @@
 *	Creates a C header file containing a 2-Dimensional Array of Integers
 *	corresponding to the ideal wheel speed ratios for a vehicle of specified dimensions
 *	over a range of incremental angles.
-*	Please note that the first ratio is always 512, as it is the ratio of front tire speeds to rear tire speeds.
-* 	The second and third ratios, front_left/front_right and rear_left/rear_right, are multipled by 256
+*	Please note that the first ratio is always 2048, as it is the ratio of front tire speeds to rear tire speeds.
+* 	The second and third ratios, front_left/front_right and rear_left/rear_right, are multipled by 1024
 *	This is so our Microcontroller board can do these comparrisons with integers and not floating point numbers.
 * 	</p><p>
 *	This program compiles using the command "javac AngleRatioCreator.java" command on a Windows 10 machine
@@ -23,7 +23,7 @@
 *	a demo file sliplessSteeringRatios_33R_3W_10L.h (made by running the java class file with input args 33 3 10)
 *	as well as a C file testCProgram.c. Compile these two using 
 *	"gcc testCProgram.c sliplessSteeringRatios_33R_3W_10L.h -o ssr -std=c99 -Wall" and then run "./a.out"
-*	to see the list of printed numbers (the ratios, multipled by 512 for the first column and 256 for the others).
+*	to see the list of printed numbers (the ratios, multipled by 2048 for the first column and 1024 for the others).
 *	The purpose of the C program is to demostrate that the .h file generated can be inserted into a C program and used without modification.
 *	</p><p>
 *	Purpose of the file:
@@ -48,6 +48,9 @@ public class AngleRatioCreator {
 	private Double length;
 	private Integer midPoint;
 	private ArrayList<RatioStore> ratioSets;
+
+	public Integer axleRatioMult = 1024;
+	public Integer overallMult = 2048;
 
 	/**
 	*	Main Function
@@ -74,7 +77,7 @@ public class AngleRatioCreator {
 		this.ratioSets = new ArrayList<RatioStore>();
 
 		this.generateLeftTurnRatios();
-		this.ratioSets.add(new RatioStore(512, 256, 256));
+		this.ratioSets.add(new RatioStore(overallMult, axleRatioMult, axleRatioMult));
 		this.generateRightTurnRatios();
 
 		this.writeInfoToCFile();
@@ -139,10 +142,10 @@ public class AngleRatioCreator {
 			vrl = 1 - ((widthLengthRatio*0.5)*myTan(-i));
 			vrr = 1 + ((widthLengthRatio*0.5)*myTan(-i));
 
-			frontRatio = 256 * (vfl/vfr);
-			rearRatio = 256 * (vrl/vrr);
+			frontRatio = axleRatioMult * (vfl/vfr);
+			rearRatio = axleRatioMult * (vrl/vrr);
 
-			this.ratioSets.add(new RatioStore(512, 
+			this.ratioSets.add(new RatioStore(overallMult, 
 				frontRatio.intValue(), rearRatio.intValue()));
 		}
 	}
@@ -161,10 +164,10 @@ public class AngleRatioCreator {
 			vrl = 1 + ((widthLengthRatio*0.5)*myTan(i));
 			vrr = 1 - ((widthLengthRatio*0.5)*myTan(i));
 
-			frontRatio = 256 * (vfl/vfr);
-			rearRatio = 256 * (vrl/vrr);
+			frontRatio = axleRatioMult * (vfl/vfr);
+			rearRatio = axleRatioMult * (vrl/vrr);
 
-			this.ratioSets.add(new RatioStore(512, 
+			this.ratioSets.add(new RatioStore(overallMult, 
 				frontRatio.intValue(), rearRatio.intValue()));
 		}
 
