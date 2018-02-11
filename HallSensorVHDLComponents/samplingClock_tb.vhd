@@ -13,22 +13,24 @@ entity samplingClock_tb is
 end samplingClock_tb;
 
 architecture behave of samplingClock_tb is
-	signal output: std_logic := '0';
+	signal fullOut, halfOut: std_logic := '0';
 	signal clk:    std_logic := '0';
 	constant CLOCK_period : time := 20ns;
 
 	component samplingClock is
 		port (
-			conduit_end_new_signal : out std_logic;        --  conduit_end.export
-			clock_sink_1_clk       : in  std_logic := '0'  -- clock_sink_1.clk
-			);
+			conduit_end_new_signal : out std_logic;
+			double_freq_new_signal : out std_logic;       
+			clock_sink_1_clk       : in  std_logic := '0'
+		);
 	end component samplingClock;
 
 begin
 
 	STL_INST : samplingClock
 		port map (
-			conduit_end_new_signal => output,
+			conduit_end_new_signal => fullOut,
+			double_freq_new_signal => halfOut,
 			clock_sink_1_clk       => clk
 		);
 

@@ -15,41 +15,51 @@ end hall_sensor_comparator_tb;
 
 architecture behave of hall_sensor_comparator_tb is
 	signal clock:    std_logic := '0';
+	signal transmitClock: std_logic := '0';
 	constant CLOCK_period : time := 200ms;
-	
-	signal fL : std_logic_vector(7 downto 0) := "10001000";
-	signal fR : std_logic_vector(7 downto 0) := "01001000";
-	signal rL : std_logic_vector(7 downto 0) := "00101000";
-	signal rR : std_logic_vector(7 downto 0) := "00011000";
-	signal fRatio : std_logic_vector(15 downto 0) := "0000000000000000";
-	signal rRatio : std_logic_vector(15 downto 0) := "0000000000000000";
-	signal frRatio : std_logic_vector(31 downto 0) := "00000000000000000000000000000000";
+
+	signal fl, fr, rl, rr : std_logic := '0';
+	constant fl_rate : time := 5ms;
+	constant fr_rate : time := 2ms;
+	constant rl_rate : time := 3ms;
+	constant rr_rate : time := 9ms;
+
+	signal fRatio, rRatio, oRatio : std_logic_vector(31 downto 0) := "00000000000000000000000000000000";
+
+	signal intStatus : std_logic := '0';
+
+
 
 	component hall_sensor_comparator is
 		port (
-			clk 				: in std_logic := '0';
-			frontLeft			: in std_logic_vector(7 downto 0);
-			frontRight			: in std_logic_vector(7 downto 0);
-			rearLeft			: in std_logic_vector(7 downto 0);
-			rearRight			: in std_logic_vector(7 downto 0);
-			frontRatio			: out std_logic_vector(15 downto 0);
-			rearRatio			: out std_logic_vector(15 downto 0);
-			frontRearRatio			: out std_logic_vector(31 downto 0)
-			--calcComplete			: out std_logic := '0'
+			fullClk 			: in std_logic := '0';
+			halfClk				: in std_logic := '0';
+			reset				: in std_logic := '0';
+			frontLeft			: in std_logic := '0';
+			frontRight			: in std_logic := '0';
+			rearLeft			: in std_logic := '0';
+			rearRight			: in std_logic := '0';
+			frontRatio			: out std_logic_vector(31 downto 0);
+			rearRatio			: out std_logic_vector(31 downto 0);
+			frontRearRatio			: out std_logic_vector(31 downto 0);
+			raiseInterrupt			: out std_logic := '0'
 		);
 	end component hall_sensor_comparator;
 
 begin
 	OTR_INST : hall_sensor_comparator
 		port map (
-			clk => clock,
-			frontLeft => fL,
-			frontRight => fR,
-			rearLeft => rL,
-			rearRight => rR,
+			fullClk => clock,
+			halfClk => transmitClock,
+			reset => '0',
+			frontLeft => fl,
+			frontRight => fr,
+			rearLeft => rl,
+			rearRight => rr,
 			frontRatio => fRatio,
 			rearRatio => rRatio,
-			frontRearRatio => frRatio
+			frontRearRatio => oRatio,
+			raiseInterrupt => intStatus
 		);	
 
 	CLOCK_process :process
@@ -60,27 +70,43 @@ begin
 		wait for CLOCK_period/2;
 	end process CLOCK_process;
 
-	stim_proc: process
+	tCLOCK: process
 	begin
-		fL <= "00001111";
-		fR <= "00010000";
-		rL <= "00001000";
-		rR <= "01101000";
-		wait for 150ms;
-		fL <= "01100100";
-		fR <= "01010000";
-		rL <= "01101010";
-		rR <= "01111010";
-		wait for 200ms;
-		fL <= "01010000";
-		fR <= "01000100";
-		rL <= "00100010";
-		rR <= "01110010";
-		wait for 200ms;
-		fL <= "00001011";
-		fR <= "00001110";
-		rL <= "11001010";
-		rR <= "11011000";
-		wait for 200ms;
-	end process stim_proc;
+		transmitClock <= '1';
+		wait for CLOCK_period/4;
+		transmitClock <= '0';
+		wait for CLOCK_period/4;
+	end process tCLOCK;
+	
+	driversLeft: process
+	begin
+		fl <= '0';
+		wait for fl_rate/2;
+		fl <= '1';
+		wait for fl_rate/2;
+	end process driversLeft;
+
+	driversRight: process
+	begin
+		fr <= '0';
+		wait for fr_rate/2;
+		fr <= '1';
+		wait for fr_rate/2;
+	end process driversRight;
+
+	backLeft: process
+	begin
+		rl <= '0';
+		wait for rl_rate/2;
+		rl <= '1';
+		wait for rl_rate/2;
+	end process backLeft;
+
+	backRight: process
+	begin
+		rr <= '0';
+		wait for rr_rate/2;
+		rr <= '1';
+		wait for rr_rate/2;
+	end process backRight;
 END;
