@@ -28,16 +28,19 @@ ARCHITECTURE logic OF proximity IS
 BEGIN
   PROCESS(clk, reset_n)
   BEGIN
-    IF reset_n = '0' THEN                                                 --asynchronous reset
-	clk_count <= 0;                                                --clear counter                                          --clear pwm inverse outputs
-	inch_count <= 0;
-   ELSIF rising_edge(clk) THEN                                      --rising system clock edge   
-	IF clk_count = clk_periods_per_sensor_cycle - 1 THEN                       --end of sensor cycle reached
-		clk_count <= 0;                                                        --reset counter
+    IF reset_n = '0' THEN --asynchronous reset
+	clk_count <= 0; --clear counter
+	inch_count <= 0; -- clear inch counter
+   ELSIF rising_edge(clk) THEN --rising system clock edge   
+	IF clk_count = clk_periods_per_sensor_cycle - 1 THEN --end of sensor cycle reached                                               
+		IF clk_count > (clk_periods_per_inch/2) THEN
+			inch_count <= inch_count + 1;
+		END IF;
+		clk_count <= 0; --reset counter
 		proximity_inches_avalon_readdata <= std_logic_vector(to_unsigned(inch_count,32)); -- latch inch_count
-		inch_count <= 0;                                                      -- reset inch_counter
-        ELSE                                                                   --end of period not reached
-		clk_count <= clk_count + 1;                                              --increment counter
+		inch_count <= 0; -- reset inch_counter
+        ELSE --end of period not reached
+		clk_count <= clk_count + 1; --increment counter
         END IF;
 	IF pw_signal = '1' THEN
 		IF clk_count mod clk_periods_per_inch = 0 THEN

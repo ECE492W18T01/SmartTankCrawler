@@ -57,6 +57,13 @@ begin
 
 		wait for 1ms;
 		test_pw_signal <= '1';
+		wait for 10.1ms; 
+		test_pw_signal <= '0';
+		wait for 37.9ms;
+
+
+		wait for 1ms;
+		test_pw_signal <= '1';
 		wait for 20ms;
 		test_pw_signal <= '0';
 		wait for 28ms;
