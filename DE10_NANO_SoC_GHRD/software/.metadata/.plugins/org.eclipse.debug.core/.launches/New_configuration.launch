@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="com.arm.debugger.launcher2">
 <mapAttribute key="AverageDurationTracker">
-<mapEntry key="*Fetching Data Model" value="566538"/>
-<mapEntry key="*list global low level symbols" value="782422"/>
+<mapEntry key="*Fetching Data Model" value="2165985"/>
+<mapEntry key="*list global low level symbols" value="11287841"/>
 <mapEntry key="*updating variables" value="2448206"/>
-<mapEntry key="AddEventObserver" value="773097"/>
-<mapEntry key="Evaluate" value="2264622"/>
+<mapEntry key="AddEventObserver" value="885883"/>
+<mapEntry key="Evaluate" value="2673949"/>
 <mapEntry key="Retrieving globals list" value="5551883"/>
-<mapEntry key="continue" value="31298053"/>
-<mapEntry key="disassemble" value="101494687"/>
-<mapEntry key="get capabilities" value="207686"/>
-<mapEntry key="get execution addresss" value="102951"/>
-<mapEntry key="get source lines" value="1148802"/>
-<mapEntry key="initialize command help" value="26155083"/>
-<mapEntry key="interrupt" value="4707166"/>
-<mapEntry key="list breakpoints" value="5450405"/>
-<mapEntry key="list instruction sets" value="500551"/>
-<mapEntry key="list signals" value="46001974"/>
-<mapEntry key="list watchpoints" value="878856"/>
-<mapEntry key="loadfile" value="455667556"/>
-<mapEntry key="set CWD" value="1460417"/>
-<mapEntry key="set debug-from" value="668953"/>
-<mapEntry key="source altera_target_check.py" value="251245632"/>
-<mapEntry key="source preloader.ds" value="2319021025"/>
-<mapEntry key="start" value="71867085"/>
-<mapEntry key="waitForTargetToStop" value="469877836"/>
+<mapEntry key="continue" value="39000565"/>
+<mapEntry key="disassemble" value="45049815"/>
+<mapEntry key="get capabilities" value="256705"/>
+<mapEntry key="get execution addresss" value="215459"/>
+<mapEntry key="get source lines" value="2288645"/>
+<mapEntry key="initialize command help" value="32746755"/>
+<mapEntry key="interrupt" value="8765865"/>
+<mapEntry key="list breakpoints" value="3909007"/>
+<mapEntry key="list instruction sets" value="828301"/>
+<mapEntry key="list signals" value="10074724"/>
+<mapEntry key="list watchpoints" value="4171495"/>
+<mapEntry key="loadfile" value="340143293"/>
+<mapEntry key="set CWD" value="2875613"/>
+<mapEntry key="set debug-from" value="1143884"/>
+<mapEntry key="source altera_target_check.py" value="273608707"/>
+<mapEntry key="source preloader.ds" value="2310268132"/>
+<mapEntry key="start" value="60817777"/>
+<mapEntry key="waitForTargetToStop" value="366201480"/>
 </mapAttribute>
 <intAttribute key="DEBUG_TAB..RESOURCES.COUNT" value="0"/>
 <intAttribute key="FILES.CONNECT_TO_GDB_SERVER.RESOURCES.COUNT" value="0"/>

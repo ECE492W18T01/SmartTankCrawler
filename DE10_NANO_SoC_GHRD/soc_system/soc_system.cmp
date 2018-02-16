@@ -1,6 +1,7 @@
 	component soc_system is
 		port (
 			clk_clk                               : in    std_logic                     := 'X';             -- clk
+			green_leds_conn_export                : out   std_logic_vector(7 downto 0);                     -- export
 			hps_0_h2f_reset_reset_n               : out   std_logic;                                        -- reset_n
 			hps_0_hps_io_hps_io_emac1_inst_TX_CLK : out   std_logic;                                        -- hps_io_emac1_inst_TX_CLK
 			hps_0_hps_io_hps_io_emac1_inst_TXD0   : out   std_logic;                                        -- hps_io_emac1_inst_TXD0

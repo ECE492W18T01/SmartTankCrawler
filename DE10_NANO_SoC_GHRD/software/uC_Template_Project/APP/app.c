@@ -68,6 +68,8 @@
 
 #define APP_TASK_PRIO 5
 #define TASK_STACK_SIZE 4096
+#define LEDR_ADD 0x00000100
+#define LEDR_BASE FPGA_TO_HPS_LW_ADDR(LEDR_ADD)
 
 /*
 *********************************************************************************************************
@@ -173,10 +175,12 @@ static  void  AppTaskStart (void *p_arg)
         OSTimeDlyHMSM(0, 0, 0, 500);
 
         BSP_LED_On();
+        alt_write_byte(LEDR_BASE, 0x00);
 
         OSTimeDlyHMSM(0, 0, 0, 500);
 
         BSP_LED_Off();
+        alt_write_byte(LEDR_BASE, 0xff);
         printf("I like pi! Also: %d\n", i);
         i++;
     }

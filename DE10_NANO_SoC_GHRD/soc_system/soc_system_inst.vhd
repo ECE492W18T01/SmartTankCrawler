@@ -66,7 +66,8 @@
 			memory_mem_odt                        : out   std_logic;                                        -- mem_odt
 			memory_mem_dm                         : out   std_logic_vector(3 downto 0);                     -- mem_dm
 			memory_oct_rzqin                      : in    std_logic                     := 'X';             -- oct_rzqin
-			reset_reset_n                         : in    std_logic                     := 'X'              -- reset_n
+			reset_reset_n                         : in    std_logic                     := 'X';             -- reset_n
+			green_leds_conn_export                : out   std_logic_vector(7 downto 0)                      -- export
 		);
 	end component soc_system;
 
@@ -138,6 +139,7 @@
 			memory_mem_odt                        => CONNECTED_TO_memory_mem_odt,                        --                .mem_odt
 			memory_mem_dm                         => CONNECTED_TO_memory_mem_dm,                         --                .mem_dm
 			memory_oct_rzqin                      => CONNECTED_TO_memory_oct_rzqin,                      --                .oct_rzqin
-			reset_reset_n                         => CONNECTED_TO_reset_reset_n                          --           reset.reset_n
+			reset_reset_n                         => CONNECTED_TO_reset_reset_n,                         --           reset.reset_n
+			green_leds_conn_export                => CONNECTED_TO_green_leds_conn_export                 -- green_leds_conn.export
 		);
 

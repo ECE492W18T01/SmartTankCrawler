@@ -9,6 +9,7 @@ use IEEE.numeric_std.all;
 entity soc_system is
 	port (
 		clk_clk                               : in    std_logic                     := '0';             --             clk.clk
+		green_leds_conn_export                : out   std_logic_vector(7 downto 0);                     -- green_leds_conn.export
 		hps_0_h2f_reset_reset_n               : out   std_logic;                                        -- hps_0_h2f_reset.reset_n
 		hps_0_hps_io_hps_io_emac1_inst_TX_CLK : out   std_logic;                                        --    hps_0_hps_io.hps_io_emac1_inst_TX_CLK
 		hps_0_hps_io_hps_io_emac1_inst_TXD0   : out   std_logic;                                        --                .hps_io_emac1_inst_TXD0
@@ -79,6 +80,19 @@ entity soc_system is
 end entity soc_system;
 
 architecture rtl of soc_system is
+	component soc_system_green_leds is
+		port (
+			clk        : in  std_logic                     := 'X';             -- clk
+			reset_n    : in  std_logic                     := 'X';             -- reset_n
+			address    : in  std_logic_vector(1 downto 0)  := (others => 'X'); -- address
+			write_n    : in  std_logic                     := 'X';             -- write_n
+			writedata  : in  std_logic_vector(31 downto 0) := (others => 'X'); -- writedata
+			chipselect : in  std_logic                     := 'X';             -- chipselect
+			readdata   : out std_logic_vector(31 downto 0);                    -- readdata
+			out_port   : out std_logic_vector(7 downto 0)                      -- export
+		);
+	end component soc_system_green_leds;
+
 	component soc_system_hps_0 is
 		generic (
 			F2S_Width : integer := 2;
@@ -242,6 +256,11 @@ architecture rtl of soc_system is
 			clk_0_clk_clk                                                       : in  std_logic                     := 'X';             -- clk
 			hps_0_h2f_lw_axi_master_agent_clk_reset_reset_bridge_in_reset_reset : in  std_logic                     := 'X';             -- reset
 			sysid_qsys_reset_reset_bridge_in_reset_reset                        : in  std_logic                     := 'X';             -- reset
+			green_leds_s1_address                                               : out std_logic_vector(1 downto 0);                     -- address
+			green_leds_s1_write                                                 : out std_logic;                                        -- write
+			green_leds_s1_readdata                                              : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
+			green_leds_s1_writedata                                             : out std_logic_vector(31 downto 0);                    -- writedata
+			green_leds_s1_chipselect                                            : out std_logic;                                        -- chipselect
 			sysid_qsys_control_slave_address                                    : out std_logic_vector(0 downto 0);                     -- address
 			sysid_qsys_control_slave_readdata                                   : in  std_logic_vector(31 downto 0) := (others => 'X')  -- readdata
 		);
@@ -360,15 +379,33 @@ architecture rtl of soc_system is
 	signal hps_0_h2f_lw_axi_master_rvalid                      : std_logic;                     -- mm_interconnect_0:hps_0_h2f_lw_axi_master_rvalid -> hps_0:h2f_lw_RVALID
 	signal mm_interconnect_0_sysid_qsys_control_slave_readdata : std_logic_vector(31 downto 0); -- sysid_qsys:readdata -> mm_interconnect_0:sysid_qsys_control_slave_readdata
 	signal mm_interconnect_0_sysid_qsys_control_slave_address  : std_logic_vector(0 downto 0);  -- mm_interconnect_0:sysid_qsys_control_slave_address -> sysid_qsys:address
+	signal mm_interconnect_0_green_leds_s1_chipselect          : std_logic;                     -- mm_interconnect_0:green_leds_s1_chipselect -> green_leds:chipselect
+	signal mm_interconnect_0_green_leds_s1_readdata            : std_logic_vector(31 downto 0); -- green_leds:readdata -> mm_interconnect_0:green_leds_s1_readdata
+	signal mm_interconnect_0_green_leds_s1_address             : std_logic_vector(1 downto 0);  -- mm_interconnect_0:green_leds_s1_address -> green_leds:address
+	signal mm_interconnect_0_green_leds_s1_write               : std_logic;                     -- mm_interconnect_0:green_leds_s1_write -> mm_interconnect_0_green_leds_s1_write:in
+	signal mm_interconnect_0_green_leds_s1_writedata           : std_logic_vector(31 downto 0); -- mm_interconnect_0:green_leds_s1_writedata -> green_leds:writedata
 	signal hps_0_f2h_irq0_irq                                  : std_logic_vector(31 downto 0); -- irq_mapper:sender_irq -> hps_0:f2h_irq_p0
 	signal hps_0_f2h_irq1_irq                                  : std_logic_vector(31 downto 0); -- irq_mapper_001:sender_irq -> hps_0:f2h_irq_p1
 	signal rst_controller_reset_out_reset                      : std_logic;                     -- rst_controller:reset_out -> [mm_interconnect_0:sysid_qsys_reset_reset_bridge_in_reset_reset, rst_controller_reset_out_reset:in]
 	signal rst_controller_001_reset_out_reset                  : std_logic;                     -- rst_controller_001:reset_out -> mm_interconnect_0:hps_0_h2f_lw_axi_master_agent_clk_reset_reset_bridge_in_reset_reset
 	signal hps_0_h2f_reset_reset_n_ports_inv                   : std_logic;                     -- hps_0_h2f_reset_reset_n:inv -> rst_controller_001:reset_in0
 	signal reset_reset_n_ports_inv                             : std_logic;                     -- reset_reset_n:inv -> rst_controller:reset_in0
-	signal rst_controller_reset_out_reset_ports_inv            : std_logic;                     -- rst_controller_reset_out_reset:inv -> sysid_qsys:reset_n
+	signal mm_interconnect_0_green_leds_s1_write_ports_inv     : std_logic;                     -- mm_interconnect_0_green_leds_s1_write:inv -> green_leds:write_n
+	signal rst_controller_reset_out_reset_ports_inv            : std_logic;                     -- rst_controller_reset_out_reset:inv -> [green_leds:reset_n, sysid_qsys:reset_n]
 
 begin
+
+	green_leds : component soc_system_green_leds
+		port map (
+			clk        => clk_clk,                                         --                 clk.clk
+			reset_n    => rst_controller_reset_out_reset_ports_inv,        --               reset.reset_n
+			address    => mm_interconnect_0_green_leds_s1_address,         --                  s1.address
+			write_n    => mm_interconnect_0_green_leds_s1_write_ports_inv, --                    .write_n
+			writedata  => mm_interconnect_0_green_leds_s1_writedata,       --                    .writedata
+			chipselect => mm_interconnect_0_green_leds_s1_chipselect,      --                    .chipselect
+			readdata   => mm_interconnect_0_green_leds_s1_readdata,        --                    .readdata
+			out_port   => green_leds_conn_export                           -- external_connection.export
+		);
 
 	hps_0 : component soc_system_hps_0
 		generic map (
@@ -531,6 +568,11 @@ begin
 			clk_0_clk_clk                                                       => clk_clk,                                             --                                                     clk_0_clk.clk
 			hps_0_h2f_lw_axi_master_agent_clk_reset_reset_bridge_in_reset_reset => rst_controller_001_reset_out_reset,                  -- hps_0_h2f_lw_axi_master_agent_clk_reset_reset_bridge_in_reset.reset
 			sysid_qsys_reset_reset_bridge_in_reset_reset                        => rst_controller_reset_out_reset,                      --                        sysid_qsys_reset_reset_bridge_in_reset.reset
+			green_leds_s1_address                                               => mm_interconnect_0_green_leds_s1_address,             --                                                 green_leds_s1.address
+			green_leds_s1_write                                                 => mm_interconnect_0_green_leds_s1_write,               --                                                              .write
+			green_leds_s1_readdata                                              => mm_interconnect_0_green_leds_s1_readdata,            --                                                              .readdata
+			green_leds_s1_writedata                                             => mm_interconnect_0_green_leds_s1_writedata,           --                                                              .writedata
+			green_leds_s1_chipselect                                            => mm_interconnect_0_green_leds_s1_chipselect,          --                                                              .chipselect
 			sysid_qsys_control_slave_address                                    => mm_interconnect_0_sysid_qsys_control_slave_address,  --                                      sysid_qsys_control_slave.address
 			sysid_qsys_control_slave_readdata                                   => mm_interconnect_0_sysid_qsys_control_slave_readdata  --                                                              .readdata
 		);
@@ -682,6 +724,8 @@ begin
 	hps_0_h2f_reset_reset_n_ports_inv <= not hps_0_h2f_reset_reset;
 
 	reset_reset_n_ports_inv <= not reset_reset_n;
+
+	mm_interconnect_0_green_leds_s1_write_ports_inv <= not mm_interconnect_0_green_leds_s1_write;
 
 	rst_controller_reset_out_reset_ports_inv <= not rst_controller_reset_out_reset;
 

@@ -66,7 +66,8 @@ module soc_system (
 	memory_mem_odt,
 	memory_mem_dm,
 	memory_oct_rzqin,
-	reset_reset_n);	
+	reset_reset_n,
+	green_leds_conn_export);	
 
 	input		clk_clk;
 	output		hps_0_h2f_reset_reset_n;
@@ -135,4 +136,5 @@ module soc_system (
 	output	[3:0]	memory_mem_dm;
 	input		memory_oct_rzqin;
 	input		reset_reset_n;
+	output	[7:0]	green_leds_conn_export;
 endmodule

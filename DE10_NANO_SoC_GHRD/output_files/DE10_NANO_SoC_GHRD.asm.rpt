@@ -1,5 +1,5 @@
 Assembler report for DE10_NANO_SoC_GHRD
-Wed Feb 14 14:37:47 2018
+Thu Feb 15 19:49:47 2018
 Quartus Prime Version 17.0.2 Build 602 07/19/2017 SJ Standard Edition
 
 
@@ -39,7 +39,7 @@ agreement for further details.
 +---------------------------------------------------------------+
 ; Assembler Summary                                             ;
 +-----------------------+---------------------------------------+
-; Assembler Status      ; Successful - Wed Feb 14 14:37:47 2018 ;
+; Assembler Status      ; Successful - Thu Feb 15 19:49:47 2018 ;
 ; Revision Name         ; DE10_NANO_SoC_GHRD                    ;
 ; Top-level Entity Name ; DE10_NANO_SoC_GHRD                    ;
 ; Family                ; Cyclone V                             ;
@@ -78,8 +78,8 @@ agreement for further details.
 +----------------+---------------------------------------------------------------------------------------------------+
 ; Option         ; Setting                                                                                           ;
 +----------------+---------------------------------------------------------------------------------------------------+
-; JTAG usercode  ; 0x00B974A9                                                                                        ;
-; Checksum       ; 0x00B974A9                                                                                        ;
+; JTAG usercode  ; 0x00BCDDB1                                                                                        ;
+; Checksum       ; 0x00BCDDB1                                                                                        ;
 +----------------+---------------------------------------------------------------------------------------------------+
 
 
@@ -89,14 +89,14 @@ agreement for further details.
 Info: *******************************************************************
 Info: Running Quartus Prime Assembler
     Info: Version 17.0.2 Build 602 07/19/2017 SJ Standard Edition
-    Info: Processing started: Wed Feb 14 14:37:37 2018
+    Info: Processing started: Thu Feb 15 19:49:37 2018
 Info: Command: quartus_asm --read_settings_files=off --write_settings_files=off DE10_NANO_SoC_GHRD -c DE10_NANO_SoC_GHRD
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (115030): Assembler is generating device programming files
 Info (11878): Hard Processor Subsystem configuration has not changed and a Preloader software update is not required
 Info: Quartus Prime Assembler was successful. 0 errors, 1 warning
-    Info: Peak virtual memory: 728 megabytes
-    Info: Processing ended: Wed Feb 14 14:37:47 2018
+    Info: Peak virtual memory: 731 megabytes
+    Info: Processing ended: Thu Feb 15 19:49:47 2018
     Info: Elapsed time: 00:00:10
     Info: Total CPU time (on all processors): 00:00:10
 
