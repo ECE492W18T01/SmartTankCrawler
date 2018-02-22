@@ -101,10 +101,10 @@ HPS_LED                      : A20       : bidir  : 3.3-V LVTTL       :         
 HPS_I2C1_SDAT                : A21       : bidir  : 3.3-V LVTTL       :         : 7A        : Y              
 HPS_UART_RX                  : A22       : input  : 3.3-V LVTTL       :         : 7A        : Y              
 HPS_nRST                     : A23       :        :                   :         : 7A        :                
-HPS_DDR3_ADDR[10]            : A24       : output : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_RAS_N               : A25       : output : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_CAS_N               : A26       : output : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_BA[0]               : A27       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_ADDR[10]            : A24       : output : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_RAS_N               : A25       : output : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_CAS_N               : A26       : output : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_BA[0]               : A27       : output : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : AA1       : gnd    :                   :         :           :                
 GND                          : AA2       : gnd    :                   :         :           :                
 GND                          : AA3       : gnd    :                   :         :           :                
@@ -114,9 +114,9 @@ nCSO, DATA4                  : AA6       :        :                   :         
 DCLK                         : AA8       :        :                   :         : 3A        :                
 GND                          : AA9       : gnd    :                   :         :           :                
 VCCPD3A                      : AA10      : power  :                   : 3.3V    : 3A        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AA11      :        :                   :         : 3A        :                
+GPIO_0_35                    : AA11      : input  : 3.3-V LVTTL       :         : 3A        : Y              
 VCCIO3B                      : AA12      : power  :                   : 3.3V    : 3B        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AA13      :        :                   :         : 4A        :                
+GPIO_0_34                    : AA13      : output : 3.3-V LVTTL       :         : 4A        : Y              
 VCCPD3B4A                    : AA14      : power  :                   : 3.3V    : 3B, 4A    :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AA15      :        :                   :         : 4A        :                
 VCCIO4A                      : AA16      : power  :                   : 3.3V    : 4A        :                
@@ -129,8 +129,8 @@ LED[7]                       : AA23      : output : 3.3-V LVTTL       :         
 LED[1]                       : AA24      : output : 3.3-V LVTTL       :         : 5A        : Y              
 VREFB5BN0                    : AA25      : power  :                   :         : 5B        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AA26      :        :                   :         : 5B        :                
-HPS_DDR3_DQ[31]              : AA27      : bidir  : SSTL-15 Class I   :         : 6B        : N              
-HPS_DDR3_DQ[26]              : AA28      : bidir  : SSTL-15 Class I   :         : 6B        : N              
+HPS_DDR3_DQ[31]              : AA27      : bidir  : SSTL-15 Class I   :         : 6B        : Y              
+HPS_DDR3_DQ[26]              : AA28      : bidir  : SSTL-15 Class I   :         : 6B        : Y              
 GND                          : AB1       : gnd    :                   :         :           :                
 GND                          : AB2       : gnd    :                   :         :           :                
 GND                          : AB3       : gnd    :                   :         :           :                
@@ -142,7 +142,7 @@ GND                          : AB24      : gnd    :                   :         
 RESERVED_INPUT_WITH_WEAK_PULLUP : AB25      :        :                   :         : 5B        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AB26      :        :                   :         : 5B        :                
 GND                          : AB27      : gnd    :                   :         :           :                
-HPS_DDR3_DM[3]               : AB28      : output : SSTL-15 Class I   :         : 6B        : N              
+HPS_DDR3_DM[3]               : AB28      : output : SSTL-15 Class I   :         : 6B        : Y              
 GND                          : AC1       : gnd    :                   :         :           :                
 GND                          : AC2       : gnd    :                   :         :           :                
 GND                          : AC3       : gnd    :                   :         :           :                
@@ -320,11 +320,11 @@ GND                          : B20       : gnd    :                   :         
 HPS_UART_TX                  : B21       : output : 3.3-V LVTTL       :         : 7A        : Y              
 GND                          : B22       : gnd    :                   :         :           :                
 HPS_TDO                      : B23       :        :                   :         : 7A        :                
-HPS_DDR3_ADDR[11]            : B24       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_ADDR[11]            : B24       : output : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : B25       : gnd    :                   :         :           :                
-HPS_DDR3_ADDR[7]             : B26       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_ADDR[7]             : B26       : output : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : B27       : gnd    :                   :         :           :                
-HPS_DDR3_ADDR[1]             : B28       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_ADDR[1]             : B28       : output : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : C1        : gnd    :                   :         :           :                
 GND                          : C2        : gnd    :                   :         :           :                
 GND                          : C3        : gnd    :                   :         :           :                
@@ -348,11 +348,11 @@ VCCIO7A_HPS                  : C20       : power  :                   : 3.3V    
 RESERVED_INPUT_WITH_WEAK_PULLUP : C21       :        :                   :         : 7A        :                
 HPS_TRST                     : C22       :        :                   :         : 7A        :                
 HPS_TMS                      : C23       :        :                   :         : 7A        :                
-HPS_DDR3_ADDR[13]            : C24       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_ADDR[13]            : C24       : output : SSTL-15 Class I   :         : 6A        : Y              
 VCCIO6A_HPS                  : C25       : power  :                   : 1.5V    : 6A        :                
-HPS_DDR3_ADDR[6]             : C26       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_ADDR[6]             : C26       : output : SSTL-15 Class I   :         : 6A        : Y              
 VCCIO6A_HPS                  : C27       : power  :                   : 1.5V    : 6A        :                
-HPS_DDR3_ADDR[0]             : C28       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_ADDR[0]             : C28       : output : SSTL-15 Class I   :         : 6A        : Y              
 DNU                          : D1        :        :                   :         :           :                
 DNU                          : D2        :        :                   :         :           :                
 GND                          : D3        : gnd    :                   :         :           :                
@@ -376,11 +376,11 @@ HPS_CLK2                     : D20       :        :                   :         
 GND                          : D21       :        :                   :         : 7A        :                
 HPS_TDI                      : D22       :        :                   :         : 7A        :                
 DNU                          : D23       :        :                   :         :           :                
-HPS_DDR3_ADDR[12]            : D24       : output : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_RZQ                 : D25       : input  : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_ADDR[3]             : D26       : output : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_DQ[3]               : D27       : bidir  : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_ODT                 : D28       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_ADDR[12]            : D24       : output : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_RZQ                 : D25       : input  : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_ADDR[3]             : D26       : output : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_DQ[3]               : D27       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_ODT                 : D28       : output : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : E1        : gnd    :                   :         :           :                
 GND                          : E2        : gnd    :                   :         :           :                
 GND                          : E3        : gnd    :                   :         :           :                
@@ -405,10 +405,10 @@ VCCPD7A_HPS                  : E21       : power  :                   : 3.3V    
 GND                          : E22       : gnd    :                   :         :           :                
 GND                          : E23       :        :                   :         : 7A        :                
 GND                          : E24       : gnd    :                   :         :           :                
-HPS_DDR3_WE_N                : E25       : output : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_ADDR[2]             : E26       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_WE_N                : E25       : output : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_ADDR[2]             : E26       : output : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : E27       : gnd    :                   :         :           :                
-HPS_DDR3_DQ[2]               : E28       : bidir  : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_DQ[2]               : E28       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : F1        : gnd    :                   :         :           :                
 GND                          : F2        : gnd    :                   :         :           :                
 GND                          : F3        : gnd    :                   :         :           :                
@@ -421,22 +421,22 @@ VCC_AUX_SHARED               : F21       : power  :                   : 2.5V    
 VCCRSTCLK_HPS                : F22       : power  :                   : 1.8V/2.5V/3.0V/3.3V :           :                
 GND                          : F23       :        :                   :         : 7A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : F24       :        :                   :         : 6A        :                
-HPS_DDR3_ADDR[9]             : F25       : output : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_ADDR[8]             : F26       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_ADDR[9]             : F25       : output : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_ADDR[8]             : F26       : output : SSTL-15 Class I   :         : 6A        : Y              
 VCCIO6A_HPS                  : F27       : power  :                   : 1.5V    : 6A        :                
-HPS_DDR3_DQ[7]               : F28       : bidir  : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_DQ[7]               : F28       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : G1        : gnd    :                   :         :           :                
 GND                          : G2        : gnd    :                   :         :           :                
 GND                          : G3        : gnd    :                   :         :           :                
 HPS_USB_CLKOUT               : G4        : input  : 3.3-V LVTTL       :         : 7D        : Y              
 VCCIO7D_HPS                  : G5        : power  :                   : 3.3V    : 7D        :                
 MSEL2                        : G6        :        :                   :         : 9A        :                
-HPS_DDR3_ADDR[14]            : G23       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_ADDR[14]            : G23       : output : SSTL-15 Class I   :         : 6A        : Y              
 VCCIO6A_HPS                  : G24       : power  :                   : 1.5V    : 6A        :                
-HPS_DDR3_BA[2]               : G25       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_BA[2]               : G25       : output : SSTL-15 Class I   :         : 6A        : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : G26       :        :                   :         : 6A        :                
-HPS_DDR3_DQ[6]               : G27       : bidir  : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_DM[0]               : G28       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_DQ[6]               : G27       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_DM[0]               : G28       : output : SSTL-15 Class I   :         : 6A        : Y              
 DNU                          : H1        :        :                   :         :           :                
 DNU                          : H2        :        :                   :         :           :                
 GND                          : H3        : gnd    :                   :         :           :                
@@ -459,7 +459,7 @@ GND                          : H20       : gnd    :                   :         
 VCCIO6A_HPS                  : H21       : power  :                   : 1.5V    : 6A        :                
 VCCPLL_HPS                   : H23       : power  :                   : 2.5V    :           :                
 GND                          : H24       : gnd    :                   :         :           :                
-HPS_DDR3_BA[1]               : H25       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_BA[1]               : H25       : output : SSTL-15 Class I   :         : 6A        : Y              
 VCCIO6A_HPS                  : H26       : power  :                   : 1.5V    : 6A        :                
 GND                          : H27       : gnd    :                   :         :           :                
 VREFB6AN0_HPS                : H28       :        :                   : 0.75V   : 6A        :                
@@ -480,13 +480,13 @@ RESERVED_INPUT_WITH_WEAK_PULLUP : J16       :        :                   :      
 RESERVED_INPUT_WITH_WEAK_PULLUP : J17       :        :                   :         : 7A        :                
 HPS_KEY                      : J18       : bidir  : 3.3-V LVTTL       :         : 7A        : Y              
 VCCRSTCLK_HPS                : J19       :        :                   :         : 7A        :                
-HPS_DDR3_ADDR[5]             : J20       : output : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_ADDR[4]             : J21       : output : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_DQ[1]               : J24       : bidir  : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_DQ[0]               : J25       : bidir  : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_DQ[4]               : J26       : bidir  : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_DQ[10]              : J27       : bidir  : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_DQ[11]              : J28       : bidir  : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_ADDR[5]             : J20       : output : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_ADDR[4]             : J21       : output : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_DQ[1]               : J24       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_DQ[0]               : J25       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_DQ[4]               : J26       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_DQ[10]              : J27       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_DQ[11]              : J28       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : K1        : gnd    :                   :         :           :                
 GND                          : K2        : gnd    :                   :         :           :                
 GND                          : K3        : gnd    :                   :         :           :                
@@ -507,8 +507,8 @@ HPS_TCK                      : K19       :        :                   :         
 GND                          : K20       : gnd    :                   :         :           :                
 VCCPD6A6B_HPS                : K21       : power  :                   : 2.5V    : 6A, 6B    :                
 VCCPD6A6B_HPS                : K24       : power  :                   : 2.5V    : 6A, 6B    :                
-HPS_DDR3_DQ[8]               : K25       : bidir  : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_DQ[5]               : K26       : bidir  : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_DQ[8]               : K25       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_DQ[5]               : K26       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : K27       :        :                   :         : 6A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : K28       :        :                   :         : 6A        :                
 GND                          : L1        : gnd    :                   :         :           :                
@@ -529,12 +529,12 @@ GND                          : L17       : gnd    :                   :         
 VCC_HPS                      : L18       : power  :                   : 1.1V    :           :                
 GND                          : L19       : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : L20       :        :                   :         : 6A        :                
-HPS_DDR3_CS_N                : L21       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_CS_N                : L21       : output : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : L24       : gnd    :                   :         :           :                
-HPS_DDR3_DQ[9]               : L25       : bidir  : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_DQ[9]               : L25       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
 VCCIO6A_HPS                  : L26       : power  :                   : 1.5V    : 6A        :                
 GND                          : L27       : gnd    :                   :         :           :                
-HPS_DDR3_CKE                 : L28       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_CKE                 : L28       : output : SSTL-15 Class I   :         : 6A        : Y              
 DNU                          : M1        :        :                   :         :           :                
 DNU                          : M2        :        :                   :         :           :                
 GND                          : M3        : gnd    :                   :         :           :                
@@ -556,9 +556,9 @@ GND                          : M20       : gnd    :                   :         
 VCCIO6A_HPS                  : M21       : power  :                   : 1.5V    : 6A        :                
 VCCPD6A6B_HPS                : M24       : power  :                   : 2.5V    : 6A, 6B    :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : M25       :        :                   :         : 6A        :                
-HPS_DDR3_DQ[13]              : M26       : bidir  : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_DQ[12]              : M27       : bidir  : SSTL-15 Class I   :         : 6A        : N              
-HPS_DDR3_DQ[14]              : M28       : bidir  : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_DQ[13]              : M26       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_DQ[12]              : M27       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
+HPS_DDR3_DQ[14]              : M28       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : N1        : gnd    :                   :         :           :                
 GND                          : N2        : gnd    :                   :         :           :                
 GND                          : N3        : gnd    :                   :         :           :                
@@ -576,13 +576,13 @@ VCC_HPS                      : N16       : power  :                   : 1.1V    
 GND                          : N17       : gnd    :                   :         :           :                
 VCC_HPS                      : N18       : power  :                   : 1.1V    :           :                
 GND                          : N19       : gnd    :                   :         :           :                
-HPS_DDR3_CK_N                : N20       : output : Differential 1.5-V SSTL Class I :         : 6A        : N              
-HPS_DDR3_CK_P                : N21       : output : Differential 1.5-V SSTL Class I :         : 6A        : N              
-HPS_DDR3_DQ[16]              : N24       : bidir  : SSTL-15 Class I   :         : 6B        : N              
-HPS_DDR3_DQ[17]              : N25       : bidir  : SSTL-15 Class I   :         : 6B        : N              
-HPS_DDR3_DQ[20]              : N26       : bidir  : SSTL-15 Class I   :         : 6B        : N              
-HPS_DDR3_DQ[21]              : N27       : bidir  : SSTL-15 Class I   :         : 6B        : N              
-HPS_DDR3_DQ[15]              : N28       : bidir  : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_CK_N                : N20       : output : Differential 1.5-V SSTL Class I :         : 6A        : Y              
+HPS_DDR3_CK_P                : N21       : output : Differential 1.5-V SSTL Class I :         : 6A        : Y              
+HPS_DDR3_DQ[16]              : N24       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
+HPS_DDR3_DQ[17]              : N25       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
+HPS_DDR3_DQ[20]              : N26       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
+HPS_DDR3_DQ[21]              : N27       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
+HPS_DDR3_DQ[15]              : N28       : bidir  : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : P1        : gnd    :                   :         :           :                
 GND                          : P2        : gnd    :                   :         :           :                
 GND                          : P3        : gnd    :                   :         :           :                
@@ -606,7 +606,7 @@ VCCPD6A6B_HPS                : P24       : power  :                   : 2.5V    
 GND                          : P25       : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : P26       :        :                   :         : 6B        :                
 VCCIO6B_HPS                  : P27       : power  :                   : 1.5V    : 6B        :                
-HPS_DDR3_DM[1]               : P28       : output : SSTL-15 Class I   :         : 6A        : N              
+HPS_DDR3_DM[1]               : P28       : output : SSTL-15 Class I   :         : 6A        : Y              
 GND                          : R1        : gnd    :                   :         :           :                
 GND                          : R2        : gnd    :                   :         :           :                
 GND                          : R3        : gnd    :                   :         :           :                
@@ -620,16 +620,16 @@ VCC                          : R12       : power  :                   : 1.1V    
 GND                          : R13       : gnd    :                   :         :           :                
 VCC                          : R14       : power  :                   : 1.1V    :           :                
 GND                          : R15       : gnd    :                   :         :           :                
-HPS_DDR3_DQS_N[0]            : R16       : bidir  : Differential 1.5-V SSTL Class I :         : 6A        : N              
-HPS_DDR3_DQS_P[0]            : R17       : bidir  : Differential 1.5-V SSTL Class I :         : 6A        : N              
-HPS_DDR3_DQS_N[1]            : R18       : bidir  : Differential 1.5-V SSTL Class I :         : 6A        : N              
-HPS_DDR3_DQS_P[1]            : R19       : bidir  : Differential 1.5-V SSTL Class I :         : 6A        : N              
+HPS_DDR3_DQS_N[0]            : R16       : bidir  : Differential 1.5-V SSTL Class I :         : 6A        : Y              
+HPS_DDR3_DQS_P[0]            : R17       : bidir  : Differential 1.5-V SSTL Class I :         : 6A        : Y              
+HPS_DDR3_DQS_N[1]            : R18       : bidir  : Differential 1.5-V SSTL Class I :         : 6A        : Y              
+HPS_DDR3_DQS_P[1]            : R19       : bidir  : Differential 1.5-V SSTL Class I :         : 6A        : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : R20       :        :                   :         : 6A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : R21       :        :                   :         : 6A        :                
-HPS_DDR3_DQ[28]              : R24       : bidir  : SSTL-15 Class I   :         : 6B        : N              
-HPS_DDR3_DQ[25]              : R25       : bidir  : SSTL-15 Class I   :         : 6B        : N              
-HPS_DDR3_DQ[24]              : R26       : bidir  : SSTL-15 Class I   :         : 6B        : N              
-HPS_DDR3_DQ[22]              : R27       : bidir  : SSTL-15 Class I   :         : 6B        : N              
+HPS_DDR3_DQ[28]              : R24       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
+HPS_DDR3_DQ[25]              : R25       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
+HPS_DDR3_DQ[24]              : R26       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
+HPS_DDR3_DQ[22]              : R27       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : R28       :        :                   :         : 6B        :                
 DNU                          : T1        :        :                   :         :           :                
 DNU                          : T2        :        :                   :         :           :                
@@ -646,15 +646,15 @@ GND                          : T14       : gnd    :                   :         
 VCC                          : T15       : power  :                   : 1.1V    :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : T16       :        :                   :         : 6B        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : T17       :        :                   :         : 6B        :                
-HPS_DDR3_DQS_N[2]            : T18       : bidir  : Differential 1.5-V SSTL Class I :         : 6B        : N              
-HPS_DDR3_DQS_P[2]            : T19       : bidir  : Differential 1.5-V SSTL Class I :         : 6B        : N              
-HPS_DDR3_DQS_N[3]            : T20       : bidir  : Differential 1.5-V SSTL Class I :         : 6B        : N              
+HPS_DDR3_DQS_N[2]            : T18       : bidir  : Differential 1.5-V SSTL Class I :         : 6B        : Y              
+HPS_DDR3_DQS_P[2]            : T19       : bidir  : Differential 1.5-V SSTL Class I :         : 6B        : Y              
+HPS_DDR3_DQS_N[3]            : T20       : bidir  : Differential 1.5-V SSTL Class I :         : 6B        : Y              
 VCCIO6B_HPS                  : T21       : power  :                   : 1.5V    : 6B        :                
-HPS_DDR3_DQ[29]              : T24       : bidir  : SSTL-15 Class I   :         : 6B        : N              
+HPS_DDR3_DQ[29]              : T24       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
 VCCIO6B_HPS                  : T25       : power  :                   : 1.5V    : 6B        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : T26       :        :                   :         : 6B        :                
 VREFB6BN0_HPS                : T27       :        :                   : 0.75V   : 6B        :                
-HPS_DDR3_DQ[18]              : T28       : bidir  : SSTL-15 Class I   :         : 6B        : N              
+HPS_DDR3_DQ[18]              : T28       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
 GND                          : U1        : gnd    :                   :         :           :                
 GND                          : U2        : gnd    :                   :         :           :                
 GND                          : U3        : gnd    :                   :         :           :                
@@ -671,14 +671,14 @@ RESERVED_INPUT_WITH_WEAK_PULLUP : U15       :        :                   :      
 RESERVED_INPUT_WITH_WEAK_PULLUP : U16       :        :                   :         : 6B        :                
 GND                          : U17       : gnd    :                   :         :           :                
 VCCIO6B_HPS                  : U18       : power  :                   : 1.5V    : 6B        :                
-HPS_DDR3_DQS_P[3]            : U19       : bidir  : Differential 1.5-V SSTL Class I :         : 6B        : N              
+HPS_DDR3_DQS_P[3]            : U19       : bidir  : Differential 1.5-V SSTL Class I :         : 6B        : Y              
 GND                          : U20       : gnd    :                   :         :           :                
 VCC_HPS                      : U21       : power  :                   : 1.1V    :           :                
 GND                          : U24       : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : U25       :        :                   :         : 6B        :                
 VCC                          : U26       : power  :                   : 1.1V    :           :                
 GND                          : U27       : gnd    :                   :         :           :                
-HPS_DDR3_DQ[19]              : U28       : bidir  : SSTL-15 Class I   :         : 6B        : N              
+HPS_DDR3_DQ[19]              : U28       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
 GND                          : V1        : gnd    :                   :         :           :                
 GND                          : V2        : gnd    :                   :         :           :                
 GND                          : V3        : gnd    :                   :         :           :                
@@ -701,8 +701,8 @@ GND                          : V21       : gnd    :                   :         
 RESERVED_INPUT_WITH_WEAK_PULLUP : V24       :        :                   :         : 6B        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : V25       :        :                   :         : 6B        :                
 GND                          : V26       : gnd    :                   :         :           :                
-HPS_DDR3_DQ[23]              : V27       : bidir  : SSTL-15 Class I   :         : 6B        : N              
-HPS_DDR3_RESET_N             : V28       : output : SSTL-15 Class I   :         : 6B        : N              
+HPS_DDR3_DQ[23]              : V27       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
+HPS_DDR3_RESET_N             : V28       : output : SSTL-15 Class I   :         : 6B        : Y              
 GND                          : W1        : gnd    :                   :         :           :                
 GND                          : W2        : gnd    :                   :         :           :                
 GND                          : W3        : gnd    :                   :         :           :                
@@ -724,9 +724,9 @@ SW[3]                        : W20       : input  : 3.3-V LVTTL       :         
 SW[2]                        : W21       : input  : 3.3-V LVTTL       :         : 5B        : Y              
 SW[1]                        : W24       : input  : 3.3-V LVTTL       :         : 5B        : Y              
 VCCIO5B                      : W25       : power  :                   : 3.3V    : 5B        :                
-HPS_DDR3_DQ[27]              : W26       : bidir  : SSTL-15 Class I   :         : 6B        : N              
+HPS_DDR3_DQ[27]              : W26       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
 VCCIO6B_HPS                  : W27       : power  :                   : 1.5V    : 6B        :                
-HPS_DDR3_DM[2]               : W28       : output : SSTL-15 Class I   :         : 6B        : N              
+HPS_DDR3_DM[2]               : W28       : output : SSTL-15 Class I   :         : 6B        : Y              
 DNU                          : Y1        :        :                   :         :           :                
 DNU                          : Y2        :        :                   :         :           :                
 GND                          : Y3        : gnd    :                   :         :           :                
@@ -749,5 +749,5 @@ VCCPD5A                      : Y21       : power  :                   : 3.3V    
 SW[0]                        : Y24       : input  : 3.3-V LVTTL       :         : 5B        : Y              
 GND                          : Y25       : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : Y26       :        :                   :         : 6B        :                
-HPS_DDR3_DQ[30]              : Y27       : bidir  : SSTL-15 Class I   :         : 6B        : N              
+HPS_DDR3_DQ[30]              : Y27       : bidir  : SSTL-15 Class I   :         : 6B        : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : Y28       :        :                   :         : 6B        :                

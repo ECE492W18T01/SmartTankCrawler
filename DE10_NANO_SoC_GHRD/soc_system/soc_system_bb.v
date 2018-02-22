@@ -1,6 +1,7 @@
 
 module soc_system (
 	clk_clk,
+	green_leds_conn_export,
 	hps_0_h2f_reset_reset_n,
 	hps_0_hps_io_hps_io_emac1_inst_TX_CLK,
 	hps_0_hps_io_hps_io_emac1_inst_TXD0,
@@ -67,9 +68,11 @@ module soc_system (
 	memory_mem_dm,
 	memory_oct_rzqin,
 	reset_reset_n,
-	green_leds_conn_export);	
+	upcounter_0_conduit_end_export,
+	pwmservo_0_conduit_end_export);	
 
 	input		clk_clk;
+	output	[7:0]	green_leds_conn_export;
 	output		hps_0_h2f_reset_reset_n;
 	output		hps_0_hps_io_hps_io_emac1_inst_TX_CLK;
 	output		hps_0_hps_io_hps_io_emac1_inst_TXD0;
@@ -136,5 +139,6 @@ module soc_system (
 	output	[3:0]	memory_mem_dm;
 	input		memory_oct_rzqin;
 	input		reset_reset_n;
-	output	[7:0]	green_leds_conn_export;
+	input		upcounter_0_conduit_end_export;
+	output		pwmservo_0_conduit_end_export;
 endmodule

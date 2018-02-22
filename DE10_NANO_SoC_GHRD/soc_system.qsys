@@ -56,6 +56,43 @@
          type = "boolean";
       }
    }
+   element pwmClk_0
+   {
+      datum _sortIndex
+      {
+         value = "5";
+         type = "int";
+      }
+   }
+   element pwmServo_0
+   {
+      datum _sortIndex
+      {
+         value = "6";
+         type = "int";
+      }
+   }
+   element pwmServo_0.avalon_slave_0
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "768";
+         type = "String";
+      }
+   }
+   element soc_system
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
    element sysid_qsys
    {
       datum _sortIndex
@@ -79,6 +116,27 @@
       datum baseAddress
       {
          value = "0";
+         type = "String";
+      }
+   }
+   element upCounter_0
+   {
+      datum _sortIndex
+      {
+         value = "4";
+         type = "int";
+      }
+   }
+   element upCounter_0.avalon_slave
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "512";
          type = "String";
       }
    }
@@ -121,7 +179,17 @@
  <interface name="hps_0_h2f_user0_clock" internal="hps_0.h2f_user0_clock" />
  <interface name="hps_0_hps_io" internal="hps_0.hps_io" type="conduit" dir="end" />
  <interface name="memory" internal="hps_0.memory" type="conduit" dir="end" />
+ <interface
+   name="pwmservo_0_conduit_end"
+   internal="pwmServo_0.conduit_end"
+   type="conduit"
+   dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
+ <interface
+   name="upcounter_0_conduit_end"
+   internal="upCounter_0.conduit_end"
+   type="conduit"
+   dir="end" />
  <module name="clk_0" kind="clock_source" version="17.0" enabled="1">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
@@ -672,6 +740,8 @@
   <parameter name="usb_mp_clk_div" value="0" />
   <parameter name="use_default_mpu_clk" value="false" />
  </module>
+ <module name="pwmClk_0" kind="pwmClk" version="1.0" enabled="1" />
+ <module name="pwmServo_0" kind="pwmServo" version="1.0" enabled="1" />
  <module
    name="sysid_qsys"
    kind="altera_avalon_sysid_qsys"
@@ -679,6 +749,25 @@
    enabled="1">
   <parameter name="id" value="-1395322110" />
  </module>
+ <module name="upCounter_0" kind="upCounter" version="1.0" enabled="1" />
+ <connection
+   kind="avalon"
+   version="17.0"
+   start="hps_0.h2f_lw_axi_master"
+   end="upCounter_0.avalon_slave">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0200" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.0"
+   start="hps_0.h2f_lw_axi_master"
+   end="pwmServo_0.avalon_slave_0">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0300" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
  <connection
    kind="avalon"
    version="17.0"
@@ -699,11 +788,22 @@
  </connection>
  <connection kind="clock" version="17.0" start="clk_0.clk" end="sysid_qsys.clk" />
  <connection kind="clock" version="17.0" start="clk_0.clk" end="green_leds.clk" />
+ <connection kind="clock" version="17.0" start="clk_0.clk" end="pwmClk_0.clock" />
+ <connection
+   kind="clock"
+   version="17.0"
+   start="clk_0.clk"
+   end="upCounter_0.clock_sink" />
  <connection
    kind="clock"
    version="17.0"
    start="clk_0.clk"
    end="hps_0.h2f_lw_axi_clock" />
+ <connection
+   kind="clock"
+   version="17.0"
+   start="pwmClk_0.clk_out"
+   end="pwmServo_0.clock" />
  <connection
    kind="reset"
    version="17.0"
@@ -714,6 +814,21 @@
    version="17.0"
    start="clk_0.clk_reset"
    end="green_leds.reset" />
+ <connection
+   kind="reset"
+   version="17.0"
+   start="clk_0.clk_reset"
+   end="pwmClk_0.reset" />
+ <connection
+   kind="reset"
+   version="17.0"
+   start="clk_0.clk_reset"
+   end="pwmServo_0.reset" />
+ <connection
+   kind="reset"
+   version="17.0"
+   start="clk_0.clk_reset"
+   end="upCounter_0.reset_sink" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
 </system>

@@ -36,7 +36,15 @@
 					"strict" : false
 				},
 				{
+					"name" : "GPIO_0_34",
+					"strict" : false
+				},
+				{
 					"name" : "FPGA_CLK1_50",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_35",
 					"strict" : false
 				}
 			]

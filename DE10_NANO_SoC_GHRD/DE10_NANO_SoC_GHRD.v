@@ -86,7 +86,11 @@ module DE10_NANO_SoC_GHRD(
     output   [ 7: 0]    LED,
 
     //////////// SW //////////
-    input    [ 3: 0]    SW
+    input    [ 3: 0]    SW,
+	 
+	 //////////// GPIO ////////
+	 input               GPIO_0_35,
+	 output					GPIO_0_34
 );
 
 
@@ -191,9 +195,10 @@ soc_system u0(
                .hps_0_h2f_reset_reset_n(hps_fpga_reset_n),                  //                hps_0_h2f_reset.reset_n
 					// DO NOT EDIT ABOVE THIS LINE
 					// TERASIC HPS/FPGA WIRES. DO NOT MESS WITH
-					// WIRES FOR CUSTOM COMPONENTS GO HERE!
+					// WIRES FOR CUSTOM COMPONENTS GO BELOW HERE ONLY!
 					.green_leds_conn_export(LED[7: 0]),                          //                         green_leds_conn.export
-
+					.upcounter_0_conduit_end_export(GPIO_0_35),         // upcounter_0_conduit_end.export
+					.pwmservo_0_conduit_end_export(GPIO_0_34)
            );
 
 // Debounce logic to clean out glitches within 1ms

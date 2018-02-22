@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="com.arm.debugger.launcher2">
 <mapAttribute key="AverageDurationTracker">
-<mapEntry key="*Fetching Data Model" value="2165985"/>
-<mapEntry key="*list global low level symbols" value="11287841"/>
-<mapEntry key="*updating variables" value="2448206"/>
-<mapEntry key="AddEventObserver" value="885883"/>
-<mapEntry key="Evaluate" value="2673949"/>
-<mapEntry key="Retrieving globals list" value="5551883"/>
-<mapEntry key="continue" value="39000565"/>
-<mapEntry key="disassemble" value="45049815"/>
-<mapEntry key="get capabilities" value="256705"/>
-<mapEntry key="get execution addresss" value="215459"/>
-<mapEntry key="get source lines" value="2288645"/>
-<mapEntry key="initialize command help" value="32746755"/>
-<mapEntry key="interrupt" value="8765865"/>
-<mapEntry key="list breakpoints" value="3909007"/>
-<mapEntry key="list instruction sets" value="828301"/>
-<mapEntry key="list signals" value="10074724"/>
-<mapEntry key="list watchpoints" value="4171495"/>
-<mapEntry key="loadfile" value="340143293"/>
-<mapEntry key="set CWD" value="2875613"/>
-<mapEntry key="set debug-from" value="1143884"/>
-<mapEntry key="source altera_target_check.py" value="273608707"/>
-<mapEntry key="source preloader.ds" value="2310268132"/>
-<mapEntry key="start" value="60817777"/>
-<mapEntry key="waitForTargetToStop" value="366201480"/>
+<mapEntry key="*Fetching Data Model" value="559615"/>
+<mapEntry key="*list global low level symbols" value="751787"/>
+<mapEntry key="*loading values from target" value="15637943"/>
+<mapEntry key="*updating registers" value="184390540"/>
+<mapEntry key="*updating variables" value="422937"/>
+<mapEntry key="AddEventObserver" value="665155"/>
+<mapEntry key="Evaluate" value="2420288"/>
+<mapEntry key="Retrieving globals list" value="4963324"/>
+<mapEntry key="continue" value="34603697"/>
+<mapEntry key="disassemble" value="33051155"/>
+<mapEntry key="get capabilities" value="128492"/>
+<mapEntry key="get execution addresss" value="385466"/>
+<mapEntry key="get source lines" value="435145"/>
+<mapEntry key="initialize command help" value="20324336"/>
+<mapEntry key="interrupt" value="42338173"/>
+<mapEntry key="list breakpoints" value="434946"/>
+<mapEntry key="list instruction sets" value="138917"/>
+<mapEntry key="list signals" value="46476393"/>
+<mapEntry key="list watchpoints" value="632190"/>
+<mapEntry key="loadfile" value="388880212"/>
+<mapEntry key="set CWD" value="1133191"/>
+<mapEntry key="set debug-from" value="588425"/>
+<mapEntry key="source altera_target_check.py" value="202236434"/>
+<mapEntry key="source preloader.ds" value="2476510552"/>
+<mapEntry key="start" value="52990993"/>
+<mapEntry key="waitForTargetToStop" value="280338659"/>
 </mapAttribute>
 <intAttribute key="DEBUG_TAB..RESOURCES.COUNT" value="0"/>
 <intAttribute key="FILES.CONNECT_TO_GDB_SERVER.RESOURCES.COUNT" value="0"/>
@@ -120,9 +122,13 @@
 <listEntry value="&lt;Next Instruction&gt;"/>
 <listEntry value="100"/>
 </listAttribute>
+<stringAttribute key="debugger.view.NewRegisterView:DebugOutlineColumnState" value="OutlineConfig1&#9;8&#9;0&#9;true&#9;true&#9;108&#9;-1&#9;true&#9;1&#9;false&#9;true&#9;90&#9;-1&#9;true&#9;2&#9;true&#9;true&#9;135&#9;-1&#9;true&#9;3&#9;false&#9;true&#9;43&#9;-1&#9;true&#9;4&#9;false&#9;true&#9;50&#9;-1&#9;true&#9;5&#9;true&#9;true&#9;37&#9;-1&#9;true&#9;6&#9;false&#9;true&#9;62&#9;-1&#9;true&#9;7&#9;true&#9;true&#9;53&#9;-1&#9;true"/>
+<stringAttribute key="debugger.view.NewRegisterView:_selectedRegisterSet" value="All registers"/>
+<mapAttribute key="debugger.view.NewRegisterView_registerSets"/>
 <stringAttribute key="debugger.view.VariableTreeView:DebugOutlineColumnState" value="OutlineConfig1&#9;8&#9;0&#9;true&#9;true&#9;150&#9;-1&#9;true&#9;1&#9;false&#9;true&#9;90&#9;-1&#9;true&#9;2&#9;true&#9;true&#9;95&#9;-1&#9;true&#9;3&#9;true&#9;true&#9;43&#9;-1&#9;true&#9;4&#9;true&#9;true&#9;50&#9;-1&#9;true&#9;5&#9;true&#9;true&#9;37&#9;-1&#9;true&#9;6&#9;true&#9;true&#9;62&#9;-1&#9;true&#9;7&#9;true&#9;true&#9;53&#9;-1&#9;true"/>
 <listAttribute key="debugger.view.VariableTreeView:USER_ADDED_FILE_STATICS"/>
 <listAttribute key="debugger.view.VariableTreeView:USER_ADDED_GLOBALS"/>
+<booleanAttribute key="debugger.view.register.DrawAsHex" value="false"/>
 <booleanAttribute key="debugger.view.variable.DrawAsHex" value="false"/>
 <stringAttribute key="ds5_launch_configuration_version" value="5.25.0"/>
 <stringAttribute key="dtsl_config" value="USBBlaster_DtslScript"/>

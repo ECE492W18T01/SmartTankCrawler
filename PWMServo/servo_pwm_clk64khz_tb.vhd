@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 --
---   FileName:         clk64kHz
+--   FileName:         servo_pwm_clk64khz_tb
 --   Dependencies:     none
 --
 --   GNU LESSER GENERAL PUBLIC LICENSE

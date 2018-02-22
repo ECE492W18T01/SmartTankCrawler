@@ -68,6 +68,10 @@
 
 #define APP_TASK_PRIO 5
 #define TASK_STACK_SIZE 4096
+#define LEDR_ADD 0x00000100
+#define LEDR_BASE FPGA_TO_HPS_LW_ADDR(LEDR_ADD)
+#define SENSOR_ADD 0x00000200
+#define SENSOR_BASE FPGA_TO_HPS_LW_ADDR(SENSOR_ADD)
 
 /*
 *********************************************************************************************************
@@ -167,17 +171,22 @@ static  void  AppTaskStart (void *p_arg)
     BSP_OS_TmrTickInit(OS_TICKS_PER_SEC);                       /* Configure and enable OS tick interrupt.              */
 
     int i = 0;
+    int j = i;
     for(;;) {
         BSP_WatchDog_Reset();                                   /* Reset the watchdog.                                  */
 
         OSTimeDlyHMSM(0, 0, 0, 500);
 
         BSP_LED_On();
+        alt_write_byte(LEDR_BASE, 0x00);
 
         OSTimeDlyHMSM(0, 0, 0, 500);
 
         BSP_LED_Off();
-        printf("I like pi! Also: %d\n", i);
+        alt_write_byte(LEDR_BASE, 0xff);
+        i = alt_read_word(SENSOR_BASE);
+        printf("I like pi! Also: %d\n", alt_read_word(SENSOR_BASE));
+        //j = i;
     }
 
 }
