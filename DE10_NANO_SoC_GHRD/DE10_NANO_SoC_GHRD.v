@@ -89,8 +89,23 @@ module DE10_NANO_SoC_GHRD(
     input    [ 3: 0]    SW,
 	 
 	 //////////// GPIO ////////
-	 input               GPIO_0_35,
-	 output					GPIO_0_34
+	 output					GPIO_0_0,
+	 output					GPIO_0_1,
+	 input					GPIO_0_4,
+	 input					GPIO_0_5,
+	 input					GPIO_0_6,
+	 input					GPIO_0_7,
+	 input					GPIO_0_8,
+	 output					GPIO_0_26,
+	 output					GPIO_0_27,
+	 output					GPIO_0_28,
+	 output					GPIO_0_29,
+	 output					GPIO_0_30,
+	 output					GPIO_0_31,
+	 output					GPIO_0_32,
+	 output					GPIO_0_33,
+	 input					GPIO_0_34
+							 
 );
 
 
@@ -192,13 +207,27 @@ soc_system u0(
                .hps_0_hps_io_hps_io_gpio_inst_GPIO54(HPS_KEY),              //                               .hps_io_gpio_inst_GPIO54
                .hps_0_hps_io_hps_io_gpio_inst_GPIO61(HPS_GSENSOR_INT),      //                               .hps_io_gpio_inst_GPIO61
                //FPGA Partion
-               .hps_0_h2f_reset_reset_n(hps_fpga_reset_n),                  //                hps_0_h2f_reset.reset_n
+               .hps_0_h2f_reset_reset_n(hps_fpga_reset_n),                  //                .hps_0_h2f_reset.reset_n
 					// DO NOT EDIT ABOVE THIS LINE
 					// TERASIC HPS/FPGA WIRES. DO NOT MESS WITH
 					// WIRES FOR CUSTOM COMPONENTS GO BELOW HERE ONLY!
-					.green_leds_conn_export(LED[7: 0]),                          //                         green_leds_conn.export
-					.upcounter_0_conduit_end_export(GPIO_0_35),         // upcounter_0_conduit_end.export
-					.pwmservo_0_conduit_end_export(GPIO_0_34)
+					.green_leds_conn_export(LED[7: 0]),                    // green_leds_conn.export
+					.upcounter_0_conduit_end_export(GPIO_0_34),            // upcounter_0_conduit_end.export
+					.pwmservo_0_conduit_end_export(GPIO_0_0),              // pwmservo_0_conduit_end_export
+					.pwmservo_1_conduit_end_export(GPIO_0_1),              // pwmservo_1_conduit_end.export
+					.pwmbrushed_0_direction_export(GPIO_0_26),             // pwmbrushed_0_direction.export
+					.pwmbrushed_0_magnitude_export(GPIO_0_27),             // pwmbrushed_0_magnitude.export
+					.pwmbrushed_1_direction_export(GPIO_0_28),             // pwmbrushed_1_direction.export
+					.pwmbrushed_1_magnitude_export(GPIO_0_29),             // pwmbrushed_1_magnitude.export
+					.pwmbrushed_2_direction_export(GPIO_0_30),             // pwmbrushed_2_direction.export
+					.pwmbrushed_2_magnitude_export(GPIO_0_31),             // pwmbrushed_2_magnitude.export
+					.pwmbrushed_3_direction_export(GPIO_0_32),             // pwmbrushed_3_direction.export
+					.pwmbrushed_3_magnitude_export(GPIO_0_33),             // pwmbrushed_3_magnitude.export
+					.hallsensordetector_0_frontlefthall_import(GPIO_0_4),  // hallsensordetector_0_frontlefthall.import
+					.hallsensordetector_0_frontrighthall_import(GPIO_0_5), // hallsensordetector_0_frontrighthall.import
+					.hallsensordetector_0_rearlefthall_1_import(GPIO_0_6), // hallsensordetector_0_rearlefthall_1.import
+					.hallsensordetector_0_rearrighthall_import(GPIO_0_7),  // hallsensordetector_0_rearrighthall.import
+					.ultrasonicrangefinder_0_sonarin_import(GPIO_0_8)      // 	 output					GPIO_0_26,ultrasonicrangefinder_0_sonarin.import
            );
 
 // Debounce logic to clean out glitches within 1ms

@@ -49,13 +49,13 @@ architecture Behavioral of servo_pwm is
 begin
     -- Minimum value should be 0.5ms.
     -- Kgmills chose to comment out the 32, it still works on our Servos.
-    pwmi <= unsigned(servo);-- + 32;
+    pwmi <= unsigned(servo) + 32;
     -- Counter process, from 0 to 1279.
     counter: process (reset, clk) begin
         if (reset = '1') then
             cnt <= (others => '0');
         elsif rising_edge(clk) then
-            if (cnt = 1279) then
+            if (cnt = 640) then
                 cnt <= (others => '0');
             else
                 cnt <= cnt + 1;

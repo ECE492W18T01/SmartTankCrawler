@@ -74,7 +74,7 @@
  -- Pin directions (input, output or bidir) are based on device operating in user mode.
  ---------------------------------------------------------------------------------
 
-Quartus Prime Version 17.0.2 Build 602 07/19/2017 SJ Standard Edition
+Quartus Prime Version 17.0.0 Build 595 04/25/2017 SJ Lite Edition
 CHIP  "DE10_NANO_SoC_GHRD"  ASSIGNED TO AN: 5CSEBA6U23I7
 
 Pin Name/Usage               : Location  : Dir.   : I/O Standard      : Voltage : I/O Bank  : User Assignment
@@ -114,21 +114,21 @@ nCSO, DATA4                  : AA6       :        :                   :         
 DCLK                         : AA8       :        :                   :         : 3A        :                
 GND                          : AA9       : gnd    :                   :         :           :                
 VCCPD3A                      : AA10      : power  :                   : 3.3V    : 3A        :                
-GPIO_0_35                    : AA11      : input  : 3.3-V LVTTL       :         : 3A        : Y              
+RESERVED_INPUT_WITH_WEAK_PULLUP : AA11      :        :                   :         : 3A        :                
 VCCIO3B                      : AA12      : power  :                   : 3.3V    : 3B        :                
-GPIO_0_34                    : AA13      : output : 3.3-V LVTTL       :         : 4A        : Y              
+GPIO_0_34                    : AA13      : input  : 3.3-V LVTTL       :         : 4A        : Y              
 VCCPD3B4A                    : AA14      : power  :                   : 3.3V    : 3B, 4A    :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AA15      :        :                   :         : 4A        :                
 VCCIO4A                      : AA16      : power  :                   : 3.3V    : 4A        :                
 GND                          : AA17      : gnd    :                   :         :           :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AA18      :        :                   :         : 4A        :                
+GPIO_0_26                    : AA18      : output : 3.3-V LVTTL       :         : 4A        : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : AA19      :        :                   :         : 4A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AA20      :        :                   :         : 5A        :                
 VCCA_FPLL                    : AA21      : power  :                   : 2.5V    :           :                
 LED[7]                       : AA23      : output : 3.3-V LVTTL       :         : 5A        : Y              
 LED[1]                       : AA24      : output : 3.3-V LVTTL       :         : 5A        : Y              
 VREFB5BN0                    : AA25      : power  :                   :         : 5B        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AA26      :        :                   :         : 5B        :                
+GPIO_0_33                    : AA26      : output : 3.3-V LVTTL       :         : 5B        : Y              
 HPS_DDR3_DQ[31]              : AA27      : bidir  : SSTL-15 Class I   :         : 6B        : Y              
 HPS_DDR3_DQ[26]              : AA28      : bidir  : SSTL-15 Class I   :         : 6B        : Y              
 GND                          : AB1       : gnd    :                   :         :           :                
@@ -139,8 +139,8 @@ altera_reserved_tck          : AB5       : input  : 3.3-V LVTTL       :         
 AS_DATA3, DATA3              : AB6       :        :                   :         : 3A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AB23      :        :                   :         : 5A        :                
 GND                          : AB24      : gnd    :                   :         :           :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AB25      :        :                   :         : 5B        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AB26      :        :                   :         : 5B        :                
+GPIO_0_30                    : AB25      : output : 3.3-V LVTTL       :         : 5B        : Y              
+GPIO_0_31                    : AB26      : output : 3.3-V LVTTL       :         : 5B        : Y              
 GND                          : AB27      : gnd    :                   :         :           :                
 HPS_DDR3_DM[3]               : AB28      : output : SSTL-15 Class I   :         : 6B        : Y              
 GND                          : AC1       : gnd    :                   :         :           :                
@@ -218,10 +218,10 @@ RESERVED_INPUT_WITH_WEAK_PULLUP : AE28      :        :                   :      
 GND                          : AF1       : gnd    :                   :         :           :                
 GND                          : AF2       : gnd    :                   :         :           :                
 GND                          : AF3       : gnd    :                   :         :           :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AF4       :        :                   :         : 3B        :                
+GPIO_0_8                     : AF4       : input  : 3.3-V LVTTL       :         : 3B        : Y              
 HDMI_TX_D[15]                : AF5       : output : 3.3-V LVTTL       :         : 3B        : Y              
 HDMI_TX_D[13]                : AF6       : output : 3.3-V LVTTL       :         : 3B        : Y              
-RESERVED_INPUT_WITH_WEAK_PULLUP : AF7       :        :                   :         : 3B        :                
+GPIO_0_6                     : AF7       : input  : 3.3-V LVTTL       :         : 3B        : Y              
 HDMI_TX_D[14]                : AF8       : output : 3.3-V LVTTL       :         : 3B        : Y              
 HDMI_TX_D[22]                : AF9       : output : 3.3-V LVTTL       :         : 3B        : Y              
 HDMI_TX_D[8]                 : AF10      : output : 3.3-V LVTTL       :         : 3B        : Y              
@@ -282,8 +282,8 @@ RESERVED_INPUT_WITH_WEAK_PULLUP : AH9       :        :                   :      
 GND                          : AH10      : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AH11      :        :                   :         : 4A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AH12      :        :                   :         : 4A        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AH13      :        :                   :         : 4A        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AH14      :        :                   :         : 4A        :                
+GPIO_0_5                     : AH13      : input  : 3.3-V LVTTL       :         : 4A        : Y              
+GPIO_0_7                     : AH14      : input  : 3.3-V LVTTL       :         : 4A        : Y              
 VCCIO4A                      : AH15      : power  :                   : 3.3V    : 4A        :                
 KEY[1]                       : AH16      : input  : 3.3-V LVTTL       :         : 4A        : Y              
 KEY[0]                       : AH17      : input  : 3.3-V LVTTL       :         : 4A        : Y              
@@ -360,7 +360,7 @@ HPS_USB_DATA[5]              : D4        : bidir  : 3.3-V LVTTL       :         
 HPS_USB_NXT                  : D5        : input  : 3.3-V LVTTL       :         : 7D        : Y              
 VCCIO7D_HPS                  : D6        : power  :                   : 3.3V    : 7D        :                
 VCCBAT                       : D7        : power  :                   : 1.2V    :           :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : D8        :        :                   :         : 8A        :                
+GPIO_0_4                     : D8        : input  : 3.3-V LVTTL       :         : 8A        : Y              
 VREFB8AN0                    : D9        : power  :                   :         : 8A        :                
 GND                          : D10       : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : D11       :        :                   :         : 8A        :                
@@ -388,7 +388,7 @@ RESERVED_INPUT_WITH_WEAK_PULLUP : E4        :        :                   :      
 HPS_USB_DIR                  : E5        : input  : 3.3-V LVTTL       :         : 7D        : Y              
 nCE                          : E6        :        :                   :         : 9A        :                
 VCCIO8A                      : E7        : power  :                   : 3.3V    : 8A        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : E8        :        :                   :         : 8A        :                
+GPIO_0_1                     : E8        : output : 3.3-V LVTTL       :         : 8A        : Y              
 GND                          : E9        : gnd    :                   :         :           :                
 VCCPD8A                      : E10       : power  :                   : 3.3V    : 8A        :                
 FPGA_CLK3_50                 : E11       : input  : 3.3-V LVTTL       :         : 8A        : Y              
@@ -688,7 +688,7 @@ GND                          : V8        : gnd    :                   :         
 GND                          : V9        : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : V10       :        :                   :         : 3A        :                
 FPGA_CLK1_50                 : V11       : input  : 3.3-V LVTTL       :         : 3B        : Y              
-RESERVED_INPUT_WITH_WEAK_PULLUP : V12       :        :                   :         : 3B        :                
+GPIO_0_0                     : V12       : output : 3.3-V LVTTL       :         : 3B        : Y              
 HDMI_TX_VS                   : V13       : output : 3.3-V LVTTL       :         : 4A        : Y              
 GND                          : V14       : gnd    :                   :         :           :                
 LED[3]                       : V15       : output : 3.3-V LVTTL       :         : 5A        : Y              
@@ -714,7 +714,7 @@ altera_reserved_tdi          : W10       : input  : 3.3-V LVTTL       :         
 RESERVED_INPUT_WITH_WEAK_PULLUP : W11       :        :                   :         : 3B        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : W12       :        :                   :         : 3B        :                
 VCCIO4A                      : W13       : power  :                   : 3.3V    : 4A        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : W14       :        :                   :         : 4A        :                
+GPIO_0_27                    : W14       : output : 3.3-V LVTTL       :         : 4A        : Y              
 LED[0]                       : W15       : output : 3.3-V LVTTL       :         : 5A        : Y              
 GND                          : W16       : gnd    :                   :         :           :                
 VCCIO5A                      : W17       : power  :                   : 3.3V    : 5A        :                
@@ -735,14 +735,14 @@ HDMI_TX_D[7]                 : Y5        : output : 3.3-V LVTTL       :         
 HDMI_TX_D[3]                 : Y8        : output : 3.3-V LVTTL       :         : 3A        : Y              
 altera_reserved_tdo          : Y9        : output : 3.3-V LVTTL       :         : 3A        : N              
 VCCPGM                       : Y10       : power  :                   : 1.8V/2.5V/3.0V/3.3V :           :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : Y11       :        :                   :         : 3A        :                
+GPIO_0_32                    : Y11       : output : 3.3-V LVTTL       :         : 3A        : Y              
 GND                          : Y12       : gnd    :                   :         :           :                
 FPGA_CLK2_50                 : Y13       : input  : 3.3-V LVTTL       :         : 4A        : Y              
 GND                          : Y14       : gnd    :                   :         :           :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : Y15       :        :                   :         : 4A        :                
 LED[6]                       : Y16       : output : 3.3-V LVTTL       :         : 5A        : Y              
-RESERVED_INPUT_WITH_WEAK_PULLUP : Y17       :        :                   :         : 5A        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : Y18       :        :                   :         : 5A        :                
+GPIO_0_29                    : Y17       : output : 3.3-V LVTTL       :         : 5A        : Y              
+GPIO_0_28                    : Y18       : output : 3.3-V LVTTL       :         : 5A        : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : Y19       :        :                   :         : 5A        :                
 GND                          : Y20       : gnd    :                   :         :           :                
 VCCPD5A                      : Y21       : power  :                   : 3.3V    : 5A        :                

@@ -1,6 +1,6 @@
 Flow report for DE10_NANO_SoC_GHRD
-Wed Feb 21 18:47:26 2018
-Quartus Prime Version 17.0.2 Build 602 07/19/2017 SJ Standard Edition
+Sun Feb 25 01:22:07 2018
+Quartus Prime Version 17.0.0 Build 595 04/25/2017 SJ Lite Edition
 
 
 ---------------------
@@ -38,29 +38,29 @@ agreement for further details.
 
 
 
-+-----------------------------------------------------------------------------------+
-; Flow Summary                                                                      ;
-+---------------------------------+-------------------------------------------------+
-; Flow Status                     ; Successful - Wed Feb 21 18:46:53 2018           ;
-; Quartus Prime Version           ; 17.0.2 Build 602 07/19/2017 SJ Standard Edition ;
-; Revision Name                   ; DE10_NANO_SoC_GHRD                              ;
-; Top-level Entity Name           ; DE10_NANO_SoC_GHRD                              ;
-; Family                          ; Cyclone V                                       ;
-; Device                          ; 5CSEBA6U23I7                                    ;
-; Timing Models                   ; Final                                           ;
-; Logic utilization (in ALMs)     ; 602 / 41,910 ( 1 % )                            ;
-; Total registers                 ; 1277                                            ;
-; Total pins                      ; 174 / 314 ( 55 % )                              ;
-; Total virtual pins              ; 0                                               ;
-; Total block memory bits         ; 0 / 5,662,720 ( 0 % )                           ;
-; Total DSP Blocks                ; 0 / 112 ( 0 % )                                 ;
-; Total HSSI RX PCSs              ; 0                                               ;
-; Total HSSI PMA RX Deserializers ; 0                                               ;
-; Total HSSI TX PCSs              ; 0                                               ;
-; Total HSSI PMA TX Serializers   ; 0                                               ;
-; Total PLLs                      ; 0 / 6 ( 0 % )                                   ;
-; Total DLLs                      ; 1 / 4 ( 25 % )                                  ;
-+---------------------------------+-------------------------------------------------+
++-------------------------------------------------------------------------------+
+; Flow Summary                                                                  ;
++---------------------------------+---------------------------------------------+
+; Flow Status                     ; Successful - Sun Feb 25 01:21:21 2018       ;
+; Quartus Prime Version           ; 17.0.0 Build 595 04/25/2017 SJ Lite Edition ;
+; Revision Name                   ; DE10_NANO_SoC_GHRD                          ;
+; Top-level Entity Name           ; DE10_NANO_SoC_GHRD                          ;
+; Family                          ; Cyclone V                                   ;
+; Device                          ; 5CSEBA6U23I7                                ;
+; Timing Models                   ; Final                                       ;
+; Logic utilization (in ALMs)     ; 2,378 / 41,910 ( 6 % )                      ;
+; Total registers                 ; 2804                                        ;
+; Total pins                      ; 188 / 314 ( 60 % )                          ;
+; Total virtual pins              ; 0                                           ;
+; Total block memory bits         ; 0 / 5,662,720 ( 0 % )                       ;
+; Total DSP Blocks                ; 4 / 112 ( 4 % )                             ;
+; Total HSSI RX PCSs              ; 0                                           ;
+; Total HSSI PMA RX Deserializers ; 0                                           ;
+; Total HSSI TX PCSs              ; 0                                           ;
+; Total HSSI PMA TX Serializers   ; 0                                           ;
+; Total PLLs                      ; 0 / 6 ( 0 % )                               ;
+; Total DLLs                      ; 1 / 4 ( 25 % )                              ;
++---------------------------------+---------------------------------------------+
 
 
 +-----------------------------------------+
@@ -68,7 +68,7 @@ agreement for further details.
 +-------------------+---------------------+
 ; Option            ; Setting             ;
 +-------------------+---------------------+
-; Start date & time ; 02/21/2018 18:42:10 ;
+; Start date & time ; 02/25/2018 01:14:57 ;
 ; Main task         ; Compilation         ;
 ; Revision Name     ; DE10_NANO_SoC_GHRD  ;
 +-------------------+---------------------+
@@ -79,7 +79,7 @@ agreement for further details.
 +---------------------------------------+--------------------------------------------------------------------------+---------------+--------------------------------+------------+
 ; Assignment Name                       ; Value                                                                    ; Default Value ; Entity Name                    ; Section Id ;
 +---------------------------------------+--------------------------------------------------------------------------+---------------+--------------------------------+------------+
-; COMPILER_SIGNATURE_ID                 ; 268883478215108.151926372704852                                          ; --            ; --                             ; --         ;
+; COMPILER_SIGNATURE_ID                 ; 53350634155983.151954649211748                                           ; --            ; --                             ; --         ;
 ; ECO_REGENERATE_REPORT                 ; On                                                                       ; Off           ; --                             ; --         ;
 ; HPS_ISW_FILE                          ; soc_system/synthesis/submodules/sequencer/alt_types.pre.h                ; --            ; soc_system_hps_0_hps_io_border ; --         ;
 ; HPS_ISW_FILE                          ; soc_system/synthesis/submodules/sequencer/emif.pre.xml                   ; --            ; soc_system_hps_0_hps_io_border ; --         ;
@@ -99,7 +99,7 @@ agreement for further details.
 ; MIN_CORE_JUNCTION_TEMP                ; -40                                                                      ; --            ; --                             ; --         ;
 ; MISC_FILE                             ; ip/altsource_probe/hps_reset_bb.v                                        ; --            ; --                             ; --         ;
 ; MISC_FILE                             ; soc_system/synthesis/../soc_system.cmp                                   ; --            ; --                             ; --         ;
-; MISC_FILE                             ; soc_system/synthesis/../../C                                             ; --            ; --                             ; --         ;
+; MISC_FILE                             ; soc_system/synthesis/../../D                                             ; --            ; --                             ; --         ;
 ; MISC_FILE                             ; soc_system/synthesis/soc_system_hps_0_hps.svd                            ; --            ; --                             ; --         ;
 ; MISC_FILE                             ; soc_system/synthesis/../../soc_system.qsys                               ; --            ; --                             ; --         ;
 ; MISC_FILE                             ; soc_system/synthesis/submodules/sequencer/alt_types.pre.h                ; --            ; --                             ; --         ;
@@ -115,6 +115,7 @@ agreement for further details.
 ; MISC_FILE                             ; soc_system/synthesis/submodules/sequencer/tclrpt.pre.c                   ; --            ; --                             ; --         ;
 ; MISC_FILE                             ; soc_system/synthesis/submodules/sequencer/tclrpt.pre.h                   ; --            ; --                             ; --         ;
 ; MISC_FILE                             ; soc_system/synthesis/submodules/hps.pre.xml                              ; --            ; --                             ; --         ;
+; NUM_PARALLEL_PROCESSORS               ; 6                                                                        ; --            ; --                             ; --         ;
 ; PARTITION_COLOR                       ; -- (Not supported for targeted family)                                   ; --            ; --                             ; Top        ;
 ; PARTITION_FITTER_PRESERVATION_LEVEL   ; -- (Not supported for targeted family)                                   ; --            ; --                             ; Top        ;
 ; PARTITION_NETLIST_TYPE                ; -- (Not supported for targeted family)                                   ; --            ; --                             ; Top        ;
@@ -123,7 +124,7 @@ agreement for further details.
 ; PROJECT_OUTPUT_DIRECTORY              ; output_files                                                             ; --            ; --                             ; --         ;
 ; SLD_FILE                              ; soc_system/synthesis/soc_system.regmap                                   ; --            ; --                             ; --         ;
 ; SLD_FILE                              ; soc_system/synthesis/soc_system.debuginfo                                ; --            ; --                             ; --         ;
-; SLD_INFO                              ; QSYS_NAME soc_system HAS_SOPCINFO 1 GENERATION_ID 1519262368             ; --            ; soc_system                     ; --         ;
+; SLD_INFO                              ; QSYS_NAME soc_system HAS_SOPCINFO 1 GENERATION_ID 1519545683             ; --            ; soc_system                     ; --         ;
 ; SOPCINFO_FILE                         ; soc_system/synthesis/../../soc_system.sopcinfo                           ; --            ; --                             ; --         ;
 ; SYNTHESIS_ONLY_QIP                    ; On                                                                       ; --            ; --                             ; --         ;
 ; USE_DLL_FREQUENCY_FOR_DQS_DELAY_CHAIN ; On                                                                       ; Off           ; --                             ; --         ;
@@ -135,24 +136,24 @@ agreement for further details.
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
 ; Module Name               ; Elapsed Time ; Average Processors Used ; Peak Virtual Memory ; Total CPU Time (on all processors) ;
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
-; Analysis & Synthesis      ; 00:00:37     ; 1.0                     ; 1019 MB             ; 00:01:02                           ;
-; Fitter                    ; 00:01:21     ; 1.1                     ; 3263 MB             ; 00:02:27                           ;
-; Assembler                 ; 00:00:11     ; 1.0                     ; 741 MB              ; 00:00:10                           ;
-; TimeQuest Timing Analyzer ; 00:00:32     ; 1.1                     ; 1727 MB             ; 00:00:35                           ;
-; Total                     ; 00:02:41     ; --                      ; --                  ; 00:04:14                           ;
+; Analysis & Synthesis      ; 00:00:54     ; 1.0                     ; 1174 MB             ; 00:01:21                           ;
+; Fitter                    ; 00:02:08     ; 1.2                     ; 3509 MB             ; 00:04:54                           ;
+; Assembler                 ; 00:00:14     ; 1.0                     ; 832 MB              ; 00:00:15                           ;
+; TimeQuest Timing Analyzer ; 00:00:44     ; 1.4                     ; 1869 MB             ; 00:00:57                           ;
+; Total                     ; 00:04:00     ; --                      ; --                  ; 00:07:27                           ;
 +---------------------------+--------------+-------------------------+---------------------+------------------------------------+
 
 
-+----------------------------------------------------------------------------------------+
-; Flow OS Summary                                                                        ;
-+---------------------------+------------------+-----------+------------+----------------+
-; Module Name               ; Machine Hostname ; OS Name   ; OS Version ; Processor type ;
-+---------------------------+------------------+-----------+------------+----------------+
-; Analysis & Synthesis      ; e3-11-02         ; Windows 7 ; 6.1        ; x86_64         ;
-; Fitter                    ; e3-11-02         ; Windows 7 ; 6.1        ; x86_64         ;
-; Assembler                 ; e3-11-02         ; Windows 7 ; 6.1        ; x86_64         ;
-; TimeQuest Timing Analyzer ; e3-11-02         ; Windows 7 ; 6.1        ; x86_64         ;
-+---------------------------+------------------+-----------+------------+----------------+
++-----------------------------------------------------------------------------------------+
+; Flow OS Summary                                                                         ;
++---------------------------+------------------+------------+------------+----------------+
+; Module Name               ; Machine Hostname ; OS Name    ; OS Version ; Processor type ;
++---------------------------+------------------+------------+------------+----------------+
+; Analysis & Synthesis      ; Keith-Desktop    ; Windows 10 ; 10.0       ; x86_64         ;
+; Fitter                    ; Keith-Desktop    ; Windows 10 ; 10.0       ; x86_64         ;
+; Assembler                 ; Keith-Desktop    ; Windows 10 ; 10.0       ; x86_64         ;
+; TimeQuest Timing Analyzer ; Keith-Desktop    ; Windows 10 ; 10.0       ; x86_64         ;
++---------------------------+------------------+------------+------------+----------------+
 
 
 ------------
