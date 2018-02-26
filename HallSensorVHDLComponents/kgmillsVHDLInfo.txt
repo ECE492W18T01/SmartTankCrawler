@@ -4,3 +4,5 @@ As of 2/3/18 it contains:
 samplingClock.vhd - A downscaling clock that goes from the FPGA's 50MHz to the 10-1Hz we need for our purposes.
 hall_sensor_accumulator.vhd - Counts incoming edges from a hall sensor and sends them off for processing.
 hall_sensor_comparator.vhd - Processes the information from hall_sensor_accumulator
+
+Stuff in oldPngs - Worked with Modelsim, worked with Quartus "Analyze Current File" did not work with "Analyze and Synthesize"
