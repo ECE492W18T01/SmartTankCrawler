@@ -38,11 +38,11 @@ USE ieee.std_logic_signed.all;
 use IEEE.numeric_std.all;
 
 -- direction information
--- pwm_signal=1, dir_1=1, dir_2=0 -> forward
--- pwm_signal=1, dir_1=0, dir_2=1 -> reverse
--- pwm_signal=1, dir_1=0, dir_2=0 -> brake
--- pwm_signal=1, dir_1=1, dir_2=1 -> brake
--- pwm_signal=0, dir_1=X, dir_2=X -> off
+-- pwm_temp=1, dir_1=1, dir_2=0 -> forward
+-- pwm_temp=1, dir_1=0, dir_2=1 -> reverse
+-- pwm_temp=1, dir_1=0, dir_2=0 -> brake
+-- pwm_temp=1, dir_1=1, dir_2=1 -> brake
+-- pwm_temp=0, dir_1=X, dir_2=X -> off
 
 ENTITY pwm IS
 	GENERIC(
