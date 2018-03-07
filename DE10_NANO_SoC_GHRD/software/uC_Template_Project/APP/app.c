@@ -24,15 +24,18 @@
 *
 *                                            CYCLONE V SOC
 *
-* Filename      : app.c
+* Filename      : app.h (used to be app.c)
 * Version       : V1.00
 * Programmer(s) : JBL
 * Modifications	: Nancy Minderman nancy.minderman@ualberta.ca, Brendan Bruner bbruner@ualberta.ca
 * 				  Changes to this project include scatter file changes and BSP changes for port from
 * 				  Cyclone V dev kit board to DE1-SoC
-*				  
-*				  Keith Mills kgmills@ualberta.ca 
-*				  Reworked for project, testing of components, for usage on the DE10-Nano. 
+*
+*				  Keith Mills kgmills@ualberta.ca
+*				  Reworked for project, testing of components, for usage on the DE10-Nano.
+*
+*				  Joshua Robertson jcrobert@ualberta.ca
+*				  Further reworked to add our necessary tasks, queues, and other data structures.
 *********************************************************************************************************
 * Note(s)       : none.
 *********************************************************************************************************
@@ -66,6 +69,10 @@
 #define APP_TASK_PRIO 5
 #define TASK_STACK_SIZE 4096
 
+#define FUZZY_TASK_PRIO 10
+#define MOTOR_TASK_PRIO 15
+#define ERROR_TASK_PRIO 20
+
 /*
 *********************************************************************************************************
 *                                       LOCAL GLOBAL VARIABLES
@@ -73,6 +80,9 @@
 */
 
 CPU_STK AppTaskStartStk[TASK_STACK_SIZE];
+CPU_STK MotorTaskStk[TASK_STACK_SIZE];
+CPU_STK FuzzyTaskStk[TASK_STACK_SIZE];
+CPU_STK ErrorTaskStk[TASK_STACK_SIZE];
 
 
 /*
@@ -82,6 +92,10 @@ CPU_STK AppTaskStartStk[TASK_STACK_SIZE];
 */
 
 static  void  AppTaskStart              (void        *p_arg);
+static  void  AppTaskStart              (void        *p_arg);
+static  void  MotorTask                 (void        *p_arg);
+static  void  FuzzyTask                 (void        *p_arg);
+static  void  ErrorTask                 (void        *p_arg);
 
 
 /*
@@ -98,6 +112,11 @@ static  void  AppTaskStart              (void        *p_arg);
 *                   initialisation.
 *********************************************************************************************************
 */
+
+// MessageQueues
+OS_EVENT *ErrorQueue;
+OS_EVENT *MotorQueue;
+OS_EVENT *FuzzyQueue;
 
 int main ()
 {
@@ -120,6 +139,14 @@ int main ()
 
     OSInit();
 
+    void *ErrorMessageArray[100];
+    void *MotorMessageArray[10];
+    void *FuzzyMessageArray[10];
+
+    //TODO: I'm pretty sure the below address is wrong. Need to test.
+    ErrorQueue = OSQCreate(&ErrorMessageArray[0], 10);
+    MotorQueue = OSQCreate(&MotorMessageArray[0], 10);
+    FuzzyQueue = OSQCreate(&FuzzyMessageArray[0], 10);
 
     os_err = OSTaskCreateExt((void (*)(void *)) AppTaskStart,   /* Create the start task.                               */
                              (void          * ) 0,
@@ -127,6 +154,46 @@ int main ()
                              (INT8U           ) APP_TASK_PRIO,
                              (INT16U          ) APP_TASK_PRIO,  // reuse prio for ID
                              (OS_STK        * )&AppTaskStartStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    os_err = OSTaskCreateExt((void (*)(void *)) MotorTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&MotorTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) MOTOR_TASK_PRIO,
+                             (INT16U          ) MOTOR_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&MotorTaskStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    os_err = OSTaskCreateExt((void (*)(void *)) FuzzyTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&FuzzyTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) FUZZY_TASK_PRIO,
+                             (INT16U          ) FUZZY_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&FuzzyTaskStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+
+    os_err = OSTaskCreateExt((void (*)(void *)) ErrorTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&ErrorTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) ERROR_TASK_PRIO,
+                             (INT16U          ) ERROR_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&ErrorTaskStk[0],
                              (INT32U          ) TASK_STACK_SIZE,
                              (void          * )0,
                              (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
@@ -195,4 +262,97 @@ static  void  AppTaskStart (void *p_arg)
         //printf("sensor: %d\n", alt_read_byte(SONAR_BASE));
     }
 
+}
+
+//TODO: Change the queue names, they're confusing
+
+static void MotorTask (void *p_arg)
+{
+	INT8U err;
+	char *TaskName = "MotorTask";
+
+    MotorChangeMessage *msg;
+    for(;;) {
+
+        msg = (MotorChangeMessage*)OSQPend(MotorQueue, 0, &err);
+
+		switch(err)
+        {
+		case 0: // Replace with OS_NO_ERR later.
+				//Message was received
+
+                float frontLeft = msg->frontLeft;
+                //And etc...
+                uint8_t steeringServo = msg->steeringServo;
+                free(msg);
+				/*
+				Here's where you can actually do what you want to do
+				*/
+
+
+				break;
+
+			default:
+				ErrorMessage *msg = malloc(sizeof(ErrorMessage));
+                msg->_taskName = TaskName;
+                msg->_sourceName = "OSQPend";
+                msg->_error = err;
+                OSQPost(ErrorQueue, msg);
+        }
+    }
+}
+
+static void FuzzyTask (void *p_arg)
+{
+	INT8U err;
+	char *TaskName = "FuzzyTask";
+
+    MotorSpeedMessage *msg;
+    for(;;) {
+
+        msg = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
+
+		switch(err)
+        {
+			case 0: // Replace with OS_NO_ERR Later
+				//Message was received
+
+                uint8_t frontLeft = msg->frontLeft;
+                //And etc.
+
+				/*
+				Here's where you can actually do what you want to do
+				*/
+
+                MotorChangeMessage* sentMessage;
+                sentMessage = malloc(sizeof(MotorChangeMessage*));
+
+                sentMessage->frontLeft = 0;
+                //...
+
+                OSQPost(FuzzyQueue, sentMessage);
+				break;
+
+			default:
+				ErrorMessage *msg = malloc(sizeof(ErrorMessage));
+				msg->_taskName = TaskName;
+				msg->_sourceName = "OSQPend";
+				msg->_error = err;
+				OSQPost(ErrorQueue, msg);
+        }
+    }
+}
+
+static void ErrorTask (void *p_arg)
+{
+	INT8U err;
+
+    struct errorMessage *msg;
+    for(;;) {
+
+        msg = (struct motorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
+        // Do something with the error.
+
+        free(msg);
+    }
 }

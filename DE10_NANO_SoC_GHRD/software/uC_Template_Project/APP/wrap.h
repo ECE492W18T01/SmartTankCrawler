@@ -3,6 +3,7 @@
  * wrap.c, wrap.h
  * March 5th, 2018
  * Fredric Mendi and Keith Mills
+ * with data structures from Joshua Robertson
  * Purpose of this C/H file pair:
  * 1.Abstract I/O driver memory locations to functions.
  *
@@ -14,6 +15,8 @@
  * data inputs to VHDL components, and using wrapper functions
  * allow another programmer to give these functions any value
  * but filter said input so that it does not cause weird behaviour.
+ *
+ * 4. Provide data structures for the information passing between tasks
  */
 
 #ifndef wrap_H
@@ -153,6 +156,28 @@
 #define SONAR_ADD 0x00000120
 #define SONAR_BASE FPGA_TO_HPS_LW_ADDR(SONAR_ADD)
 
+typedef struct {
+	char *_taskName;
+	char *_sourceName;
+	INT8U _error;
+} ErrorMessage;
+
+typedef struct {
+	uint8_t frontLeft;
+    uint8_t frontRight;
+    uint8_t backLeft;
+    uint8_t backRight;
+} MotorSpeedMessage;
+
+typedef struct {
+	float frontLeft;
+    float frontRight;
+    float backLeft;
+    float backRight;
+    uint8_t steeringServo;
+} MotorChangeMessage;
+
+extern OS_EVENT *FuzzyQueue;
 
 // Function for controlling rear, emergency brake servo.
 void MoveBackServo(uint8_t hex);

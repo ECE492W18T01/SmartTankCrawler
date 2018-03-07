@@ -1,0 +1,153 @@
+#ifndef app_H
+#define app_H
+
+/*
+*********************************************************************************************************
+*                                            EXAMPLE CODE
+*
+*                          (c) Copyright 2009-2014; Micrium, Inc.; Weston, FL
+*
+*               All rights reserved.  Protected by international copyright laws.
+*
+*               Please feel free to use any application code labeled as 'EXAMPLE CODE' in
+*               your application products.  Example code may be used as is, in whole or in
+*               part, or may be used as a reference only.
+*
+*               Please help us continue to provide the Embedded community with the finest
+*               software available.  Your honesty is greatly appreciated.
+*
+*               You can contact us at www.micrium.com.
+*********************************************************************************************************
+*/
+
+/*
+*********************************************************************************************************
+*
+*                                          APPLICATION CODE
+*
+*                                            CYCLONE V SOC
+*
+* Filename      : app.h (used to be app.c)
+* Version       : V1.00
+* Programmer(s) : JBL
+* Modifications	: Nancy Minderman nancy.minderman@ualberta.ca, Brendan Bruner bbruner@ualberta.ca
+* 				  Changes to this project include scatter file changes and BSP changes for port from
+* 				  Cyclone V dev kit board to DE1-SoC
+*
+*				  Keith Mills kgmills@ualberta.ca
+*				  Reworked for project, testing of components, for usage on the DE10-Nano.
+*
+*				  Joshua Robertson jcrobert@ualberta.ca
+*				  Further reworked to add our necessary tasks, queues, and other data structures.
+*********************************************************************************************************
+* Note(s)       : none.
+*********************************************************************************************************
+*/
+
+
+/*
+*********************************************************************************************************
+*                                            INCLUDE FILES
+*********************************************************************************************************
+*/
+
+#include  <app_cfg.h>
+#include  <lib_mem.h>
+
+#include  <bsp.h>
+#include  <bsp_int.h>
+#include  <bsp_os.h>
+#include  <cpu_cache.h>
+
+#include  <cpu.h>
+#include  <cpu_core.h>
+
+#include  <os.h>
+#include  <hps.h>
+#include  <socal.h>
+#include  <hwlib.h>
+
+#include "wrap.h"
+
+#define APP_TASK_PRIO 5
+#define TASK_STACK_SIZE 4096
+
+#define FUZZY_TASK_PRIO 10
+#define MOTOR_TASK_PRIO 15
+#define ERROR_TASK_PRIO 20
+
+/*
+*********************************************************************************************************
+*                                       LOCAL GLOBAL VARIABLES
+*********************************************************************************************************
+*/
+
+CPU_STK AppTaskStartStk[TASK_STACK_SIZE];
+CPU_STK MotorTaskStk[TASK_STACK_SIZE];
+CPU_STK FuzzyTaskStk[TASK_STACK_SIZE];
+CPU_STK ErrorTaskStk[TASK_STACK_SIZE];
+
+
+/*
+*********************************************************************************************************
+*                                      LOCAL FUNCTION PROTOTYPES
+*********************************************************************************************************
+*/
+
+static  void  AppTaskStart              (void        *p_arg);
+static  void  AppTaskStart              (void        *p_arg);
+static  void  MotorTask                 (void        *p_arg);
+static  void  FuzzyTask                 (void        *p_arg);
+static  void  ErrorTask                 (void        *p_arg);
+
+
+/*
+*********************************************************************************************************
+*                                               main()
+*
+* Description : Entry point for C code.
+*
+* Arguments   : none.
+*
+* Returns     : none.
+*
+* Note(s)     : (1) It is assumed that your code will call main() once you have performed all necessary
+*                   initialisation.
+*********************************************************************************************************
+*/
+
+// MessageQueues
+OS_EVENT *ErrorQueue;
+OS_EVENT *MotorQueue;
+OS_EVENT *FuzzyQueue;
+
+struct errorMessage {
+	char *_taskName;
+	char *_sourceName;
+	INT8U _error;
+};
+
+struct motorSpeedMessage {
+	uint8_t frontLeft;
+    uint8_t frontRight;
+    uint8_t backLeft;
+    uint8_t backRight;
+};
+
+struct motorChangeMessage {
+	float frontLeft;
+    float frontRight;
+    float backLeft;
+    float backRight;
+    uint8_t steeringServo;
+};
+
+extern OS_EVENT *FuzzyQueue;
+
+int main();
+static  void  AppTaskStart (void *p_arg);
+static void MotorTask (void *p_arg);
+static void FuzzyTask (void *p_arg);
+static void ErrorTask (void *p_arg);
+
+#endif

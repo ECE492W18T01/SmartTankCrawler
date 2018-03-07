@@ -5,14 +5,17 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../APP/app.c \
+../APP/timer.c \
 ../APP/wrap.c 
 
 C_DEPS += \
 ./APP/app.d \
+./APP/timer.d \
 ./APP/wrap.d 
 
 OBJS += \
 ./APP/app.o \
+./APP/timer.o \
 ./APP/wrap.o 
 
 
