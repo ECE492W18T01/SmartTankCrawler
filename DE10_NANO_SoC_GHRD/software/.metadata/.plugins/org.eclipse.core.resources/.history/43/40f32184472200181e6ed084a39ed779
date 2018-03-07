@@ -1,0 +1,130 @@
+#ifndef wrap_H
+#define wrap_H
+
+#include  <app_cfg.h>
+#include  <lib_mem.h>
+
+#include  <bsp.h>
+#include  <bsp_int.h>
+#include  <bsp_os.h>
+#include  <cpu_cache.h>
+
+#include  <cpu.h>
+#include  <cpu_core.h>
+
+#include  <os.h>
+#include  <hps.h>
+#include  <socal.h>
+#include  <hwlib.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define BackServoMin 0x00    
+#define BackServoMax 0x2E
+#define FrontServoMin 0x00
+#define FrontServoMax 0x10
+#define DCMotorMin -127
+#define DCMotorMax 127
+#define FRONTLEFT 0
+#define FRONTRIGHT 1
+#define REARLEFT 2
+#define REARRIGHT 3
+
+// Compute absolute address of any slave component attached to lightweight bridge
+// base is address of component in QSYS window
+// This computation only works for slave components attached to the lightweight bridge
+// base should be ranged checked from 0x0 - 0x1fffff
+
+#define FPGA_TO_HPS_LW_ADDR(base)  ((void *) (((char *)  (ALT_LWFPGASLVS_ADDR))+ (base)))
+
+/*
+*********************************************************************************************************
+*										Qsys Components
+*********************************************************************************************************
+*/
+// Green FPGA Leds
+// Type:  Input
+// Width: Byte
+// GPIO:  N/A
+#define LEDR_ADD 0x00000100
+#define LEDR_BASE FPGA_TO_HPS_LW_ADDR(LEDR_ADD)
+
+// Servo #1, Steering Control
+// Type:  Input
+// Width: Byte
+// GPIO:  0_0
+#define STEER_SERVO_ADD 0x00000110
+#define STEER_SERVO_BASE FPGA_TO_HPS_LW_ADDR(STEER_SERVO_ADD)
+
+// Servo #2, Emergency Braking System
+// Type:  Input
+// Width: Byte
+// GPIO:  0_1
+#define BRAKE_SERVO_ADD 0x00000111
+#define BRAKE_SERVO_BASE FPGA_TO_HPS_LW_ADDR(BRAKE_SERVO_ADD)
+
+// Drive Motor #1, Front Left
+// Type:  Input
+// Width: Longword
+// GPIO:  dir - 0_26; mag - 0_27
+#define FRONT_LEFT_MOTOR_ADD 0x00000114
+#define FRONT_LEFT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(FRONT_LEFT_MOTOR_ADD)
+
+// Drive Motor #2, Front Right
+// Type:  Input
+// Width: Longword
+// GPIO:  dir - 0_28; mag - 0_29
+#define FRONT_RIGHT_MOTOR_ADD 0x00000118
+#define FRONT_RIGHT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(FRONT_RIGHT_MOTOR_ADD)
+
+// Drive Motor #3, Rear Left
+// Type:  Input
+// Width: Longword
+// GPIO:  dir - 0_30; mag - 0_31
+#define REAR_LEFT_MOTOR_ADD 0x0000011c
+#define REAR_LEFT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(REAR_LEFT_MOTOR_ADD)
+
+// Drive Motor #4, Rear Right
+// Type:  Input
+// Width: Longword
+// GPIO:  dir - 0_32; mag - 0_33
+#define REAR_RIGHT_MOTOR_ADD 0x00000120
+#define REAR_RIGHT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(REAR_RIGHT_MOTOR_ADD)
+
+
+/* Hall Sensor GPIO
+* FL - 0_4
+* FR - 0_5
+* RL - 0_6
+* RR - 0_7
+*/
+// Front Left Byte
+#define F_LEFT_ADD 0x00000124
+#define F_LEFT_BASE FPGA_TO_HPS_LW_ADDR(F_LEFT_ADD)
+
+// Front Right Byte
+#define F_RIGHT_ADD 0x00000125
+#define F_RIGHT_BASE FPGA_TO_HPS_LW_ADDR(F_RIGHT_ADD)
+
+// Rear Left Byte
+#define R_LEFT_ADD 0x00000126
+#define R_LEFT_BASE FPGA_TO_HPS_LW_ADDR(R_LEFT_ADD)
+
+// Rear Right Byte
+#define R_RIGHT_ADD 0x00000127
+#define R_RIGHT_BASE FPGA_TO_HPS_LW_ADDR(R_RIGHT_ADD)
+
+// Ultrasonic Range Finder
+// Type:  Output
+// Width: Longword
+// GPIO:  0_8
+#define SONAR_ADD 0x00000130
+#define SONAR_BASE FPGA_TO_HPS_LW_ADDR(SONAR_ADD)
+
+
+void MoveBackServo(uint8_t hex);
+void MoveFrontServo(uint8_t hex);
+void MoveDCMotor(uint8_t num, int wheel);
+
+#endif

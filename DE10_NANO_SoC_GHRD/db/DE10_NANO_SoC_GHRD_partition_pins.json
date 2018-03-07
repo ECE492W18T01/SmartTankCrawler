@@ -1,0 +1,121 @@
+{
+	"partitions" : [
+		{
+			"name" : "Top",
+			"pins" : [
+				{
+					"name" : "LED[0]",
+					"strict" : false
+				},
+				{
+					"name" : "LED[1]",
+					"strict" : false
+				},
+				{
+					"name" : "LED[2]",
+					"strict" : false
+				},
+				{
+					"name" : "LED[3]",
+					"strict" : false
+				},
+				{
+					"name" : "LED[4]",
+					"strict" : false
+				},
+				{
+					"name" : "LED[5]",
+					"strict" : false
+				},
+				{
+					"name" : "LED[6]",
+					"strict" : false
+				},
+				{
+					"name" : "LED[7]",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_0",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_1",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_10",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_11",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_12",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_13",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_14",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_15",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_16",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_17",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_18",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_19",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_20",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_21",
+					"strict" : false
+				},
+				{
+					"name" : "FPGA_CLK1_50",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_8",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_5",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_6",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_7",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_4",
+					"strict" : false
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,167 @@
+Info: Starting: Create block symbol file (.bsf)
+Info: qsys-generate C:\Users\kgmills\Desktop\TestDE10\SmartTankCrawler\DE10_NANO_SoC_GHRD\soc_system.qsys --block-symbol-file --output-directory=C:\Users\kgmills\Desktop\TestDE10\SmartTankCrawler\DE10_NANO_SoC_GHRD\soc_system --family="Cyclone V" --part=5CSEBA6U23I7
+Progress: Loading DE10_NANO_SoC_GHRD/soc_system.qsys
+Progress: Reading input file
+Progress: Adding clk_0 [clock_source 17.0]
+Progress: Parameterizing module clk_0
+Progress: Adding green_leds [altera_avalon_pio 17.0]
+Progress: Parameterizing module green_leds
+Progress: Adding hps_0 [altera_hps 17.0]
+Progress: Parameterizing module hps_0
+Progress: Adding pwmBrushed_0 [pwmBrushed 1.1]
+Progress: Parameterizing module pwmBrushed_0
+Progress: Adding pwmBrushed_1 [pwmBrushed 1.1]
+Progress: Parameterizing module pwmBrushed_1
+Progress: Adding pwmBrushed_2 [pwmBrushed 1.1]
+Progress: Parameterizing module pwmBrushed_2
+Progress: Adding pwmBrushed_3 [pwmBrushed 1.1]
+Progress: Parameterizing module pwmBrushed_3
+Progress: Adding pwmClk_0 [pwmClk 1.0]
+Progress: Parameterizing module pwmClk_0
+Progress: Adding pwmServo_0 [pwmServo 1.0]
+Progress: Parameterizing module pwmServo_0
+Progress: Adding pwmServo_1 [pwmServo 1.0]
+Progress: Parameterizing module pwmServo_1
+Progress: Adding sysid_qsys [altera_avalon_sysid_qsys 17.0]
+Progress: Parameterizing module sysid_qsys
+Progress: Adding ultraSonicRangeFinder_0 [ultraSonicRangeFinder 1.0]
+Progress: Parameterizing module ultraSonicRangeFinder_0
+Progress: Adding upCounter_0 [upCounter 1.0]
+Progress: Parameterizing module upCounter_0
+Progress: Adding upCounter_1 [upCounter 1.0]
+Progress: Parameterizing module upCounter_1
+Progress: Adding upCounter_2 [upCounter 1.0]
+Progress: Parameterizing module upCounter_2
+Progress: Adding upCounter_3 [upCounter 1.0]
+Progress: Parameterizing module upCounter_3
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Info: soc_system.hps_0: HPS Main PLL counter settings: n = 0  m = 63
+Info: soc_system.hps_0: HPS peripherial PLL counter settings: n = 0  m = 39
+Info: soc_system.sysid_qsys: System ID is not assigned automatically. Edit the System ID parameter to provide a unique ID
+Info: soc_system.sysid_qsys: Time stamp will be automatically updated when this component is generated.
+Info: qsys-generate succeeded.
+Info: Finished: Create block symbol file (.bsf)
+Info: 
+Info: Starting: Create HDL design files for synthesis
+Info: qsys-generate C:\Users\kgmills\Desktop\TestDE10\SmartTankCrawler\DE10_NANO_SoC_GHRD\soc_system.qsys --synthesis=VHDL --output-directory=C:\Users\kgmills\Desktop\TestDE10\SmartTankCrawler\DE10_NANO_SoC_GHRD\soc_system\synthesis --family="Cyclone V" --part=5CSEBA6U23I7
+Progress: Loading DE10_NANO_SoC_GHRD/soc_system.qsys
+Progress: Reading input file
+Progress: Adding clk_0 [clock_source 17.0]
+Progress: Parameterizing module clk_0
+Progress: Adding green_leds [altera_avalon_pio 17.0]
+Progress: Parameterizing module green_leds
+Progress: Adding hps_0 [altera_hps 17.0]
+Progress: Parameterizing module hps_0
+Progress: Adding pwmBrushed_0 [pwmBrushed 1.1]
+Progress: Parameterizing module pwmBrushed_0
+Progress: Adding pwmBrushed_1 [pwmBrushed 1.1]
+Progress: Parameterizing module pwmBrushed_1
+Progress: Adding pwmBrushed_2 [pwmBrushed 1.1]
+Progress: Parameterizing module pwmBrushed_2
+Progress: Adding pwmBrushed_3 [pwmBrushed 1.1]
+Progress: Parameterizing module pwmBrushed_3
+Progress: Adding pwmClk_0 [pwmClk 1.0]
+Progress: Parameterizing module pwmClk_0
+Progress: Adding pwmServo_0 [pwmServo 1.0]
+Progress: Parameterizing module pwmServo_0
+Progress: Adding pwmServo_1 [pwmServo 1.0]
+Progress: Parameterizing module pwmServo_1
+Progress: Adding sysid_qsys [altera_avalon_sysid_qsys 17.0]
+Progress: Parameterizing module sysid_qsys
+Progress: Adding ultraSonicRangeFinder_0 [ultraSonicRangeFinder 1.0]
+Progress: Parameterizing module ultraSonicRangeFinder_0
+Progress: Adding upCounter_0 [upCounter 1.0]
+Progress: Parameterizing module upCounter_0
+Progress: Adding upCounter_1 [upCounter 1.0]
+Progress: Parameterizing module upCounter_1
+Progress: Adding upCounter_2 [upCounter 1.0]
+Progress: Parameterizing module upCounter_2
+Progress: Adding upCounter_3 [upCounter 1.0]
+Progress: Parameterizing module upCounter_3
+Progress: Building connections
+Progress: Parameterizing connections
+Progress: Validating
+Progress: Done reading input file
+Info: soc_system.hps_0: HPS Main PLL counter settings: n = 0  m = 63
+Info: soc_system.hps_0: HPS peripherial PLL counter settings: n = 0  m = 39
+Info: soc_system.sysid_qsys: System ID is not assigned automatically. Edit the System ID parameter to provide a unique ID
+Info: soc_system.sysid_qsys: Time stamp will be automatically updated when this component is generated.
+Info: soc_system: Generating soc_system "soc_system" for QUARTUS_SYNTH
+Info: Inserting clock-crossing logic between cmd_demux.src4 and cmd_mux_004.sink0
+Info: Inserting clock-crossing logic between cmd_demux.src5 and cmd_mux_005.sink0
+Info: Inserting clock-crossing logic between cmd_demux_001.src4 and cmd_mux_004.sink1
+Info: Inserting clock-crossing logic between cmd_demux_001.src5 and cmd_mux_005.sink1
+Info: Inserting clock-crossing logic between rsp_demux_004.src0 and rsp_mux.sink4
+Info: Inserting clock-crossing logic between rsp_demux_004.src1 and rsp_mux_001.sink4
+Info: Inserting clock-crossing logic between rsp_demux_005.src0 and rsp_mux.sink5
+Info: Inserting clock-crossing logic between rsp_demux_005.src1 and rsp_mux_001.sink5
+Warning: hps_0.f2h_irq0: Cannot connect clock for irq_mapper.sender
+Warning: hps_0.f2h_irq0: Cannot connect reset for irq_mapper.sender
+Warning: hps_0.f2h_irq1: Cannot connect clock for irq_mapper_001.sender
+Warning: hps_0.f2h_irq1: Cannot connect reset for irq_mapper_001.sender
+Info: green_leds: Starting RTL generation for module 'soc_system_green_leds'
+Info: green_leds:   Generation command is [exec C:/intelfpga/17.0/quartus/bin64/perl/bin/perl.exe -I C:/intelfpga/17.0/quartus/bin64/perl/lib -I C:/intelfpga/17.0/quartus/sopc_builder/bin/europa -I C:/intelfpga/17.0/quartus/sopc_builder/bin/perl_lib -I C:/intelfpga/17.0/quartus/sopc_builder/bin -I C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_system_green_leds --dir=C:/Users/kgmills/AppData/Local/Temp/alt7597_2291352898590098400.dir/0004_green_leds_gen/ --quartus_dir=C:/intelfpga/17.0/quartus --verilog --config=C:/Users/kgmills/AppData/Local/Temp/alt7597_2291352898590098400.dir/0004_green_leds_gen//soc_system_green_leds_component_configuration.pl  --do_build_sim=0  ]
+Info: green_leds: Done RTL generation for module 'soc_system_green_leds'
+Info: green_leds: "soc_system" instantiated altera_avalon_pio "green_leds"
+Info: hps_0: "Running  for module: hps_0"
+Info: hps_0: HPS Main PLL counter settings: n = 0  m = 63
+Info: hps_0: HPS peripherial PLL counter settings: n = 0  m = 39
+Info: hps_0: "soc_system" instantiated altera_hps "hps_0"
+Info: pwmBrushed_0: "soc_system" instantiated pwmBrushed "pwmBrushed_0"
+Info: pwmClk_0: "soc_system" instantiated pwmClk "pwmClk_0"
+Info: pwmServo_0: "soc_system" instantiated pwmServo "pwmServo_0"
+Info: sysid_qsys: "soc_system" instantiated altera_avalon_sysid_qsys "sysid_qsys"
+Info: ultraSonicRangeFinder_0: "soc_system" instantiated ultraSonicRangeFinder "ultraSonicRangeFinder_0"
+Info: upCounter_0: "soc_system" instantiated upCounter "upCounter_0"
+Info: avalon_st_adapter: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_001: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_002: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_003: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_004: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_005: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_006: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_007: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_008: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_009: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_010: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_011: Inserting error_adapter: error_adapter_0
+Info: avalon_st_adapter_012: Inserting error_adapter: error_adapter_0
+Info: mm_interconnect_0: "soc_system" instantiated altera_mm_interconnect "mm_interconnect_0"
+Info: irq_mapper: "soc_system" instantiated altera_irq_mapper "irq_mapper"
+Info: rst_controller: "soc_system" instantiated altera_reset_controller "rst_controller"
+Info: fpga_interfaces: "hps_0" instantiated altera_interface_generator "fpga_interfaces"
+Info: hps_io: "hps_0" instantiated altera_hps_io "hps_io"
+Info: pwmBrushed_0_avalon_slave_translator: "mm_interconnect_0" instantiated altera_merlin_slave_translator "pwmBrushed_0_avalon_slave_translator"
+Info: hps_0_h2f_lw_axi_master_agent: "mm_interconnect_0" instantiated altera_merlin_axi_master_ni "hps_0_h2f_lw_axi_master_agent"
+Info: pwmBrushed_0_avalon_slave_agent: "mm_interconnect_0" instantiated altera_merlin_slave_agent "pwmBrushed_0_avalon_slave_agent"
+Info: pwmBrushed_0_avalon_slave_agent_rsp_fifo: "mm_interconnect_0" instantiated altera_avalon_sc_fifo "pwmBrushed_0_avalon_slave_agent_rsp_fifo"
+Info: router: "mm_interconnect_0" instantiated altera_merlin_router "router"
+Info: router_002: "mm_interconnect_0" instantiated altera_merlin_router "router_002"
+Info: router_008: "mm_interconnect_0" instantiated altera_merlin_router "router_008"
+Info: hps_0_h2f_lw_axi_master_wr_limiter: "mm_interconnect_0" instantiated altera_merlin_traffic_limiter "hps_0_h2f_lw_axi_master_wr_limiter"
+Info: Reusing file C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/soc_system/synthesis/submodules/altera_avalon_sc_fifo.v
+Info: pwmBrushed_0_avalon_slave_burst_adapter: "mm_interconnect_0" instantiated altera_merlin_burst_adapter "pwmBrushed_0_avalon_slave_burst_adapter"
+Info: Reusing file C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/soc_system/synthesis/submodules/altera_merlin_address_alignment.sv
+Info: Reusing file C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/soc_system/synthesis/submodules/altera_avalon_st_pipeline_base.v
+Info: cmd_demux: "mm_interconnect_0" instantiated altera_merlin_demultiplexer "cmd_demux"
+Info: cmd_mux: "mm_interconnect_0" instantiated altera_merlin_multiplexer "cmd_mux"
+Info: rsp_demux: "mm_interconnect_0" instantiated altera_merlin_demultiplexer "rsp_demux"
+Info: rsp_demux_004: "mm_interconnect_0" instantiated altera_merlin_demultiplexer "rsp_demux_004"
+Info: rsp_mux: "mm_interconnect_0" instantiated altera_merlin_multiplexer "rsp_mux"
+Info: Reusing file C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/soc_system/synthesis/submodules/altera_merlin_arbitrator.sv
+Info: pwmBrushed_0_avalon_slave_rsp_width_adapter: "mm_interconnect_0" instantiated altera_merlin_width_adapter "pwmBrushed_0_avalon_slave_rsp_width_adapter"
+Info: Reusing file C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/soc_system/synthesis/submodules/altera_merlin_address_alignment.sv
+Info: Reusing file C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/soc_system/synthesis/submodules/altera_merlin_burst_uncompressor.sv
+Info: crosser: "mm_interconnect_0" instantiated altera_avalon_st_handshake_clock_crosser "crosser"
+Info: Reusing file C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/soc_system/synthesis/submodules/altera_avalon_st_pipeline_base.v
+Info: avalon_st_adapter: "mm_interconnect_0" instantiated altera_avalon_st_adapter "avalon_st_adapter"
+Info: avalon_st_adapter_006: "mm_interconnect_0" instantiated altera_avalon_st_adapter "avalon_st_adapter_006"
+Info: border: "hps_io" instantiated altera_interface_generator "border"
+Info: error_adapter_0: "avalon_st_adapter" instantiated error_adapter "error_adapter_0"
+Info: error_adapter_0: "avalon_st_adapter_006" instantiated error_adapter "error_adapter_0"
+Info: soc_system: Done "soc_system" with 35 modules, 95 files
+Info: qsys-generate succeeded.
+Info: Finished: Create HDL design files for synthesis

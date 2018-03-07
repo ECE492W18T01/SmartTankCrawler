@@ -1,0 +1,60 @@
+#ifndef BackServoMin         
+#define BackServoMin 0x00    
+#endif
+
+#ifndef BackServoMax 
+#define BackServoMax 0x2f
+#endif
+
+#ifndef FrontServoMin
+#define FrontServoMin 0x00
+#endif
+
+#ifndef FrontServoMax
+#define FrontServoMax 0x10
+#endif
+
+#ifndef DCMotorMin
+#define DCMotorMin -127
+#endif
+
+#ifndef DCMotorMax
+#define DCMotorMax 127
+#endif
+
+#ifndef FRONTLEFT
+#define FRONTLEFT 1 
+#endif
+
+#ifndef FRONTRIGHT
+#define FRONTRIGHT 2
+#endif
+
+#ifndef REARLEFT
+#define REARLEFT 3
+#endif
+
+#ifndef REARRIGHT
+#define REARRIGHT 4
+#endif
+
+#ifndef REARRIGHT
+#define FPGA_TO_HPS_LW_ADDR(base)  ((void *) (((char *)  (ALT_LWFPGASLVS_ADDR))+ (base)))
+#endif
+
+
+
+#ifndef MoveFrontServo_H_
+#define MoveFrontServo_H_
+int MoveFrontServo(int);
+#endif
+
+#ifndef MoveBackServo_H_
+#define MoveBackServo_H_
+int MoveBackServo(int);
+#endif
+
+#ifndef MoveDCMotor_H_
+#define MoveDCMotor_H_
+int MoveDCMotor(int, int);
+#endif
