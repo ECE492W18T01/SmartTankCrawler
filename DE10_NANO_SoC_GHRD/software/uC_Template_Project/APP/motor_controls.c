@@ -1,6 +1,10 @@
+#include <hps.h>
+#include <stdint.h>
+#include  <socal.h>
 #include "fpga_to_hps.h"
 #include "motor_control.h"
 
+void* MOTOR_ADDRESSES[] = {FRONT_LEFT_MOTOR_BASE, FRONT_RIGHT_MOTOR_BASE, REAR_LEFT_MOTOR_BASE, REAR_RIGHT_MOTOR_BASE};
 
 // drive_val = value from -1 to 1
 void update_motor_control(float drive_val, int motor_position) {

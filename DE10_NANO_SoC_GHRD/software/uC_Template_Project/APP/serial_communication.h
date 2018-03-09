@@ -1,0 +1,5 @@
+#ifndef __SERIAL_COMMUNICATION_H__
+#define __SERIAL_COMMUNICATION_H__
+
+
+#endif

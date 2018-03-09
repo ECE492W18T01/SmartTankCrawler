@@ -1,5 +1,5 @@
-#ifndef MOTOR_CONTROL_H
-#define MOTOR_CONTROL_H
+#ifndef __MOTOR_CONTROL_H__
+#define __MOTOR_CONTROL_H__
 // Drive Motor #1, Front Left
 // Type:  Input
 // Width: Byte
@@ -32,7 +32,5 @@
 #define INPUT_DRIVE_VALUE_MIN -1.0
 
 #define OUTPUT_ABSOLUTE_MAX 127
-
-const void* MOTOR_ADDRESSES[] = {FRONT_LEFT_MOTOR_BASE, FRONT_RIGHT_MOTOR, REAR_LEFT_MOTOR, REAR_RIGHT_MOTOR};
 
 #endif

@@ -66,6 +66,7 @@
 
 #include "motor_control.h"
 #include "wrap.h"
+#include "serial_communication.h"
 
 #define APP_TASK_PRIO 5
 #define TASK_STACK_SIZE 4096
@@ -244,10 +245,13 @@ static  void  AppTaskStart (void *p_arg)
         //MoveFrontServo(0x20);
         //alt_write_byte(STEER_SERVO_BASE, 0x10);
         //BSP_LED_Off();
-        MoveFrontServo(0x10);
+        //MoveFrontServo(0x10);
+        char rx_char = serial_getc();
+        printf("Rx char: %c\n",rx_char);
         //OSTimeDlyHMSM(0, 0, 0, 999);
         //MoveFrontServo(0x40);
         OSTimeDlyHMSM(0, 0, 0, 999);
+
 
         //////////// Steer Servo Range 0x00 - 0x31 (markings on body).  Wrap functions work.
         // For Actual use 0x00 - 0x10
@@ -294,11 +298,11 @@ static void MotorTask (void *p_arg)
 				break;
 
 			default:
-				ErrorMessage *msg = malloc(sizeof(ErrorMessage));
-                msg->_taskName = TaskName;
-                msg->_sourceName = "OSQPend";
-                msg->_error = err;
-                OSQPost(ErrorQueue, msg);
+//				ErrorMessage *msg = malloc(sizeof(ErrorMessage));
+//                msg->_taskName = TaskName;
+//                msg->_sourceName = "OSQPend";
+//                msg->_error = err;
+//                OSQPost(ErrorQueue, msg);
         }
     }
 }
@@ -335,11 +339,11 @@ static void FuzzyTask (void *p_arg)
 				break;
 
 			default:
-				ErrorMessage *msg = malloc(sizeof(ErrorMessage));
-				msg->_taskName = TaskName;
-				msg->_sourceName = "OSQPend";
-				msg->_error = err;
-				OSQPost(ErrorQueue, msg);
+//				ErrorMessage *msg = malloc(sizeof(ErrorMessage));
+//				msg->_taskName = TaskName;
+//				msg->_sourceName = "OSQPend";
+//				msg->_error = err;
+//				OSQPost(ErrorQueue, msg);
         }
     }
 }
