@@ -26,7 +26,7 @@
 --------------------------------------------------------------------------------
 -- Modified By Brian Ofrim, Feb, 1 2018
 -- Changes: generic constants
---          Input source changed to Avalon Slave
+--          Input sourcperiod : INTEGER := sys_clk/pwm_freq;e changed to Avalon Slave
 --         	Added a direction output
 --          Simplified logic to just generate one pwm signal
 --------------------------------------------------------------------------------
@@ -36,55 +36,98 @@ USE ieee.std_logic_1164.all;
 USE ieee.std_logic_unsigned.all;
 USE ieee.std_logic_signed.all;
 use IEEE.numeric_std.all;
+
+-- direction information
+-- pwm_signal=1, dir_1=1, dir_2=0 -> forward
+-- pwm_signal=1, dir_1=0, dir_2=1 -> reverse
+-- pwm_signal=1, dir_1=0, dir_2=0 -> brake
+-- pwm_signal=1, dir_1=1, dir_2=1 -> brake
+-- pwm_signal=0, dir_1=X, dir_2=X -> off
+
 ENTITY pwm IS
-  GENERIC(
-      sys_clk         : INTEGER := 50_000_000; --system clock frequency in Hz
-      pwm_freq        : INTEGER := 50_000;    --PWM switching frequency in Hz
-      bits_resolution : INTEGER := 8);         --bits of resolution setting the duty cycle
-  PORT(
-      clk       : IN  STD_LOGIC;                                    --system clock
-      reset_n   : IN  STD_LOGIC;                                    --asynchronous reset                                 --latches in new duty cycle
-		avalon_slave_write_n   : in  std_logic                     := '0';             --  avalon_slave.write
-		avalon_slave_writedata : in  std_logic_vector(31 downto 0) := (others => '0'); --  duty
-		dir       : OUT STD_LOGIC;
-		pwm_temp  : OUT STD_LOGIC);
+	GENERIC(
+		--system clock frequency in Hz
+		sys_clk : INTEGER := 50_000_000;
+		--PWM switching frequency in Hz
+		pwm_freq : INTEGER := 10_000;
+		--bits of resolution setting the duty cycle
+      		bits_resolution : INTEGER := 8);         
+	PORT(
+		--system clock
+		clk : IN  STD_LOGIC;
+		--asynchronous reset
+		reset_n : IN  STD_LOGIC;
+		-- indicator for when the is a new motor value
+		avalon_slave_write_n : in  std_logic := '0';
+		-- input motor value
+		avalon_slave_writedata : in std_logic_vector(7 downto 0) := (others => '0');
+		-- direction outputs
+		dir_1 : OUT STD_LOGIC;
+		dir_2 : OUT STD_LOGIC;
+		pwm_signal : OUT STD_LOGIC);
 END pwm;
 
+
 ARCHITECTURE logic OF pwm IS
-  CONSTANT  period     :  INTEGER := sys_clk/pwm_freq;                      --number of clocks in one pwm period
-  SIGNAL  count        :  INTEGER RANGE 0 TO period - 1;
-  SIGNAL   half_duty_new  :  INTEGER RANGE 0 TO period/2 := 0;              --number of clocks in 1/2 duty cycle
-  SIGNAL  half_duty    :  INTEGER RANGE 0 TO period/2;                     --array of half duty values (for each phase)
-  SIGNAL  input_signed :  signed(3 downto 0) := (others => '0');
-  SIGNAL  input_magnitude : signed(3 downto 0) := (others => '0');
+	--number of clocks in one pwm period
+	CONSTANT period : INTEGER := sys_clk/pwm_freq;
+	--max duty cycle value 
+	CONSTANT max_pwm: INTEGER := 2**(bits_resolution -1) - 1;
+	-- duty cycle multiplier
+	CONSTANT duty_cycle_multiplier: INTEGER := period/max_pwm;
+	-- clock cycle count
+	SIGNAL count: INTEGER RANGE 0 TO period - 1;
+	--number of clocks in 1/2 duty cycle
+	SIGNAL half_duty_new : INTEGER RANGE 0 TO period := 0;
+	-- count value for which the pwm switches to low
+	SIGNAL half_duty : INTEGER RANGE 0 TO period;
+	SIGNAL input_signed : signed(7 downto 0) := (others => '0');
+	SIGNAL input_magnitude : signed(7 downto 0) := (others => '0');
 BEGIN
-  PROCESS(clk, reset_n, avalon_slave_write_n )
-  BEGIN
-    IF(reset_n = '0') THEN                                                 --asynchronous reset
-      count <= 0;                                                --clear counter                                          --clear pwm inverse outputs
-		pwm_temp <= '0';
+	PROCESS(clk, reset_n, avalon_slave_write_n )
+	BEGIN
+	IF(reset_n = '0') THEN
+		-- reset control values
+		count <= 0;
+		pwm_signal <= '0';
+		dir_1 <= '0';
+		dir_2 <= '0'; 
+	-- new data avaliable
 	ELSIF(avalon_slave_write_n = '0') THEN
-		input_signed <= signed(avalon_slave_writedata(3 downto 0));
+		input_signed <= signed(avalon_slave_writedata(7 downto 0));
 		input_magnitude <= signed(abs(input_signed));
-		half_duty_new <= to_integer(input_magnitude)*period/(2**bits_resolution)/2;   --determine clocks in 1/2 duty cycle
+		--determine clocks in 1/2 duty cycle
+		half_duty_new <= to_integer(input_magnitude)*duty_cycle_multiplier;
+		-- forward
 		if (input_signed > 0) then
-			dir <= '1';
+			dir_1 <= '1';
+			dir_2 <= '0';
 		else
-			dir <= '0';
+		-- reverse
+			dir_1 <= '0';
+			dir_2 <= '1';
 		end if;
-    ELSIF(clk'EVENT AND clk = '1') THEN                                      --rising system clock edge   
-		  IF(count = period - 1) THEN                       --end of period reached
-          count <= 0;                                                         --reset counter
-          half_duty <= half_duty_new;                                         --set most recent duty cycle value
-        ELSE                                                                   --end of period not reached
-          count <= count + 1;                                              --increment counter
-        END IF;
-        IF(count = half_duty) THEN                                       --phase's falling edge reached
-          pwm_temp <= '0';
-        ELSIF(count = period - half_duty) THEN                           --phase's rising edge reached
-			 pwm_temp <= '1';
-        END IF;
-    END IF;
-  END PROCESS;
-  
+	--rising system clock edge 
+	ELSIF(clk'EVENT AND clk = '1') THEN
+		--end of period reached
+		IF(count = period - 1) THEN
+			--reset counter
+			count <= 0;
+			--set most recent duty cycle value
+			half_duty <= half_duty_new;
+		--end of period not reached
+		ELSE
+			--increment counter		
+			count <= count + 1;
+		END IF;
+		--phase's falling edge reached
+		IF(count <= half_duty) THEN
+			pwm_signal <= '1';
+		--phase's rising edge reached
+		ELSE
+			pwm_signal <= '0';
+		END IF;
+	END IF;
+	END PROCESS;
 END logic;
+

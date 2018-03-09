@@ -47,7 +47,7 @@ end entity hall_sensor_comparator;
 
 architecture rtl of hall_sensor_comparator is
 	CONSTANT initialCalcs : unsigned := "00000000000000000000000000000001";
-	CONSTANT initialConds : std_logic_vector(9 downto 0) := "0000000001";
+	CONSTANT initialConds : std_logic_vector(9 downto 0) := "0000000000";
 
 	CONSTANT bitSize : Integer := 32;
 	CONSTANT axleMult: Integer := 1024;
@@ -56,15 +56,18 @@ architecture rtl of hall_sensor_comparator is
 	CONSTANT axlePaddingZeros : std_logic_vector(20 downto 0) := "000000000000000000000";
 
 	signal frontCalc, rearCalc, totalCalc: unsigned(31 downto 0) := initialCalcs;
-	signal fl, fr, rl, rr : std_logic_vector(9 downto 0) := initialConds;
+	
+	signal fli, fri, rli, rri : std_logic_vector(9 downto 0) := initialConds; -- Difference between flc and flp
+	signal fl, fr, rl, rr : std_logic_vector(9 downto 0) := initialConds; -- Floating values attached to accums
+	signal flc, frc, rlc, rrc : std_logic_vector(9 downto 0) := initialConds; -- current value gotten at rising clock.
+	signal flp, frp, rlp, rrp : std_logic_vector(9 downto 0) := initialConds; -- previous value. 
 
 	component hall_sensor_accumulator is
 		port (
 			edge_input  : in  std_logic := '0';
 			reset	    : in  std_logic := '0';
-			samplePulse : in  std_logic := '0';
 			sysClk	    : in  std_logic := '0';
-			output      : out std_logic_vector(9 downto 0)
+			sendValue      : out std_logic_vector(9 downto 0)
 		);
 	end component hall_sensor_accumulator;
 begin
@@ -73,44 +76,64 @@ begin
 	driverLeft : hall_sensor_accumulator
 	port map (
 		edge_input => frontLeft,
-		reset      => reset,
-		samplePulse  => sampleImpulse,	
+		reset      => reset,	
 		sysClk	   => sysClk,
-		output     => fl
+		sendValue     => fl
 	);	
 
 	driverRight : hall_sensor_accumulator
 	port map (
 		edge_input => frontRight,
 		reset      => reset,
-		samplePulse  => sampleImpulse,
 		sysClk	   => sysClk,
-		output     => fr
+		sendValue     => fr
 	);	
 
 	backLeft : hall_sensor_accumulator
 	port map (
 		edge_input => rearLeft,
 		reset      => reset,
-		samplePulse  => sampleImpulse,
 		sysClk	   => sysClk,
-		output     => rl
+		sendValue     => rl
 	);	
 
 	backRight : hall_sensor_accumulator
 	port map (
 		edge_input => rearRight,
 		reset      => reset,
-		samplePulse  => sampleImpulse,
 		sysClk	   => sysClk,
-		output     => rr
+		sendValue     => rr
 	);	
 
-
-	-- Division syntax from https://stackoverflow.com/questions/21270074/division-in-vhdl
-	frontCalc <= (to_unsigned(to_integer(unsigned((axlePaddingZeros&fl)) * axleMult / unsigned(fr)), bitSize));
-	rearCalc <= (to_unsigned(to_integer(unsigned((axlePaddingZeros&rl)) * axleMult / unsigned(rr)), bitSize));
-	totalCalc <= ((unsigned(fl) + unsigned(fr)) * overallMultWithPaddingZeros) / (unsigned(rl) + unsigned(rr));
+	getNewVals:process(fullClk) is
+	begin
+		if rising_edge(fullClk) then
+			flc <= fl;
+			frc <= fr;
+			rlc <= rl;
+			rrc <= rr;
+		end if;
+	end process getNewVals;
+	
+	fli <= std_logic_vector(unsigned(flc) - unsigned(flp) + 1);
+	fri <= std_logic_vector(unsigned(frc) - unsigned(frp) + 1);
+	rli <= std_logic_vector(unsigned(rlc) - unsigned(rlp) + 1);
+	rri <= std_logic_vector(unsigned(rrc) - unsigned(rrp) + 1);
+		
+	calc:process(sampleImpulse) is
+	begin	-- Division syntax from https://stackoverflow.com/questions/21270074/division-in-vhdl
+		if rising_edge(sampleImpulse) then
+			frontCalc <= (to_unsigned(to_integer(unsigned((axlePaddingZeros&fli)) * axleMult / unsigned(fri)), bitSize));
+			rearCalc <= (to_unsigned(to_integer(unsigned((axlePaddingZeros&rli)) * axleMult / unsigned(rri)), bitSize));
+			totalCalc <= ((unsigned(fli) + unsigned(fri)) * overallMultWithPaddingZeros) / (unsigned(rli) + unsigned(rri));
+		end if;
+	end process calc;
+	
+	
+	
+--	frontCalc <= (to_unsigned(to_integer(unsigned((axlePaddingZeros&fl)) * axleMult / unsigned(fr)), bitSize));
+--	rearCalc <= (to_unsigned(to_integer(unsigned((axlePaddingZeros&rl)) * axleMult / unsigned(rr)), bitSize));
+--	totalCalc <= ((unsigned(fl) + unsigned(fr)) * overallMultWithPaddingZeros) / (unsigned(rl) + unsigned(rr));
 
 	-- Load data onto lines.
 	postResultsAndRaiseInterrupt:process(halfClk) is
@@ -119,6 +142,10 @@ begin
 			frontRatio <= std_logic_vector(frontCalc);
 			rearRatio <= std_logic_vector(rearCalc);
 			frontRearRatio <= std_logic_vector(totalCalc);
+			flp <= flc;
+			frp <= frc;
+			rlp <= rlc;
+			rrp <= rrc;
 		end if;
 	end process postResultsAndRaiseInterrupt;
 	

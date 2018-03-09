@@ -34,6 +34,7 @@ entity samplingClock is
 		sample_impulse_signal  : out std_logic;
 		normal_freq_new_signal : out std_logic;
 		double_freq_new_signal : out std_logic;       
+		reset : in std_logic := '0';
 		clock_sink_1_clk       : in  std_logic := '0' -- 50MHz in
 	);
 end entity samplingClock;
@@ -48,22 +49,22 @@ architecture rtl of samplingClock is
 	CONSTANT oneHertz  : unsigned := "00000001011111010111100001000000"; -- of our electric motors
 
 	signal fullCount, halfCount: unsigned(31 downto 0) := intOfZeros; -- Initialize clock counters to zero.
-	signal sampleCount: unsigned(31 downto 0) := twoHertz; -- Initalize impulse counter to half way so it syncs with the full clock.
+	signal sampleCount: unsigned(31 downto 0) := (twoHertz - 400); -- Initalize impulse counter to half way so it syncs with the full clock.
 	signal sampleEnd, fullEnd, halfEnd: std_logic := '0';
 begin
 	
 	sampleImpulse:process(clock_sink_1_clk) is
 	begin
-		if rising_edge(clock_sink_1_clk) and sampleEnd = '0' then
+		if rising_edge(clock_sink_1_clk) then
 			sampleCount <= sampleCount + 1;
-		elsif rising_edge(clock_sink_1_clk) and sampleEnd = '1' then
-			sampleEnd <= '0';
-			sampleCount <= intOne;
 		end if;
 		
-		if (sampleCount = (twoHertz*2)) then -- See constants in architecture for different frequencies
+		if (sampleCount = (twoHertz*2)-200) AND sampleEnd = '0' then -- See constants in architecture for different frequencies
 			sampleCount <= intOfZeros;
 			sampleEnd <= '1';
+		elsif (sampleCount = 200) AND sampleEnd = '1' then
+			sampleCount <= intOfZeros;
+			sampleEnd <= '0';
 		end if;
 		sample_impulse_signal <= sampleEnd;
 	end process sampleImpulse;

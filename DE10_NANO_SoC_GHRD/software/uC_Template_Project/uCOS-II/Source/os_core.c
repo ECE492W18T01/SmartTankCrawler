@@ -1802,7 +1802,7 @@ void  OS_TaskIdle (void *p_arg)
 
 
 
-    p_arg = p_arg;                               /* Prevent compiler warning for not using 'p_arg'     */
+    //p_arg = p_arg;                               /* Prevent compiler warning for not using 'p_arg'     */
     for (;;) {
         OS_ENTER_CRITICAL();
         OSIdleCtr++;
@@ -1844,7 +1844,7 @@ void  OS_TaskStat (void *p_arg)
 
 
 
-    p_arg = p_arg;                               /* Prevent compiler warning for not using 'p_arg'     */
+    //p_arg = p_arg;                               /* Prevent compiler warning for not using 'p_arg'     */
     while (OSStatRdy == OS_FALSE) {
         OSTimeDly(2u * OS_TICKS_PER_SEC / 10u);  /* Wait until statistic task is ready                 */
     }

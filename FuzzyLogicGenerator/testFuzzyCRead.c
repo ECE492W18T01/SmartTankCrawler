@@ -1,7 +1,20 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "fMatrices_servoFuzzyLogic.h"
+#include "fMatrices_servoFuzzyThree.h"
 
+/* 
+ * ECE 492 
+ * Wi18
+ * Keith Mills
+ * Just a simple file for confirming that the results of 
+ * generateDecisionMatrices.m can be read properly by C and compile with
+ * a program.
+ * 
+ * Compile using
+ * gcc testFuzzyCRead.c fMatrices_servoFuzzyThree.h -o fr -std=c99 -Wall
+ * And run using ./fuzzy
+ * All it does is read the matrices.
+*/
 int main(int argc, char **argv) {
 
 	for (int i = 0; i < 21; i++) {

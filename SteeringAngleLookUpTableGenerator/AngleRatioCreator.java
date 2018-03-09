@@ -7,23 +7,20 @@
 *	Creates a C header file containing a 2-Dimensional Array of Integers
 *	corresponding to the ideal wheel speed ratios for a vehicle of specified dimensions
 *	over a range of incremental angles.
-*	Please note that the first ratio is always 2048, as it is the ratio of front tire speeds to rear tire speeds.
-* 	The second and third ratios, front_left/front_right and rear_left/rear_right, are multipled by 1024
-*	This is so our Microcontroller board can do these comparrisons with integers and not floating point numbers.
+*	Please note that the first ratio is always 512, as it is the ratio of front tire speeds to rear tire speeds.
+* 	The second and third ratios, front_left/front_right and rear_left/rear_right, are multipled by 256
+*	This makes number processing easier on our system, less time spent in floating point domain.
 * 	</p><p>
 *	This program compiles using the command "javac AngleRatioCreator.java" command on a Windows 10 machine
 *	running Java 8 Update 161
 *	The compiled can be executed by running java AngleRatioCreator X Y Z
-*	X - Range of steering angles, e.g. for 45 degrees left to right, this number would be 91
-*	For 45 in the left, 1 in the center, 45 in the right. This number HAS to be odd 
-*	or the program will reject it.
+*	X - Range of steering angles, e.g. for 45 degrees left or right, it would be 45.
 *	Y - Width of the vehicles axles (they must be the same length).
 *	Z - Length between the two axles. Must be in the units as Y. 
 *	The program outputs a .h file with a name given by the input parameters. In the same directory there is
-*	a demo file sliplessSteeringRatios_33R_3W_10L.h (made by running the java class file with input args 33 3 10)
-*	as well as a C file testCProgram.c. Compile these two using 
-*	"gcc testCProgram.c sliplessSteeringRatios_33R_3W_10L.h -o ssr -std=c99 -Wall" and then run "./a.out"
-*	to see the list of printed numbers (the ratios, multipled by 2048 for the first column and 1024 for the others).
+*	a demo file sliplessSteeringRatios_45R_17W_30L.h (made by running the java class file with input args 45 17 30)
+*	as well as a C file testCProgram.c. Compile these two using the provided Makefile and then run the output file "./ssr"
+*	to see the list of printed numbers (the ratios, multipled by 512 for the first column and 256 for the others).
 *	The purpose of the C program is to demostrate that the .h file generated can be inserted into a C program and used without modification.
 *	</p><p>
 *	Purpose of the file:
@@ -33,7 +30,7 @@
 *
 *	@since 2018-02-02
 *	@author kgmills
-*	@version 1.0
+*	@version 1.3
 *	@param args Three values, see above.
 */
 
@@ -49,8 +46,8 @@ public class AngleRatioCreator {
 	private Integer midPoint;
 	private ArrayList<RatioStore> ratioSets;
 
-	public Integer axleRatioMult = 1024;
-	public Integer overallMult = 2048;
+	public Integer axleRatioMult = 256;
+	public Integer overallMult = 512;
 
 	/**
 	*	Main Function
@@ -73,10 +70,10 @@ public class AngleRatioCreator {
 			System.exit(0);
 		}
 
-		this.midPoint = (this.angleRange - 1) / 2;
+		this.midPoint = this.angleRange;//(this.angleRange - 1) / 2;
 		this.ratioSets = new ArrayList<RatioStore>();
 
-		this.generateLeftTurnRatios();
+		//this.generateLeftTurnRatios();
 		this.ratioSets.add(new RatioStore(overallMult, axleRatioMult, axleRatioMult));
 		this.generateRightTurnRatios();
 
@@ -98,7 +95,7 @@ public class AngleRatioCreator {
 			ratioFile.write("#ifndef " + fileName.replace(".h", "_H") + "\n");
 			ratioFile.write("#define " + fileName.replace(".h", "_H") + "\n");
 
-			ratioFile.write("const int SLIPRATIOS[" + this.angleRange + "][3] = {\n");
+			ratioFile.write("const int SLIPRATIOS[" + this.angleRange + 1 + "][3] = {\n");
 
 			RatioStore currentTuple;
 
@@ -191,10 +188,6 @@ public class AngleRatioCreator {
 			this.angleRange = Integer.parseInt(args[0]);
 			this.width = Double.parseDouble(args[1]);
 			this.length = Double.parseDouble(args[2]);
-
-			if ((angleRange % 2) != 1) {
-				return false;
-			}
 		}
 
 		catch (NumberFormatException e) {
@@ -209,7 +202,7 @@ public class AngleRatioCreator {
 	*/
 	public static void printRequirements() {
 		System.out.println("Function takes three numerical arguments:");
-		System.out.println("Angle Range: The angle range of steering movement, an odd degree number");
+		System.out.println("Angle Range: The angle range in one direction.");
 		System.out.println("Length: Distance between the axles in whatever units you so choose");
 		System.out.println("Width: Horizontal distance between the tires, same units as length ");
 	}

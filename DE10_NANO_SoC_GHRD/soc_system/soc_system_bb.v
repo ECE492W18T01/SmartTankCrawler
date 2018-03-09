@@ -2,10 +2,6 @@
 module soc_system (
 	clk_clk,
 	green_leds_conn_export,
-	hallsensordetector_0_frontlefthall_import,
-	hallsensordetector_0_frontrighthall_import,
-	hallsensordetector_0_rearlefthall_1_import,
-	hallsensordetector_0_rearrighthall_import,
 	hps_0_h2f_reset_reset_n,
 	hps_0_hps_io_hps_io_emac1_inst_TX_CLK,
 	hps_0_hps_io_hps_io_emac1_inst_TXD0,
@@ -71,26 +67,29 @@ module soc_system (
 	memory_mem_odt,
 	memory_mem_dm,
 	memory_oct_rzqin,
-	pwmbrushed_0_direction_export,
-	pwmbrushed_0_magnitude_export,
+	pwmbrushed_0_direction1_export,
+	pwmbrushed_0_direction2_export,
+	pwmbrushed_1_direction1_export,
+	pwmbrushed_1_direction2_export,
+	pwmbrushed_2_direction1_export,
+	pwmbrushed_2_direction2_export,
+	pwmbrushed_3_direction1_export,
+	pwmbrushed_3_direction2_export,
 	pwmservo_0_conduit_end_export,
+	pwmservo_1_conduit_end_export,
 	reset_reset_n,
 	ultrasonicrangefinder_0_sonarin_import,
-	upcounter_0_conduit_end_export,
-	pwmservo_1_conduit_end_export,
-	pwmbrushed_1_direction_export,
-	pwmbrushed_1_magnitude_export,
-	pwmbrushed_2_direction_export,
-	pwmbrushed_2_magnitude_export,
-	pwmbrushed_3_direction_export,
-	pwmbrushed_3_magnitude_export);	
+	upcounter_0_hallsensorinput_export,
+	upcounter_1_hallsensorinput_export,
+	upcounter_2_hallsensorinput_export,
+	upcounter_3_hallsensorinput_export,
+	pwmbrushed_0_pulsewidthmodulatedsignal_export,
+	pwmbrushed_1_pulsewidthmodulatedsignal_export,
+	pwmbrushed_3_pulsewidthmodulatedsignal_export,
+	pwmbrushed_2_pulsewidthmodulatedsignal_export);	
 
 	input		clk_clk;
 	output	[7:0]	green_leds_conn_export;
-	input		hallsensordetector_0_frontlefthall_import;
-	input		hallsensordetector_0_frontrighthall_import;
-	input		hallsensordetector_0_rearlefthall_1_import;
-	input		hallsensordetector_0_rearrighthall_import;
 	output		hps_0_h2f_reset_reset_n;
 	output		hps_0_hps_io_hps_io_emac1_inst_TX_CLK;
 	output		hps_0_hps_io_hps_io_emac1_inst_TXD0;
@@ -156,17 +155,24 @@ module soc_system (
 	output		memory_mem_odt;
 	output	[3:0]	memory_mem_dm;
 	input		memory_oct_rzqin;
-	output		pwmbrushed_0_direction_export;
-	output		pwmbrushed_0_magnitude_export;
+	output		pwmbrushed_0_direction1_export;
+	output		pwmbrushed_0_direction2_export;
+	output		pwmbrushed_1_direction1_export;
+	output		pwmbrushed_1_direction2_export;
+	output		pwmbrushed_2_direction1_export;
+	output		pwmbrushed_2_direction2_export;
+	output		pwmbrushed_3_direction1_export;
+	output		pwmbrushed_3_direction2_export;
 	output		pwmservo_0_conduit_end_export;
+	output		pwmservo_1_conduit_end_export;
 	input		reset_reset_n;
 	input		ultrasonicrangefinder_0_sonarin_import;
-	input		upcounter_0_conduit_end_export;
-	output		pwmservo_1_conduit_end_export;
-	output		pwmbrushed_1_direction_export;
-	output		pwmbrushed_1_magnitude_export;
-	output		pwmbrushed_2_direction_export;
-	output		pwmbrushed_2_magnitude_export;
-	output		pwmbrushed_3_direction_export;
-	output		pwmbrushed_3_magnitude_export;
+	input		upcounter_0_hallsensorinput_export;
+	input		upcounter_1_hallsensorinput_export;
+	input		upcounter_2_hallsensorinput_export;
+	input		upcounter_3_hallsensorinput_export;
+	output		pwmbrushed_0_pulsewidthmodulatedsignal_export;
+	output		pwmbrushed_1_pulsewidthmodulatedsignal_export;
+	output		pwmbrushed_3_pulsewidthmodulatedsignal_export;
+	output		pwmbrushed_2_pulsewidthmodulatedsignal_export;
 endmodule

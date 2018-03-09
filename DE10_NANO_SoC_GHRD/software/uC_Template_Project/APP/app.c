@@ -24,15 +24,18 @@
 *
 *                                            CYCLONE V SOC
 *
-* Filename      : app.c
+* Filename      : app.h (used to be app.c)
 * Version       : V1.00
 * Programmer(s) : JBL
 * Modifications	: Nancy Minderman nancy.minderman@ualberta.ca, Brendan Bruner bbruner@ualberta.ca
 * 				  Changes to this project include scatter file changes and BSP changes for port from
 * 				  Cyclone V dev kit board to DE1-SoC
-*				  
-*				  Keith Mills kgmills@ualberta.ca 
-*				  Reworked for project, testing of components, for usage on the DE10-Nano. 
+*
+*				  Keith Mills kgmills@ualberta.ca
+*				  Reworked for project, testing of components, for usage on the DE10-Nano.
+*
+*				  Joshua Robertson jcrobert@ualberta.ca
+*				  Further reworked to add our necessary tasks, queues, and other data structures.
 *********************************************************************************************************
 * Note(s)       : none.
 *********************************************************************************************************
@@ -61,110 +64,14 @@
 #include  <socal.h>
 #include  <hwlib.h>
 
-
-// Compute absolute address of any slave component attached to lightweight bridge
-// base is address of component in QSYS window
-// This computation only works for slave components attached to the lightweight bridge
-// base should be ranged checked from 0x0 - 0x1fffff
-
-#define FPGA_TO_HPS_LW_ADDR(base)  ((void *) (((char *)  (ALT_LWFPGASLVS_ADDR))+ (base)))
+#include "wrap.h"
 
 #define APP_TASK_PRIO 5
 #define TASK_STACK_SIZE 4096
 
-/*
-*********************************************************************************************************
-*										Qsys Components
-*********************************************************************************************************
-*/
-// Green FPGA Leds
-// Type:  Input
-// Width: Byte
-// GPIO:  N/A
-#define LEDR_ADD 0x00000100
-#define LEDR_BASE FPGA_TO_HPS_LW_ADDR(LEDR_ADD)
-
-// Servo #1, Steering Control
-// Type:  Input
-// Width: Byte
-// GPIO:  0_0
-#define STEER_SERVO_ADD 0x00000110
-#define STEER_SERVO_BASE FPGA_TO_HPS_LW_ADDR(STEER_SERVO_BASE)
-
-// Servo #2, Emergency Braking System
-// Type:  Input
-// Width: Byte
-// GPIO:  0_1
-#define BRAKE_SERVO_ADD 0x00000111
-#define BRAKE_SERV_BASE FPGA_TO_HPS_LW_ADDR(BRAKE_SERVO_ADD)
-
-// Drive Motor #1, Front Left
-// Type:  Input
-// Width: Longword
-// GPIO:  dir - 0_26; mag - 0_27
-#define FRONT_LEFT_MOTOR_ADD 0x00000114
-#define FRONT_LEFT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(FRONT_LEFT_MOTOR_ADD)
-
-// Drive Motor #2, Front Right
-// Type:  Input
-// Width: Longword
-// GPIO:  dir - 0_28; mag - 0_29
-#define FRONT_RIGHT_MOTOR_ADD 0x00000118
-#define FRONT_RIGHT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(FRONT_RIGHT_MOTOR_ADD)
-
-// Drive Motor #3, Rear Left
-// Type:  Input
-// Width: Longword
-// GPIO:  dir - 0_30; mag - 0_31
-#define REAR_LEFT_MOTOR_ADD 0x0000011c
-#define REAR_LEFT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(REAR_LEFT_MOTOR_ADD)
-
-// Drive Motor #4, Rear Right
-// Type:  Input
-// Width: Longword
-// GPIO:  dir - 0_32; mag - 0_33
-#define REAR_RIGHT_MOTOR_ADD 0x00000120
-#define REAR_RIGHT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(REAR_RIGHT_MOTOR_ADD)
-
-
-/* Hall Sensor GPIO
-* FL - 0_4
-* FR - 0_5
-* RL - 0_6
-* RR - 0_7
-*/
-// Hall Sensor Front Left / Front Right Ratio
-// Type:  Output
-// Width: Longword
-#define FRONT_RATIO_ADD 0x00000124
-#define FRONT_RATIO_BASE FPGA_TO_HPS_LW_ADDR(FRONT_RATIO_ADD)
-
-// Hall Sensor Rear Left / Rear Right Ratio
-// Type:  Output
-// Width: Longword
-#define REAR_RATIO_ADD 0x00000128
-#define REAR_RATIO_BASE FPGA_TO_HPS_LW_ADDR(REAR_RATIO_ADD)
-
-// Hall Sensor Overall Ratio
-// Type:  Output
-// Width: Longword
-#define OVERALL_RATIO_ADD 0x0000012c
-#define OVERALL_RATIO_BASE FPGA_TO_HPS_LW_ADDR(OVERALL_RATIO_ADD)
-
-// Ultrasonic Range Finder
-// Type:  Output
-// Width: Longword
-// GPIO:  0_8
-#define SONAR_ADD 0x00000130
-#define SONAR_BASE FPGA_TO_HPS_LW_ADDR(SONAR_ADD)
-
-// Lab 2 Sensor
-// Type:  Output
-// Width: Longword
-// GPIO:  0_34
-#define SENSOR_ADD 0x00000200
-#define SENSOR_BASE FPGA_TO_HPS_LW_ADDR(SENSOR_ADD)
-
+#define FUZZY_TASK_PRIO 10
+#define MOTOR_TASK_PRIO 15
+#define ERROR_TASK_PRIO 20
 
 /*
 *********************************************************************************************************
@@ -173,6 +80,9 @@
 */
 
 CPU_STK AppTaskStartStk[TASK_STACK_SIZE];
+CPU_STK MotorTaskStk[TASK_STACK_SIZE];
+CPU_STK FuzzyTaskStk[TASK_STACK_SIZE];
+CPU_STK ErrorTaskStk[TASK_STACK_SIZE];
 
 
 /*
@@ -182,6 +92,10 @@ CPU_STK AppTaskStartStk[TASK_STACK_SIZE];
 */
 
 static  void  AppTaskStart              (void        *p_arg);
+static  void  AppTaskStart              (void        *p_arg);
+static  void  MotorTask                 (void        *p_arg);
+static  void  FuzzyTask                 (void        *p_arg);
+static  void  ErrorTask                 (void        *p_arg);
 
 
 /*
@@ -198,6 +112,11 @@ static  void  AppTaskStart              (void        *p_arg);
 *                   initialisation.
 *********************************************************************************************************
 */
+
+// MessageQueues
+OS_EVENT *ErrorQueue;
+OS_EVENT *MotorQueue;
+OS_EVENT *FuzzyQueue;
 
 int main ()
 {
@@ -220,6 +139,14 @@ int main ()
 
     OSInit();
 
+    void *ErrorMessageArray[100];
+    void *MotorMessageArray[10];
+    void *FuzzyMessageArray[10];
+
+    //TODO: I'm pretty sure the below address is wrong. Need to test.
+    ErrorQueue = OSQCreate(&ErrorMessageArray[0], 10);
+    MotorQueue = OSQCreate(&MotorMessageArray[0], 10);
+    FuzzyQueue = OSQCreate(&FuzzyMessageArray[0], 10);
 
     os_err = OSTaskCreateExt((void (*)(void *)) AppTaskStart,   /* Create the start task.                               */
                              (void          * ) 0,
@@ -227,6 +154,46 @@ int main ()
                              (INT8U           ) APP_TASK_PRIO,
                              (INT16U          ) APP_TASK_PRIO,  // reuse prio for ID
                              (OS_STK        * )&AppTaskStartStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    os_err = OSTaskCreateExt((void (*)(void *)) MotorTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&MotorTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) MOTOR_TASK_PRIO,
+                             (INT16U          ) MOTOR_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&MotorTaskStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    os_err = OSTaskCreateExt((void (*)(void *)) FuzzyTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&FuzzyTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) FUZZY_TASK_PRIO,
+                             (INT16U          ) FUZZY_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&FuzzyTaskStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+
+    os_err = OSTaskCreateExt((void (*)(void *)) ErrorTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&ErrorTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) ERROR_TASK_PRIO,
+                             (INT16U          ) ERROR_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&ErrorTaskStk[0],
                              (INT32U          ) TASK_STACK_SIZE,
                              (void          * )0,
                              (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
@@ -264,22 +231,128 @@ static  void  AppTaskStart (void *p_arg)
     BSP_OS_TmrTickInit(OS_TICKS_PER_SEC);                       /* Configure and enable OS tick interrupt.              */
     for(;;) {
         BSP_WatchDog_Reset();                                   /* Reset the watchdog.                                  */
-
-        //OSTimeDlyHMSM(0, 0, 0, 999);
-        // 0x00 all the way to the left for the stopping servo
-        BSP_LED_On();
-        alt_write_byte(LEDR_BASE, 0x00);
-
+        MoveFrontServo(0x00);
+        //alt_write_byte(STEER_SERVO_BASE, 0x00);
         OSTimeDlyHMSM(0, 0, 0, 999);
+        // 0x00 all the way to the left for the stopping servo
+        //BSP_LED_On();
+        //MoveFrontServo(0x00);
+        //alt_write_byte(LEDR_BASE, 0x00);
 
         BSP_WatchDog_Reset();
-        BSP_LED_Off();
-        alt_write_byte(LEDR_BASE, 0xff);
+        //MoveFrontServo(0x20);
+        //alt_write_byte(STEER_SERVO_BASE, 0x10);
+        //BSP_LED_Off();
+        MoveFrontServo(0x10);
+        //OSTimeDlyHMSM(0, 0, 0, 999);
+        //MoveFrontServo(0x40);
+        OSTimeDlyHMSM(0, 0, 0, 999);
+
+        //////////// Steer Servo Range 0x00 - 0x31 (markings on body).  Wrap functions work.
+        // For Actual use 0x00 - 0x10
+
+        //////////// Back Servo Range 0x00 - 0x2E, 0x2F servo makes noise
+
+        //alt_write_byte(LEDR_BASE, 0xff);
         // 0x2f all the way to the right for the stopping servo.
-        printf("%d\n", alt_read_word(SENSOR_BASE));
-
-
-        //servo (0x2F = 2.5ms, 0x20 = 2.0ms, 0x1A =1.8ms (need 1.5ms) )
+        //printf("FL4: %d\n", alt_read_byte(F_LEFT_BASE));
+        //printf("FR5: %d\n", alt_read_byte(F_RIGHT_BASE));
+        //printf("RL6: %d\n", alt_read_byte(R_LEFT_BASE));
+        //printf("RR7: %d\n", alt_read_byte(R_RIGHT_BASE));
+        //printf("sensor: %d\n", alt_read_byte(SONAR_BASE));
     }
 
+}
+
+//TODO: Change the queue names, they're confusing
+
+static void MotorTask (void *p_arg)
+{
+	INT8U err;
+	char *TaskName = "MotorTask";
+
+    MotorChangeMessage *msg;
+    for(;;) {
+
+        msg = (MotorChangeMessage*)OSQPend(MotorQueue, 0, &err);
+
+		switch(err)
+        {
+		case 0: // Replace with OS_NO_ERR later.
+				//Message was received
+
+                float frontLeft = msg->frontLeft;
+                //And etc...
+                uint8_t steeringServo = msg->steeringServo;
+                free(msg);
+				/*
+				Here's where you can actually do what you want to do
+				*/
+
+
+				break;
+
+			default:
+				ErrorMessage *msg = malloc(sizeof(ErrorMessage));
+                msg->_taskName = TaskName;
+                msg->_sourceName = "OSQPend";
+                msg->_error = err;
+                OSQPost(ErrorQueue, msg);
+        }
+    }
+}
+
+static void FuzzyTask (void *p_arg)
+{
+	INT8U err;
+	char *TaskName = "FuzzyTask";
+
+    MotorSpeedMessage *msg;
+    for(;;) {
+
+        msg = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
+
+		switch(err)
+        {
+			case 0: // Replace with OS_NO_ERR Later
+				//Message was received
+
+                uint8_t frontLeft = msg->frontLeft;
+                //And etc.
+
+				/*
+				Here's where you can actually do what you want to do
+				*/
+
+                MotorChangeMessage* sentMessage;
+                sentMessage = malloc(sizeof(MotorChangeMessage*));
+
+                sentMessage->frontLeft = 0;
+                //...
+
+                OSQPost(FuzzyQueue, sentMessage);
+				break;
+
+			default:
+				ErrorMessage *msg = malloc(sizeof(ErrorMessage));
+				msg->_taskName = TaskName;
+				msg->_sourceName = "OSQPend";
+				msg->_error = err;
+				OSQPost(ErrorQueue, msg);
+        }
+    }
+}
+
+static void ErrorTask (void *p_arg)
+{
+	INT8U err;
+
+    struct errorMessage *msg;
+    for(;;) {
+
+        msg = (struct motorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
+        // Do something with the error.
+
+        free(msg);
+    }
 }

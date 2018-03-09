@@ -96,16 +96,18 @@ module DE10_NANO_SoC_GHRD(
 	 input					GPIO_0_6,
 	 input					GPIO_0_7,
 	 input					GPIO_0_8,
-	 output					GPIO_0_26,
-	 output					GPIO_0_27,
-	 output					GPIO_0_28,
-	 output					GPIO_0_29,
-	 output					GPIO_0_30,
-	 output					GPIO_0_31,
-	 output					GPIO_0_32,
-	 output					GPIO_0_33,
-	 input					GPIO_0_34
-							 
+	 output					GPIO_0_10,
+	 output					GPIO_0_11,
+	 output					GPIO_0_12,
+	 output					GPIO_0_13,
+	 output					GPIO_0_14,
+	 output					GPIO_0_15,
+	 output					GPIO_0_16,
+	 output					GPIO_0_17,
+	 output					GPIO_0_18,
+	 output					GPIO_0_19,
+	 output					GPIO_0_20,
+	 output					GPIO_0_21	 
 );
 
 
@@ -212,22 +214,25 @@ soc_system u0(
 					// TERASIC HPS/FPGA WIRES. DO NOT MESS WITH
 					// WIRES FOR CUSTOM COMPONENTS GO BELOW HERE ONLY!
 					.green_leds_conn_export(LED[7: 0]),                    // green_leds_conn.export
-					.upcounter_0_conduit_end_export(GPIO_0_34),            // upcounter_0_conduit_end.export
 					.pwmservo_0_conduit_end_export(GPIO_0_0),              // pwmservo_0_conduit_end_export
 					.pwmservo_1_conduit_end_export(GPIO_0_1),              // pwmservo_1_conduit_end.export
-					.pwmbrushed_0_direction_export(GPIO_0_26),             // pwmbrushed_0_direction.export
-					.pwmbrushed_0_magnitude_export(GPIO_0_27),             // pwmbrushed_0_magnitude.export
-					.pwmbrushed_1_direction_export(GPIO_0_28),             // pwmbrushed_1_direction.export
-					.pwmbrushed_1_magnitude_export(GPIO_0_29),             // pwmbrushed_1_magnitude.export
-					.pwmbrushed_2_direction_export(GPIO_0_30),             // pwmbrushed_2_direction.export
-					.pwmbrushed_2_magnitude_export(GPIO_0_31),             // pwmbrushed_2_magnitude.export
-					.pwmbrushed_3_direction_export(GPIO_0_32),             // pwmbrushed_3_direction.export
-					.pwmbrushed_3_magnitude_export(GPIO_0_33),             // pwmbrushed_3_magnitude.export
-					.hallsensordetector_0_frontlefthall_import(GPIO_0_4),  // hallsensordetector_0_frontlefthall.import
-					.hallsensordetector_0_frontrighthall_import(GPIO_0_5), // hallsensordetector_0_frontrighthall.import
-					.hallsensordetector_0_rearlefthall_1_import(GPIO_0_6), // hallsensordetector_0_rearlefthall_1.import
-					.hallsensordetector_0_rearrighthall_import(GPIO_0_7),  // hallsensordetector_0_rearrighthall.import
-					.ultrasonicrangefinder_0_sonarin_import(GPIO_0_8)      // 	 output					GPIO_0_26,ultrasonicrangefinder_0_sonarin.import
+					.upcounter_0_hallsensorinput_export(GPIO_0_4),
+					.upcounter_1_hallsensorinput_export(GPIO_0_5),
+					.upcounter_2_hallsensorinput_export(GPIO_0_6),
+					.upcounter_3_hallsensorinput_export(GPIO_0_7),
+					.ultrasonicrangefinder_0_sonarin_import(GPIO_0_8),      // 	 output					GPIO_0_26,ultrasonicrangefinder_0_sonarin.import
+					.pwmbrushed_0_direction1_export(GPIO_0_10),                //                pwmbrushed_0_direction1.export
+					.pwmbrushed_0_direction2_export(GPIO_0_11),                //                pwmbrushed_0_direction2.export
+					.pwmbrushed_0_pulsewidthmodulatedsignal_export(GPIO_0_12), // pwmbrushed_0_pulsewidthmodulatedsignal.export
+					.pwmbrushed_1_direction1_export(GPIO_0_13),                //                pwmbrushed_0_direction1.export
+					.pwmbrushed_1_direction2_export(GPIO_0_14),                //                pwmbrushed_0_direction2.export
+					.pwmbrushed_1_pulsewidthmodulatedsignal_export(GPIO_0_15), // pwmbrushed_0_pulsewidthmodulatedsignal.export
+					.pwmbrushed_2_direction1_export(GPIO_0_16),                //                pwmbrushed_0_direction1.export
+					.pwmbrushed_2_direction2_export(GPIO_0_17),                //                pwmbrushed_0_direction2.export
+					.pwmbrushed_2_pulsewidthmodulatedsignal_export(GPIO_0_18), // pwmbrushed_0_pulsewidthmodulatedsignal.export
+					.pwmbrushed_3_direction1_export(GPIO_0_19),                //                pwmbrushed_0_direction1.export
+					.pwmbrushed_3_direction2_export(GPIO_0_20),                //                pwmbrushed_0_direction2.export
+					.pwmbrushed_3_pulsewidthmodulatedsignal_export(GPIO_0_21) // pwmbrushed_0_pulsewidthmodulatedsignal.export
            );
 
 // Debounce logic to clean out glitches within 1ms

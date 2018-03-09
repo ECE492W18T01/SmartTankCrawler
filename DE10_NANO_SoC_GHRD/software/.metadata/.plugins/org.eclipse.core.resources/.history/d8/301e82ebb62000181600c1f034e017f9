@@ -1,0 +1,125 @@
+#ifndef BackServoMin         
+#define BackServoMin 0x00    
+#endif
+
+#ifndef BackServoMax 
+#define BackServoMax 0x2f
+#endif
+
+#ifndef FrontServoMin
+#define FrontServoMin 0x00
+#endif
+
+#ifndef FrontServoMax
+#define FrontServoMax 0x10
+#endif
+
+#ifndef DCMotorMin
+#define DCMotorMin -127
+#endif
+
+#ifndef DCMotorMax
+#define DCMotorMax 127
+#endif
+
+#ifndef FRONTLEFT
+#define FRONTLEFT 1 
+#endif
+
+#ifndef FRONTRIGHT
+#define FRONTRIGHT 2
+#endif
+
+#ifndef REARLEFT
+#define REARLEFT 3
+#endif
+
+#ifndef REARRIGHT
+#define REARRIGHT 4
+#endif
+
+#ifndef FPGA_TO_HPS_LW_ADDR(base)
+#define FPGA_TO_HPS_LW_ADDR(base)  ((void *) (((char *)  (ALT_LWFPGASLVS_ADDR))+ (base)))
+#endif
+
+// Servo #1, Steering Control
+// Type:  Input
+// Width: Byte
+// GPIO:  0_0
+#ifndef STEER_SERVO_ADD
+#define STEER_SERVO_ADD 0x00000110
+#endif
+#ifndef STEER_SERVO_BASE
+#define STEER_SERVO_BASE FPGA_TO_HPS_LW_ADDR(STEER_SERVO_ADD)
+#endif
+
+// Servo #2, Emergency Braking System
+// Type:  Input
+// Width: Byte
+// GPIO:  0_1
+#ifndef BRAKE_SERVO_ADD
+#define BRAKE_SERVO_ADD 0x00000111
+#endif
+#ifndef BRAKE_SERVO_BASE
+#define BRAKE_SERVO_BASE FPGA_TO_HPS_LW_ADDR(BRAKE_SERVO_ADD)
+#endif
+
+// Drive Motor #1, Front Left
+// Type:  Input
+// Width: Longword
+// GPIO:  dir - 0_26; mag - 0_27
+#ifndef FRONT_LEFT_MOTOR_ADD
+#define FRONT_LEFT_MOTOR_ADD 0x00000114
+#endif
+#ifndef FRONT_LEFT_MOTOR_BASE
+#define FRONT_LEFT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(FRONT_LEFT_MOTOR_ADD)
+#endif
+
+// Drive Motor #2, Front Right
+// Type:  Input
+// Width: Longword
+// GPIO:  dir - 0_28; mag - 0_29
+#ifndef FRONT_RIGHT_MOTOR_ADD
+#define FRONT_RIGHT_MOTOR_ADD 0x00000118
+#endif
+#ifndef FRONT_RIGHT_MOTOR_BASE
+#define FRONT_RIGHT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(FRONT_RIGHT_MOTOR_ADD)
+#endif
+
+// Drive Motor #3, Rear Left
+// Type:  Input
+// Width: Longword
+// GPIO:  dir - 0_30; mag - 0_31
+#ifndef REAR_LEFT_MOTOR_ADD
+#define REAR_LEFT_MOTOR_ADD 0x0000011c
+#endif
+#ifndef REAR_LEFT_MOTOR_BASE
+#define REAR_LEFT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(REAR_LEFT_MOTOR_ADD)
+#endif
+
+// Drive Motor #4, Rear Right
+// Type:  Input
+// Width: Longword
+// GPIO:  dir - 0_32; mag - 0_33
+#ifndef REAR_RIGHT_MOTOR
+#define REAR_RIGHT_MOTOR_ADD 0x00000120
+#endif
+#ifndef REAR_RIGHT_MOTOR_BASE
+#define REAR_RIGHT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(REAR_RIGHT_MOTOR_ADD)
+#endif
+
+
+#ifndef MoveFrontServo_H_
+#define MoveFrontServo_H_
+int MoveFrontServo(int);
+#endif
+
+#ifndef MoveBackServo_H_
+#define MoveBackServo_H_
+int MoveBackServo(int);
+#endif
+
+#ifndef MoveDCMotor_H_
+#define MoveDCMotor_H_
+int MoveDCMotor(int, int);
+#endif

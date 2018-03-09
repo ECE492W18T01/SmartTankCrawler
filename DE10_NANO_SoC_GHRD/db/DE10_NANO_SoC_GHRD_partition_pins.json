@@ -44,35 +44,51 @@
 					"strict" : false
 				},
 				{
-					"name" : "GPIO_0_26",
+					"name" : "GPIO_0_10",
 					"strict" : false
 				},
 				{
-					"name" : "GPIO_0_27",
+					"name" : "GPIO_0_11",
 					"strict" : false
 				},
 				{
-					"name" : "GPIO_0_28",
+					"name" : "GPIO_0_12",
 					"strict" : false
 				},
 				{
-					"name" : "GPIO_0_29",
+					"name" : "GPIO_0_13",
 					"strict" : false
 				},
 				{
-					"name" : "GPIO_0_30",
+					"name" : "GPIO_0_14",
 					"strict" : false
 				},
 				{
-					"name" : "GPIO_0_31",
+					"name" : "GPIO_0_15",
 					"strict" : false
 				},
 				{
-					"name" : "GPIO_0_32",
+					"name" : "GPIO_0_16",
 					"strict" : false
 				},
 				{
-					"name" : "GPIO_0_33",
+					"name" : "GPIO_0_17",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_18",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_19",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_20",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_21",
 					"strict" : false
 				},
 				{
@@ -81,6 +97,22 @@
 				},
 				{
 					"name" : "GPIO_0_8",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_5",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_6",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_7",
+					"strict" : false
+				},
+				{
+					"name" : "GPIO_0_4",
 					"strict" : false
 				}
 			]

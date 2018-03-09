@@ -43,58 +43,6 @@
          type = "String";
       }
    }
-   element hallSensorDetector_0
-   {
-      datum _sortIndex
-      {
-         value = "9";
-         type = "int";
-      }
-      datum sopceditor_expanded
-      {
-         value = "1";
-         type = "boolean";
-      }
-   }
-   element hallSensorDetector_0.front
-   {
-      datum _lockedAddress
-      {
-         value = "1";
-         type = "boolean";
-      }
-      datum baseAddress
-      {
-         value = "292";
-         type = "String";
-      }
-   }
-   element hallSensorDetector_0.rear
-   {
-      datum _lockedAddress
-      {
-         value = "1";
-         type = "boolean";
-      }
-      datum baseAddress
-      {
-         value = "296";
-         type = "String";
-      }
-   }
-   element hallSensorDetector_0.whole
-   {
-      datum _lockedAddress
-      {
-         value = "1";
-         type = "boolean";
-      }
-      datum baseAddress
-      {
-         value = "300";
-         type = "String";
-      }
-   }
    element hps_0
    {
       datum _sortIndex
@@ -112,7 +60,7 @@
    {
       datum _sortIndex
       {
-         value = "7";
+         value = "6";
          type = "int";
       }
       datum sopceditor_expanded
@@ -130,7 +78,7 @@
       }
       datum baseAddress
       {
-         value = "276";
+         value = "274";
          type = "String";
       }
    }
@@ -138,7 +86,7 @@
    {
       datum _sortIndex
       {
-         value = "12";
+         value = "9";
          type = "int";
       }
    }
@@ -151,7 +99,7 @@
       }
       datum baseAddress
       {
-         value = "280";
+         value = "275";
          type = "String";
       }
    }
@@ -159,7 +107,7 @@
    {
       datum _sortIndex
       {
-         value = "13";
+         value = "10";
          type = "int";
       }
    }
@@ -172,7 +120,7 @@
       }
       datum baseAddress
       {
-         value = "284";
+         value = "276";
          type = "String";
       }
    }
@@ -180,7 +128,7 @@
    {
       datum _sortIndex
       {
-         value = "14";
+         value = "11";
          type = "int";
       }
    }
@@ -193,7 +141,7 @@
       }
       datum baseAddress
       {
-         value = "288";
+         value = "277";
          type = "String";
       }
    }
@@ -201,7 +149,7 @@
    {
       datum _sortIndex
       {
-         value = "5";
+         value = "4";
          type = "int";
       }
    }
@@ -209,7 +157,7 @@
    {
       datum _sortIndex
       {
-         value = "6";
+         value = "5";
          type = "int";
       }
    }
@@ -230,7 +178,7 @@
    {
       datum _sortIndex
       {
-         value = "11";
+         value = "8";
          type = "int";
       }
    }
@@ -247,17 +195,28 @@
          type = "String";
       }
    }
-   element samplingClock_0
+   element soc_system
    {
-      datum _sortIndex
+      datum _originalDeviceFamily
       {
-         value = "8";
-         type = "int";
+         value = "Cyclone V";
+         type = "String";
       }
-      datum sopceditor_expanded
+   }
+   element soc_system
+   {
+      datum _originalDeviceFamily
       {
-         value = "1";
-         type = "boolean";
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
+   element soc_system
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
       }
    }
    element soc_system
@@ -330,7 +289,7 @@
    {
       datum _sortIndex
       {
-         value = "10";
+         value = "7";
          type = "int";
       }
       datum sopceditor_expanded
@@ -348,7 +307,7 @@
       }
       datum baseAddress
       {
-         value = "304";
+         value = "288";
          type = "String";
       }
    }
@@ -356,16 +315,11 @@
    {
       datum _sortIndex
       {
-         value = "4";
+         value = "12";
          type = "int";
       }
-      datum sopceditor_expanded
-      {
-         value = "1";
-         type = "boolean";
-      }
    }
-   element upCounter_0.avalon_slave
+   element upCounter_0.hallReading
    {
       datum _lockedAddress
       {
@@ -374,7 +328,70 @@
       }
       datum baseAddress
       {
-         value = "512";
+         value = "278";
+         type = "String";
+      }
+   }
+   element upCounter_1
+   {
+      datum _sortIndex
+      {
+         value = "13";
+         type = "int";
+      }
+   }
+   element upCounter_1.hallReading
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "279";
+         type = "String";
+      }
+   }
+   element upCounter_2
+   {
+      datum _sortIndex
+      {
+         value = "14";
+         type = "int";
+      }
+   }
+   element upCounter_2.hallReading
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "280";
+         type = "String";
+      }
+   }
+   element upCounter_3
+   {
+      datum _sortIndex
+      {
+         value = "15";
+         type = "int";
+      }
+   }
+   element upCounter_3.hallReading
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "281";
          type = "String";
       }
    }
@@ -405,26 +422,6 @@
    internal="green_leds.external_connection"
    type="conduit"
    dir="end" />
- <interface
-   name="hallsensordetector_0_frontlefthall"
-   internal="hallSensorDetector_0.frontLeftHall"
-   type="conduit"
-   dir="end" />
- <interface
-   name="hallsensordetector_0_frontrighthall"
-   internal="hallSensorDetector_0.frontRightHall"
-   type="conduit"
-   dir="end" />
- <interface
-   name="hallsensordetector_0_rearlefthall_1"
-   internal="hallSensorDetector_0.rearLeftHall_1"
-   type="conduit"
-   dir="end" />
- <interface
-   name="hallsensordetector_0_rearrighthall"
-   internal="hallSensorDetector_0.rearRightHall"
-   type="conduit"
-   dir="end" />
  <interface name="hps_0_f2h_cold_reset_req" internal="hps_0.f2h_cold_reset_req" />
  <interface name="hps_0_f2h_debug_reset_req" internal="hps_0.f2h_debug_reset_req" />
  <interface name="hps_0_f2h_stm_hw_events" internal="hps_0.f2h_stm_hw_events" />
@@ -437,44 +434,72 @@
  <interface name="hps_0_h2f_user0_clock" internal="hps_0.h2f_user0_clock" />
  <interface name="hps_0_hps_io" internal="hps_0.hps_io" type="conduit" dir="end" />
  <interface name="memory" internal="hps_0.memory" type="conduit" dir="end" />
+ <interface name="pwmbrushed_0_direction" internal="pwmBrushed_0.direction" />
  <interface
-   name="pwmbrushed_0_direction"
-   internal="pwmBrushed_0.direction"
+   name="pwmbrushed_0_direction1"
+   internal="pwmBrushed_0.Direction1"
    type="conduit"
    dir="end" />
  <interface
-   name="pwmbrushed_0_magnitude"
-   internal="pwmBrushed_0.magnitude"
+   name="pwmbrushed_0_direction2"
+   internal="pwmBrushed_0.Direction2"
+   type="conduit"
+   dir="end" />
+ <interface name="pwmbrushed_0_magnitude" internal="pwmBrushed_0.magnitude" />
+ <interface
+   name="pwmbrushed_0_pulsewidthmodulatedsignal"
+   internal="pwmBrushed_0.PulseWidthModulatedSignal"
+   type="conduit"
+   dir="end" />
+ <interface name="pwmbrushed_1_direction" internal="pwmBrushed_1.direction" />
+ <interface
+   name="pwmbrushed_1_direction1"
+   internal="pwmBrushed_1.Direction1"
    type="conduit"
    dir="end" />
  <interface
-   name="pwmbrushed_1_direction"
-   internal="pwmBrushed_1.direction"
+   name="pwmbrushed_1_direction2"
+   internal="pwmBrushed_1.Direction2"
+   type="conduit"
+   dir="end" />
+ <interface name="pwmbrushed_1_magnitude" internal="pwmBrushed_1.magnitude" />
+ <interface
+   name="pwmbrushed_1_pulsewidthmodulatedsignal"
+   internal="pwmBrushed_1.PulseWidthModulatedSignal"
+   type="conduit"
+   dir="end" />
+ <interface name="pwmbrushed_2_direction" internal="pwmBrushed_2.direction" />
+ <interface
+   name="pwmbrushed_2_direction1"
+   internal="pwmBrushed_2.Direction1"
    type="conduit"
    dir="end" />
  <interface
-   name="pwmbrushed_1_magnitude"
-   internal="pwmBrushed_1.magnitude"
+   name="pwmbrushed_2_direction2"
+   internal="pwmBrushed_2.Direction2"
+   type="conduit"
+   dir="end" />
+ <interface name="pwmbrushed_2_magnitude" internal="pwmBrushed_2.magnitude" />
+ <interface
+   name="pwmbrushed_2_pulsewidthmodulatedsignal"
+   internal="pwmBrushed_2.PulseWidthModulatedSignal"
+   type="conduit"
+   dir="end" />
+ <interface name="pwmbrushed_3_direction" internal="pwmBrushed_3.direction" />
+ <interface
+   name="pwmbrushed_3_direction1"
+   internal="pwmBrushed_3.Direction1"
    type="conduit"
    dir="end" />
  <interface
-   name="pwmbrushed_2_direction"
-   internal="pwmBrushed_2.direction"
+   name="pwmbrushed_3_direction2"
+   internal="pwmBrushed_3.Direction2"
    type="conduit"
    dir="end" />
+ <interface name="pwmbrushed_3_magnitude" internal="pwmBrushed_3.magnitude" />
  <interface
-   name="pwmbrushed_2_magnitude"
-   internal="pwmBrushed_2.magnitude"
-   type="conduit"
-   dir="end" />
- <interface
-   name="pwmbrushed_3_direction"
-   internal="pwmBrushed_3.direction"
-   type="conduit"
-   dir="end" />
- <interface
-   name="pwmbrushed_3_magnitude"
-   internal="pwmBrushed_3.magnitude"
+   name="pwmbrushed_3_pulsewidthmodulatedsignal"
+   internal="pwmBrushed_3.PulseWidthModulatedSignal"
    type="conduit"
    dir="end" />
  <interface
@@ -494,8 +519,23 @@
    type="conduit"
    dir="end" />
  <interface
-   name="upcounter_0_conduit_end"
-   internal="upCounter_0.conduit_end"
+   name="upcounter_0_hallsensorinput"
+   internal="upCounter_0.HallSensorInput"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="upcounter_1_hallsensorinput"
+   internal="upCounter_1.HallSensorInput"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="upcounter_2_hallsensorinput"
+   internal="upCounter_2.HallSensorInput"
+   type="conduit"
+   dir="end" />
+ <interface
+   name="upcounter_3_hallsensorinput"
+   internal="upCounter_3.HallSensorInput"
    type="conduit"
    dir="end" />
  <module name="clk_0" kind="clock_source" version="17.0" enabled="1">
@@ -518,11 +558,6 @@
   <parameter name="simDrivenValue" value="0" />
   <parameter name="width" value="8" />
  </module>
- <module
-   name="hallSensorDetector_0"
-   kind="hallSensorDetector"
-   version="1.0"
-   enabled="1" />
  <module name="hps_0" kind="altera_hps" version="17.0" enabled="1">
   <parameter name="ABSTRACT_REAL_COMPARE_TEST" value="false" />
   <parameter name="ABS_RAM_MEM_INIT_FILENAME" value="meminit" />
@@ -1053,22 +1088,22 @@
   <parameter name="usb_mp_clk_div" value="0" />
   <parameter name="use_default_mpu_clk" value="false" />
  </module>
- <module name="pwmBrushed_0" kind="pwmBrushed" version="1.0" enabled="1">
+ <module name="pwmBrushed_0" kind="pwmBrushed" version="1.1" enabled="1">
   <parameter name="bits_resolution" value="8" />
   <parameter name="pwm_freq" value="50000" />
   <parameter name="sys_clk" value="50000000" />
  </module>
- <module name="pwmBrushed_1" kind="pwmBrushed" version="1.0" enabled="1">
+ <module name="pwmBrushed_1" kind="pwmBrushed" version="1.1" enabled="1">
   <parameter name="bits_resolution" value="8" />
   <parameter name="pwm_freq" value="50000" />
   <parameter name="sys_clk" value="50000000" />
  </module>
- <module name="pwmBrushed_2" kind="pwmBrushed" version="1.0" enabled="1">
+ <module name="pwmBrushed_2" kind="pwmBrushed" version="1.1" enabled="1">
   <parameter name="bits_resolution" value="8" />
   <parameter name="pwm_freq" value="50000" />
   <parameter name="sys_clk" value="50000000" />
  </module>
- <module name="pwmBrushed_3" kind="pwmBrushed" version="1.0" enabled="1">
+ <module name="pwmBrushed_3" kind="pwmBrushed" version="1.1" enabled="1">
   <parameter name="bits_resolution" value="8" />
   <parameter name="pwm_freq" value="50000" />
   <parameter name="sys_clk" value="50000000" />
@@ -1076,7 +1111,6 @@
  <module name="pwmClk_0" kind="pwmClk" version="1.0" enabled="1" />
  <module name="pwmServo_0" kind="pwmServo" version="1.0" enabled="1" />
  <module name="pwmServo_1" kind="pwmServo" version="1.0" enabled="1" />
- <module name="samplingClock_0" kind="samplingClock" version="1.0" enabled="1" />
  <module
    name="sysid_qsys"
    kind="altera_avalon_sysid_qsys"
@@ -1094,22 +1128,16 @@
   <parameter name="time_per_inch" value="147" />
  </module>
  <module name="upCounter_0" kind="upCounter" version="1.0" enabled="1" />
- <connection
-   kind="avalon"
-   version="17.0"
-   start="hps_0.h2f_lw_axi_master"
-   end="upCounter_0.avalon_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0200" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
+ <module name="upCounter_1" kind="upCounter" version="1.0" enabled="1" />
+ <module name="upCounter_2" kind="upCounter" version="1.0" enabled="1" />
+ <module name="upCounter_3" kind="upCounter" version="1.0" enabled="1" />
  <connection
    kind="avalon"
    version="17.0"
    start="hps_0.h2f_lw_axi_master"
    end="pwmBrushed_0.avalon_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0114" />
+  <parameter name="baseAddress" value="0x0112" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1118,7 +1146,7 @@
    start="hps_0.h2f_lw_axi_master"
    end="pwmBrushed_1.avalon_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0118" />
+  <parameter name="baseAddress" value="0x0113" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1127,7 +1155,7 @@
    start="hps_0.h2f_lw_axi_master"
    end="pwmBrushed_2.avalon_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x011c" />
+  <parameter name="baseAddress" value="0x0114" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1136,7 +1164,7 @@
    start="hps_0.h2f_lw_axi_master"
    end="pwmBrushed_3.avalon_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0120" />
+  <parameter name="baseAddress" value="0x0115" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1170,9 +1198,36 @@
    kind="avalon"
    version="17.0"
    start="hps_0.h2f_lw_axi_master"
-   end="hallSensorDetector_0.front">
+   end="upCounter_0.hallReading">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0124" />
+  <parameter name="baseAddress" value="0x0116" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.0"
+   start="hps_0.h2f_lw_axi_master"
+   end="upCounter_1.hallReading">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0117" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.0"
+   start="hps_0.h2f_lw_axi_master"
+   end="upCounter_2.hallReading">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0118" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
+   kind="avalon"
+   version="17.0"
+   start="hps_0.h2f_lw_axi_master"
+   end="upCounter_3.hallReading">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0119" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1181,16 +1236,7 @@
    start="hps_0.h2f_lw_axi_master"
    end="ultraSonicRangeFinder_0.rangeValue">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0130" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="17.0"
-   start="hps_0.h2f_lw_axi_master"
-   end="hallSensorDetector_0.rear">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x0128" />
+  <parameter name="baseAddress" value="0x0120" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1203,14 +1249,25 @@
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
-   kind="avalon"
+   kind="clock"
    version="17.0"
-   start="hps_0.h2f_lw_axi_master"
-   end="hallSensorDetector_0.whole">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x012c" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
+   start="clk_0.clk"
+   end="upCounter_0.SystemClock" />
+ <connection
+   kind="clock"
+   version="17.0"
+   start="clk_0.clk"
+   end="upCounter_1.SystemClock" />
+ <connection
+   kind="clock"
+   version="17.0"
+   start="clk_0.clk"
+   end="upCounter_2.SystemClock" />
+ <connection
+   kind="clock"
+   version="17.0"
+   start="clk_0.clk"
+   end="upCounter_3.SystemClock" />
  <connection kind="clock" version="17.0" start="clk_0.clk" end="sysid_qsys.clk" />
  <connection kind="clock" version="17.0" start="clk_0.clk" end="green_leds.clk" />
  <connection kind="clock" version="17.0" start="clk_0.clk" end="pwmClk_0.clock" />
@@ -1219,11 +1276,6 @@
    version="17.0"
    start="clk_0.clk"
    end="pwmBrushed_0.clock" />
- <connection
-   kind="clock"
-   version="17.0"
-   start="clk_0.clk"
-   end="ultraSonicRangeFinder_0.clock" />
  <connection
    kind="clock"
    version="17.0"
@@ -1243,22 +1295,12 @@
    kind="clock"
    version="17.0"
    start="clk_0.clk"
-   end="upCounter_0.clock_sink" />
+   end="ultraSonicRangeFinder_0.clock" />
  <connection
    kind="clock"
    version="17.0"
    start="clk_0.clk"
    end="hps_0.h2f_lw_axi_clock" />
- <connection
-   kind="clock"
-   version="17.0"
-   start="clk_0.clk"
-   end="hallSensorDetector_0.systemClock" />
- <connection
-   kind="clock"
-   version="17.0"
-   start="clk_0.clk"
-   end="samplingClock_0.systemClock" />
  <connection
    kind="clock"
    version="17.0"
@@ -1269,28 +1311,6 @@
    version="17.0"
    start="pwmClk_0.clk_out"
    end="pwmServo_1.clock" />
- <connection
-   kind="clock"
-   version="17.0"
-   start="samplingClock_0.halfPeriod"
-   end="hallSensorDetector_0.samplingHalfFreqClock" />
- <connection
-   kind="clock"
-   version="17.0"
-   start="samplingClock_0.impulse"
-   end="hallSensorDetector_0.samplingImpulse" />
- <connection
-   kind="clock"
-   version="17.0"
-   start="samplingClock_0.normalPeriod"
-   end="hallSensorDetector_0.samplingFullFreqClock" />
- <connection
-   kind="interrupt"
-   version="17.0"
-   start="hps_0.f2h_irq0"
-   end="hallSensorDetector_0.newDataInterrupt">
-  <parameter name="irqNumber" value="0" />
- </connection>
  <connection
    kind="reset"
    version="17.0"
@@ -1350,7 +1370,17 @@
    kind="reset"
    version="17.0"
    start="clk_0.clk_reset"
-   end="hallSensorDetector_0.systemReset" />
+   end="upCounter_1.reset_sink" />
+ <connection
+   kind="reset"
+   version="17.0"
+   start="clk_0.clk_reset"
+   end="upCounter_2.reset_sink" />
+ <connection
+   kind="reset"
+   version="17.0"
+   start="clk_0.clk_reset"
+   end="upCounter_3.reset_sink" />
  <interconnectRequirement for="$system" name="qsys_mm.clockCrossingAdapter" value="HANDSHAKE" />
  <interconnectRequirement for="$system" name="qsys_mm.maxAdditionalLatency" value="1" />
 </system>

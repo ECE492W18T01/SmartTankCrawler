@@ -3,13 +3,12 @@
  <debug showDebugMenu="0" />
  <systemtable filter="All Interfaces">
   <columns>
-   <connections preferredWidth="191" />
+   <connections preferredWidth="143" />
    <irq preferredWidth="47" />
   </columns>
  </systemtable>
- <library
-   expandedCategories="Library,Library/Basic Functions/Configuration and Programming,Library/Processors and Peripherals,Library/Basic Functions/On Chip Memory,Library/Processors and Peripherals/Peripherals,Library/Basic Functions,Library/University Program/Generic IO,Library/University Program,Project" />
- <window width="1936" height="1096" x="3832" y="1061" />
+ <library expandedCategories="Library,Project" />
+ <window width="1456" height="876" x="-8" y="-8" />
  <generation synthesis="VHDL" greybox="0" />
  <hdlexample language="VERILOG" />
 </preferences>

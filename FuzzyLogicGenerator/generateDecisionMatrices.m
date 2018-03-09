@@ -5,26 +5,50 @@
 % fuzzy logic decision matrix
 % using a given MATLAB Fuzzy Logic set (.fis) file
 
+% The output decision matrix has the form
+% fMatrices_"fuzzySet".h
+% Where "fuzzySet" is the 3 input, 5 output set used.
+% Some data processing occurs, mainly any result for the wheels
+% less than 0.01 in absolute terms, is ignored. Steering angles are
+% rounded.
+
 function dMatFile = generateDecisionMatrices(fuzzySet)
 
+% Open the file with write permissions.
 fileName = strcat("fMatrices_", fuzzySet, ".h");
 dMatFile = fopen(fileName, 'w');
 
+% Declare it's headers.
 fprintf(dMatFile, '#ifndef fMatrices_%s_H\n', fuzzySet);
 fprintf(dMatFile, '#define fMatrices_%s_H\n', fuzzySet);
 
+% Declare the decision matrices
 fprintf(dMatFile, 'const float FUZZYLOOKUP[21][21][21][5] = {\n');
 
+% Instantiate the fuzzy set
 myFuzz = readfis(fuzzySet);
 
+% Front ratio, from -10 to 10, 21 points
+% Number is multiplied by 10 later.
 for fRatio = linspace(-1.0, 1.0, 21)
     fprintf(dMatFile, '{');
+    
+    % Rear ratio, from -10 to 10, 21 points
+    % Number is multiplied by 10 later
     for rRatio = linspace(-1.0, 1.0, 21)
         fprintf(dMatFile, '{\n');
-        for oRatio = linspace(-1.0, 1.0, 21)
-            rawValues = evalfis([fRatio, rRatio, oRatio], myFuzz);
+        
+        % Overall ratio, -10 to 10, 21 points
+        for oRatio = linspace(-10, 10, 21)
+            
+            % Compute the fuzzy set outputs given the inputs.
+            rawValues = evalfis([fRatio * 10, rRatio * 10, oRatio], myFuzz);
+            
+            % Process values
             [fl, fr, rl, rr, angle] = processOutput(rawValues);
-            if oRatio == 1
+            
+            % Conditional here for array formatting.
+            if oRatio == 10
                 fprintf(dMatFile, '{%g, %g, %g, %g, %g}\n', fl, fr, rl, rr, angle);
             else
                 fprintf(dMatFile, '{%g, %g, %g, %g, %g},\n', fl, fr, rl, rr, angle);
@@ -44,27 +68,32 @@ for fRatio = linspace(-1.0, 1.0, 21)
     end
 end
 end
+
+% Function takes a 5-length vector containing the raw fuzzy
+% set outputs and cleans the data a little.
+% very small values of less than abs(x) < 0.01 are ignored
+% Steering angle is rounded. 
 function [fl, fr, rl, rr, angle] = processOutput(raw)
 
-    if raw(1) < 0.01
+    if abs(raw(1)) < 0.01
         fl = 0;
     else
         fl = raw(1);
     end
     
-    if raw(2) < 0.01
+    if abs(raw(2)) < 0.01
         fr = 0;
     else
         fr = raw(2);
     end
     
-    if raw(3) < 0.01
+    if abs(raw(3)) < 0.01
         rl = 0;
     else
         rl = raw(3);
     end
     
-    if raw(4) < 0.01
+    if abs(raw(4)) < 0.01
         rr = 0;
     else
         rr = raw(4);
