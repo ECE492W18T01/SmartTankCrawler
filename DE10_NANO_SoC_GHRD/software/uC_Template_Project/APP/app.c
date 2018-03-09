@@ -64,6 +64,8 @@
 #include  <socal.h>
 #include  <hwlib.h>
 
+#include "fpga_to_hps.h"
+#include "motor_control.h"
 #include "wrap.h"
 
 #define APP_TASK_PRIO 5

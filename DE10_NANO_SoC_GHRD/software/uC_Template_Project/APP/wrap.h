@@ -53,24 +53,11 @@
 // Steering rod 60 degrees left turn.
 #define FrontServoMax 0x10
 
-// Full reverse.
-#define DCMotorMin -127
-
-// Full forward.
-#define DCMotorMax 127
-
 // Numerical labels for motors
 #define FRONTLEFT 0
 #define FRONTRIGHT 1
 #define REARLEFT 2
 #define REARRIGHT 3
-
-// Compute absolute address of any slave component attached to lightweight bridge
-// base is address of component in QSYS window
-// This computation only works for slave components attached to the lightweight bridge
-// base should be ranged checked from 0x0 - 0x1fffff
-
-#define FPGA_TO_HPS_LW_ADDR(base)  ((void *) (((char *)  (ALT_LWFPGASLVS_ADDR))+ (base)))
 
 /*
 *********************************************************************************************************
@@ -98,33 +85,7 @@
 #define BRAKE_SERVO_ADD 0x00000111
 #define BRAKE_SERVO_BASE FPGA_TO_HPS_LW_ADDR(BRAKE_SERVO_ADD)
 
-// Drive Motor #1, Front Left
-// Type:  Input
-// Width: Byte
-// GPIO:  dir_1 - 0_10; dir_2 - 0_11 mag - 0_12
-#define FRONT_LEFT_MOTOR_ADD 0x00000112
-#define FRONT_LEFT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(FRONT_LEFT_MOTOR_ADD)
 
-// Drive Motor #2, Front Right
-// Type:  Input
-// Width: Byte
-// GPIO:  dir_1 - 0_13; dir_2 - 0_14 mag - 0_15
-#define FRONT_RIGHT_MOTOR_ADD 0x00000113
-#define FRONT_RIGHT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(FRONT_RIGHT_MOTOR_ADD)
-
-// Drive Motor #3, Rear Left
-// Type:  Input
-// Width: Byte
-// GPIO:  dir_1 - 0_16; dir_2 - 0_17 mag - 0_18
-#define REAR_LEFT_MOTOR_ADD 0x00000114
-#define REAR_LEFT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(REAR_LEFT_MOTOR_ADD)
-
-// Drive Motor #4, Rear Right
-// Type:  Input
-// Width: Byte
-// GPIO:  dir_1 - 0_19; dir_2 - 0_20 mag - 0_21
-#define REAR_RIGHT_MOTOR_ADD 0x00000115
-#define REAR_RIGHT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(REAR_RIGHT_MOTOR_ADD)
 
 
 /* Hall Sensor GPIO
@@ -184,8 +145,5 @@ void MoveBackServo(uint8_t hex);
 
 // Function for controlling front, steering servo.
 void MoveFrontServo(uint8_t hex);
-
-// Function for giving instructions to a wheel.
-void MoveDCMotor(uint8_t num, int wheel);
 
 #endif
