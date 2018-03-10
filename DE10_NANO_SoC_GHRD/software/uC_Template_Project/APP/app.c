@@ -141,6 +141,8 @@ int main ()
 
     OSInit();
 
+    serial_communication_init();
+
     void *ErrorMessageArray[100];
     void *MotorMessageArray[10];
     void *FuzzyMessageArray[10];
@@ -246,8 +248,6 @@ static  void  AppTaskStart (void *p_arg)
         //alt_write_byte(STEER_SERVO_BASE, 0x10);
         //BSP_LED_Off();
         //MoveFrontServo(0x10);
-        char rx_char = serial_getc();
-        printf("Rx char: %c\n",rx_char);
         //OSTimeDlyHMSM(0, 0, 0, 999);
         //MoveFrontServo(0x40);
         OSTimeDlyHMSM(0, 0, 0, 999);
