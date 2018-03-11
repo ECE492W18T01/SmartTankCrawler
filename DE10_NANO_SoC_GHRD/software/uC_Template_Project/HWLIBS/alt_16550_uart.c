@@ -33,13 +33,14 @@
 /*
  * $Id: //acds/rel/17.0std/embedded/ip/hps/altera_hps/hwlib/src/hwmgr/alt_16550_uart.c#1 $
  */
-
+#include <stdbool.h>
 #include "alt_16550_uart.h"
 #include "alt_clock_manager.h"
 #include "socal/alt_rstmgr.h"
 #include "socal/alt_uart.h"
 #include "socal/hps.h"
 #include "socal/socal.h"
+
 
 #define DEFAULT_BAUD ALT_16550_BAUDRATE_115200
 
