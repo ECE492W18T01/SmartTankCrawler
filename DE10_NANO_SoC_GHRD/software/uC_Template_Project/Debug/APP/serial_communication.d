@@ -1,0 +1,9 @@
+APP/serial_communication.o: ../APP/serial_communication.c
+APP/serial_communication.o: C:/intelFPGA/17.0/embedded/ip/altera/hps/altera_hps/hwlib/include/hwlib.h
+APP/serial_communication.o: C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uC-LIBS/lib_def.h
+APP/serial_communication.o: C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uC-CPU/cpu_def.h
+APP/serial_communication.o: C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uC-CPU/ARM-Cortex-A/cpu.h
+APP/serial_communication.o: C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/APP/cpu_cfg.h
+APP/serial_communication.o: C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/BSP/bsp_int.h
+APP/serial_communication.o: ../APP/serial_communication.h
+APP/serial_communication.o: C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/HWLIBS/uart0_support.h

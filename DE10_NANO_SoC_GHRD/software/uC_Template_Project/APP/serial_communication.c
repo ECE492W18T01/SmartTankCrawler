@@ -35,5 +35,5 @@ void serial_printf(char * print_str){
 }
 
 void UART0_IRS_Handeler(CPU_INT32U cpu_id){
-	printf("c\n", serial_getc());
+	//printf("c\n", serial_getc());
 }

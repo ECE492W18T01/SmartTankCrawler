@@ -7,19 +7,22 @@ C_SRCS += \
 ../HWLIBS/alt_16550_uart.c \
 ../HWLIBS/alt_bridge_manager.c \
 ../HWLIBS/alt_clock_manager.c \
-../HWLIBS/alt_fpga_manager.c 
+../HWLIBS/alt_fpga_manager.c \
+../HWLIBS/uart0_support.c 
 
 C_DEPS += \
 ./HWLIBS/alt_16550_uart.d \
 ./HWLIBS/alt_bridge_manager.d \
 ./HWLIBS/alt_clock_manager.d \
-./HWLIBS/alt_fpga_manager.d 
+./HWLIBS/alt_fpga_manager.d \
+./HWLIBS/uart0_support.d 
 
 OBJS += \
 ./HWLIBS/alt_16550_uart.o \
 ./HWLIBS/alt_bridge_manager.o \
 ./HWLIBS/alt_clock_manager.o \
-./HWLIBS/alt_fpga_manager.o 
+./HWLIBS/alt_fpga_manager.o \
+./HWLIBS/uart0_support.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes

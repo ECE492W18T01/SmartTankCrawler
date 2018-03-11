@@ -5,16 +5,22 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../APP/app.c \
+../APP/motor_controls.c \
+../APP/serial_communication.c \
 ../APP/timer.c \
 ../APP/wrap.c 
 
 C_DEPS += \
 ./APP/app.d \
+./APP/motor_controls.d \
+./APP/serial_communication.d \
 ./APP/timer.d \
 ./APP/wrap.d 
 
 OBJS += \
 ./APP/app.o \
+./APP/motor_controls.o \
+./APP/serial_communication.o \
 ./APP/timer.o \
 ./APP/wrap.o 
 

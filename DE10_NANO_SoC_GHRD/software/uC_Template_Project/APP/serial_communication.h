@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #define UART_0_BASE_ADDRESS 0xFFC02000
 
-bool serial_communication_init();
-char serial_getc();
+bool serial_communication_init(void);
+char serial_getc(void);
 void UART0_IRS_Handeler(CPU_INT32U cpu_id);
 #endif

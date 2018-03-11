@@ -13,12 +13,12 @@ reset system
 stop
 wait 5s
 
-set semihosting enabled 0
+set semihosting enabled 1
 
 #
 # load the preloader (a.k.a the spl from our uboot dist)
 #
-loadfile "$sdir/uboot-socfpga/spl/u-boot-spl" 0x0
+loadfile "$sdir/u-boot-spl" 0x0
 
 #
 # set pc to entry point

@@ -21,3 +21,4 @@ APP/wrap.o: C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHR
 APP/wrap.o: C:/intelFPGA/17.0/embedded/ip/altera/hps/altera_hps/hwlib/include/soc_cv_av/socal/hps.h
 APP/wrap.o: C:/intelFPGA/17.0/embedded/ip/altera/hps/altera_hps/hwlib/include/soc_cv_av/socal/socal.h
 APP/wrap.o: C:/intelFPGA/17.0/embedded/ip/altera/hps/altera_hps/hwlib/include/hwlib.h
+APP/wrap.o: ../APP/fpga_to_hps.h

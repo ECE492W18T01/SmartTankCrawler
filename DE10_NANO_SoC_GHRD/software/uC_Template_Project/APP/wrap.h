@@ -40,6 +40,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "fpga_to_hps.h"
 
 // Full Clockwise.
 #define BackServoMin 0x00

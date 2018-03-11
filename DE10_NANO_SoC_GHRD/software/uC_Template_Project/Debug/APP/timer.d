@@ -23,3 +23,4 @@ APP/timer.o: C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GH
 APP/timer.o: C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uC-CPU/cpu_cache.h
 APP/timer.o: C:/Users/kgmills/Desktop/TestDE10/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uCOS-II/Source/os.h
 APP/timer.o: C:/intelFPGA/17.0/embedded/ip/altera/hps/altera_hps/hwlib/include/hwlib.h
+APP/timer.o: ../APP/fpga_to_hps.h
