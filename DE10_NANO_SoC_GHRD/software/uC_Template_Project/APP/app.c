@@ -233,24 +233,26 @@ int main ()
 static  void  AppTaskStart (void *p_arg)
 {
 
+	uint8_t i = 0x00;
     BSP_OS_TmrTickInit(OS_TICKS_PER_SEC);                       /* Configure and enable OS tick interrupt.              */
     for(;;) {
         BSP_WatchDog_Reset();                                   /* Reset the watchdog.                                  */
-        //MoveFrontServo(0x00);
-        alt_write_byte(STEER_SERVO_BASE, 0x00);
+        //MoveFrontServo(0x00);//alt_write_byte(STEER_SERVO_BASE, 0x00);
         OSTimeDlyHMSM(0, 0, 0, 999);
         // 0x00 all the way to the left for the stopping servo
-        //BSP_LED_On();
-        //MoveFrontServo(0x00);
-        //alt_write_byte(LEDR_BASE, 0x00);
+        BSP_LED_On();
+        alt_write_byte(LEDR_BASE, 0x00);
 
         BSP_WatchDog_Reset();
-        //MoveFrontServo(0x10);
-        alt_write_byte(STEER_SERVO_BASE, 0x10);
-        //BSP_LED_Off();
-        //MoveFrontServo(0x10);
-        //OSTimeDlyHMSM(0, 0, 0, 999);
-        //MoveFrontServo(0x40);
+        //MoveFrontServo(0x13);
+        BSP_LED_Off();
+        printf("FL4: %d\n", alt_read_byte(F_LEFT_BASE));
+        printf("FR5: %d\n", alt_read_byte(F_RIGHT_BASE));
+        printf("RL6: %d\n", alt_read_byte(R_LEFT_BASE));
+        printf("RR7: %d\n", alt_read_byte(R_RIGHT_BASE));
+        i = alt_read_byte(SONAR_BASE);
+        printf("sensor: %d\n", i);
+        MoveBackServo(i);
         OSTimeDlyHMSM(0, 0, 0, 999);
 
 
@@ -261,11 +263,14 @@ static  void  AppTaskStart (void *p_arg)
 
         //alt_write_byte(LEDR_BASE, 0xff);
         // 0x2f all the way to the right for the stopping servo.
-       // printf("FL4: %d\n", alt_read_byte(F_LEFT_BASE));
-       // printf("FR5: %d\n", alt_read_byte(F_RIGHT_BASE));
-       // printf("RL6: %d\n", alt_read_byte(R_LEFT_BASE));
-       // printf("RR7: %d\n", alt_read_byte(R_RIGHT_BASE));
-        //printf("sensor: %d\n", alt_read_byte(SONAR_BASE));
+        printf("FL4: %d\n", alt_read_byte(F_LEFT_BASE));
+        printf("FR5: %d\n", alt_read_byte(F_RIGHT_BASE));
+        printf("RL6: %d\n", alt_read_byte(R_LEFT_BASE));
+        printf("RR7: %d\n", alt_read_byte(R_RIGHT_BASE));
+        i = alt_read_byte(SONAR_BASE);
+        printf("sensor: %d\n", i);
+        MoveBackServo(i);
+
     }
 
 }
@@ -306,6 +311,13 @@ static void MotorTask (void *p_arg)
 ////                OSQPost(ErrorQueue, msg);
 //        }
 //    }
+
+	for (;;) {
+		for (int i = 0; i < 127; i++) {
+			alt_write_byte(FRONT_LEFT_MOTOR_BASE, i);
+			OSTimeDlyHMSM(0, 0, 0, 50);
+		}
+	}
 }
 
 static void FuzzyTask (void *p_arg)
