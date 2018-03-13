@@ -68,6 +68,9 @@
 #include "wrap.h"
 #include "serial_communication.h"
 
+#include <timer.h>
+
+
 #define APP_TASK_PRIO 5
 #define TASK_STACK_SIZE 4096
 
@@ -147,10 +150,9 @@ int main ()
     void *MotorMessageArray[10];
     void *FuzzyMessageArray[10];
 
-    //TODO: I'm pretty sure the below address is wrong. Need to test.
-    ErrorQueue = OSQCreate(&ErrorMessageArray[0], 10);
-    MotorQueue = OSQCreate(&MotorMessageArray[0], 10);
-    FuzzyQueue = OSQCreate(&FuzzyMessageArray[0], 10);
+    ErrorQueue = OSQCreate(ErrorMessageArray, 10);
+    MotorQueue = OSQCreate(MotorMessageArray, 10);
+    FuzzyQueue = OSQCreate(FuzzyMessageArray, 10);
 
     os_err = OSTaskCreateExt((void (*)(void *)) AppTaskStart,   /* Create the start task.                               */
                              (void          * ) 0,
@@ -233,6 +235,8 @@ static  void  AppTaskStart (void *p_arg)
 {
 
     BSP_OS_TmrTickInit(OS_TICKS_PER_SEC);                       /* Configure and enable OS tick interrupt.              */
+    InitHPSTimerInterrupt();
+
     for(;;) {
         BSP_WatchDog_Reset();                                   /* Reset the watchdog.                                  */
         MoveFrontServo(0x00);
@@ -269,40 +273,45 @@ static  void  AppTaskStart (void *p_arg)
 
 }
 
-//TODO: Change the queue names, they're confusing
-
+//TODO: Ask nancy about using malloc vs just passing the address of the allocated structure to the queue.
+// Is there a chance that a struct will be overwritten in memory before its accessed by the pending function?
 static void MotorTask (void *p_arg)
 {
 	INT8U err;
 	char *TaskName = "MotorTask";
 
-    MotorChangeMessage *msg;
+    MotorChangeMessage *incoming;
     for(;;) {
 
-        msg = (MotorChangeMessage*)OSQPend(MotorQueue, 0, &err);
+    	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, 0, &err);
 
 		switch(err)
         {
-		case 0: // Replace with OS_NO_ERR later.
+		case OS_ERR_NONE:
 				//Message was received
 
-                float frontLeft = msg->frontLeft;
-                //And etc...
-                uint8_t steeringServo = msg->steeringServo;
-                free(msg);
+                float frontLeft = incoming->frontLeft;
+                float frontRight = incoming->frontRight;
+                float backLeft = incoming->backLeft;
+                float backRight = incoming->backRight;
+                uint8_t steeringServo = incoming->steeringServo;
+                free(incoming);
+
+                //TODO: Delete printf
+                printf("Incoming Message to MotorTask:\n fL = %f\n fR = %f\n rL = %f\n rR = %f\n sR = %d\n", frontLeft, frontRight, backLeft, backRight, steeringServo);
+
 				/*
 				Here's where you can actually do what you want to do
 				*/
 
-
 				break;
 
 			default:
-//				ErrorMessage *msg = malloc(sizeof(ErrorMessage));
-//                msg->_taskName = TaskName;
-//                msg->_sourceName = "OSQPend";
-//                msg->_error = err;
-//                OSQPost(ErrorQueue, msg);
+				ErrorMessage *errorMessage = malloc(sizeof(ErrorMessage));
+				errorMessage->_taskName = TaskName;
+				errorMessage->_sourceName = "OSQPend";
+				errorMessage->_error = err;
+                OSQPost(ErrorQueue, errorMessage);
         }
     }
 }
@@ -311,39 +320,69 @@ static void FuzzyTask (void *p_arg)
 {
 	INT8U err;
 	char *TaskName = "FuzzyTask";
-
-    MotorSpeedMessage *msg;
+    MotorSpeedMessage *incoming;
     for(;;) {
 
-        msg = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
+    	//TODO: Delete the below example until...
+
+//    	OSTimeDlyHMSM(0, 0, 1, 0);
+//
+//    	MotorChangeMessage *outgoing = malloc(sizeof(MotorChangeMessage));
+//    	outgoing->frontLeft = 1;
+//    	outgoing->frontRight = 2;
+//    	outgoing->backLeft = 3;
+//    	outgoing->backRight = 4;
+//    	outgoing->steeringServo = 5;
+//
+//    	MotorChangeMessage *outgoing2 = malloc(sizeof(MotorChangeMessage));
+//    	outgoing2->frontLeft = 1;
+//    	outgoing2->frontRight = 2;
+//    	outgoing2->backLeft = 3;
+//    	outgoing2->backRight = 40;
+//    	outgoing2->steeringServo = 15;
+//
+//    	OSQPost(MotorQueue, outgoing);
+//    	OSQPost(MotorQueue, outgoing2);
+
+    	//TODO: ...here.
+
+    	incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
 
 		switch(err)
         {
-			case 0: // Replace with OS_NO_ERR Later
+			case OS_ERR_NONE:
 				//Message was received
 
-                uint8_t frontLeft = msg->frontLeft;
-                //And etc.
+                uint8_t frontLeft = incoming->frontLeft;
+                uint8_t frontRight = incoming->frontRight;
+                uint8_t backLeft = incoming->backLeft;
+                uint8_t backRight = incoming->backRight;
 
-				/*
+                //TODO: Delete this printf
+                printf("Incoming Message to FuzzyTask:\n fL = %d\n fR = %d\n rL = %d\n rR = %d\n", frontLeft, frontRight, backLeft, backRight);
+
+                /*
 				Here's where you can actually do what you want to do
+				...
+				Below is where you set the outgoing message
 				*/
 
-                MotorChangeMessage* sentMessage;
-                sentMessage = malloc(sizeof(MotorChangeMessage*));
+                MotorChangeMessage *outgoing = malloc(sizeof(MotorChangeMessage));
+                outgoing->frontLeft = 0; 	//TODO: Plz give me output
+                outgoing->frontRight = 1; 	//TODO: Plz give me output
+                outgoing->backLeft = 2; 	//TODO: Plz give me output
+                outgoing->backRight = 3; 	//TODO: Plz give me output
+                outgoing->steeringServo = 4;//TODO: Plz give me output
 
-                sentMessage->frontLeft = 0;
-                //...
-
-                OSQPost(FuzzyQueue, sentMessage);
+                OSQPost(MotorQueue, outgoing);
 				break;
 
 			default:
-//				ErrorMessage *msg = malloc(sizeof(ErrorMessage));
-//				msg->_taskName = TaskName;
-//				msg->_sourceName = "OSQPend";
-//				msg->_error = err;
-//				OSQPost(ErrorQueue, msg);
+				ErrorMessage *errorMessage = malloc(sizeof(ErrorMessage));
+				errorMessage->_taskName = TaskName;
+				errorMessage->_sourceName = "OSQPend";
+				errorMessage->_error = err;
+				OSQPost(ErrorQueue, errorMessage);
         }
     }
 }
@@ -351,13 +390,13 @@ static void FuzzyTask (void *p_arg)
 static void ErrorTask (void *p_arg)
 {
 	INT8U err;
+	ErrorMessage *errorMessage;
 
-    struct errorMessage *msg;
     for(;;) {
 
-        msg = (struct motorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
-        // Do something with the error.
+    	errorMessage = (ErrorMessage*)OSQPend(ErrorQueue, 0, &err);
+        //TODO: Do something with the error.
 
-        free(msg);
+        free(errorMessage);
     }
 }

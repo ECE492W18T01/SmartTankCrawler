@@ -117,26 +117,30 @@
 #define SONAR_ADD 0x00000120
 #define SONAR_BASE FPGA_TO_HPS_LW_ADDR(SONAR_ADD)
 
-typedef struct {
+typedef struct ErrorMessage ErrorMessage;
+typedef struct MotorSpeedMessage MotorSpeedMessage;
+typedef struct MotorChangeMessage MotorChangeMessage;
+
+struct ErrorMessage {
 	char *_taskName;
 	char *_sourceName;
 	INT8U _error;
-} ErrorMessage;
+};
 
-typedef struct {
+struct MotorSpeedMessage {
 	uint8_t frontLeft;
     uint8_t frontRight;
     uint8_t backLeft;
     uint8_t backRight;
-} MotorSpeedMessage;
+};
 
-typedef struct {
+struct MotorChangeMessage {
 	float frontLeft;
     float frontRight;
     float backLeft;
     float backRight;
     uint8_t steeringServo;
-} MotorChangeMessage;
+};
 
 extern OS_EVENT *FuzzyQueue;
 

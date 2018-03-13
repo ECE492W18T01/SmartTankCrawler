@@ -14,7 +14,6 @@
 
 #include "wrap.h"
 
-
 void InitHPSTimerInterrupt(void) {
 	// This version will use the oscl_clk based timers on the HPS core
 	// Process
@@ -35,8 +34,11 @@ void InitHPSTimerInterrupt(void) {
 
 	ARM_OSCL_TIMER_0_REG_CONTROL &= ARM_OSCL_TIMER_0_INT_UNMASKED;
 
-	//TODO: Externalize this veriable to a "settings" header.
-	ARM_OSCL_TIMER_0_REG_LOADCOUNT = 12500000; // 250000000 of the oscl_clk should be one second
+	//TODO: Externalize this veriable to a "settings" header. I think the comment below is wrong too
+	// 250000000 of the oscl_clk should be one second --> I think it's actually 10 seconds
+	//12500000 should be 2Hz
+	//125000000 should be every five seconds, or 0.2 Hz
+	ARM_OSCL_TIMER_0_REG_LOADCOUNT = 125000000; // 250000000 of the oscl_clk should be one second
 
 	BSP_IntVectSet   (201u,   // 201 is source for oscl_timer 0
 	                         1,	    // prio
@@ -53,16 +55,15 @@ void InitHPSTimerInterrupt(void) {
 
 void HPS_TimerISR_Handler(CPU_INT32U cpu_id) {
 
-	//I don't know how to read from the motors;
-	//Read the four motor speeds and set below instead of 0;
+	//TODO: Read the four motor speeds and set below;
 
-	MotorSpeedMessage *msg;
-	msg->frontLeft = 0;
-	msg->frontRight = 0;
-	msg->backLeft = 0;
-	msg->backRight = 0;
+	MotorSpeedMessage msg;
+	msg.frontLeft = 0; 	//TODO: Plz give me output
+	msg.frontRight = 1;	//TODO: Plz give me output
+	msg.backLeft = 2;	//TODO: Plz give me output
+	msg.backRight = 3;	//TODO: Plz give me output
 
-	OSQPost(FuzzyQueue, msg);
+	OSQPost(FuzzyQueue, &msg);
 
 	// READ EOI Reg to clear interrupt (PAGE 23-10/23-11 of Cyclone V Hard Processor System
 	// Technical Reference Manual
