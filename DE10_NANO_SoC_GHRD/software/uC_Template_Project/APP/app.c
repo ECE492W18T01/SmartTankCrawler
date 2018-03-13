@@ -299,7 +299,7 @@ static void MotorTask (void *p_arg)
                 free(incoming);
 
                 //TODO: Delete printf
-                printf("Incoming Message to MotorTask:\n fL = %f\n fR = %f\n rL = %f\n rR = %f\n sR = %d\n", frontLeft, frontRight, backLeft, backRight, steeringServo);
+                //printf("Incoming Message to MotorTask:\n fL = %f\n fR = %f\n rL = %f\n rR = %f\n sR = %d\n", frontLeft, frontRight, backLeft, backRight, steeringServo);
 
 				/*
 				Here's where you can actually do what you want to do
@@ -333,8 +333,16 @@ static void FuzzyTask (void *p_arg)
 
 	int8_t steeringAngle = 0;
 
+	int fl[12] = {40,25,128, 32, 50, 40, 54, 44, 6, 4, 5, 40};
+	int fr[12] = {54,25,32,128,40,50,44,54,4,6,15,40};
+	int rl[12] = {43,50,120,40,39,30,39,30,4,3,25,20};
+	int rr[12] = {50,50,40,120,30,39,30,39,3,4,25,40};
+	int8_t steer[12] = {-15,0,30,-30,25,-25,25,-25,10,0,0};
+
+	float ffl, ffr, frl, frr, fs;
+
 	MotorSpeedMessage *incoming;
-    for(;;) {
+    for(int i = 0; i < 12; i++) {
 
     	incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
 
@@ -343,21 +351,21 @@ static void FuzzyTask (void *p_arg)
 			case OS_ERR_NONE:
 				//Message was received
 
-                newFrontLeft = incoming->frontLeft;
-                newFrontRight = incoming->frontRight;
-                newRearLeft = incoming->backLeft;
-                newRearRight = incoming->backRight;
+                newFrontLeft = fl[i];
+                newFrontRight = fr[i];
+                newRearLeft = rl[i];
+                newRearRight = rr[i];
 
-                uint8_t wheelSpeeds[4] = {newFrontLeft - oldFrontLeft,
-                		newFrontRight - oldFrontRight,
-						newRearLeft - oldRearLeft,
-						newRearRight - oldRearRight
+                uint8_t wheelSpeeds[4] = {newFrontLeft,
+                		newFrontRight,
+						newRearLeft,
+						newRearRight
                 };
 
             	MotorChangeMessage *outgoing = malloc(sizeof(MotorChangeMessage));
 
             	// TO-DO Change '0' in the abs to the actual steering angle.
-                if (getMinWheelDiff(wheelSpeeds) < speedThres && abs(steeringAngle) < lowAngle) {
+                if (getMinWheelDiff(wheelSpeeds) < speedThres && abs(steer[i]) < lowAngle) {
 
                     outgoing->frontLeft = 0;
                     outgoing->frontRight = 0;
@@ -368,23 +376,17 @@ static void FuzzyTask (void *p_arg)
 
                 else {
 
-                	float *fuzzyOutput = calculateMotorModifiers(wheelSpeeds, steeringAngle);
+                	float *fuzzyOutput = calculateMotorModifiers(wheelSpeeds, steer[i]);
 
-                    outgoing->frontLeft = fuzzyOutput[0];
-                    outgoing->frontRight = fuzzyOutput[1];
-                    outgoing->backLeft = fuzzyOutput[2];
-                    outgoing->backRight = fuzzyOutput[3];
-                    outgoing->steeringServo = fuzzyOutput[4];
+                    ffl = fuzzyOutput[0];
+                    ffr = fuzzyOutput[1];
+                    frl = fuzzyOutput[2];
+                    frr = fuzzyOutput[3];
+                    fs = fuzzyOutput[4];
 
-                    free(fuzzyOutput);
                 }
-
-                oldFrontLeft = newFrontLeft;
-                oldFrontRight = newFrontRight;
-                oldRearLeft = newRearLeft;
-                oldRearRight = newRearRight;
-
-                OSQPost(MotorQueue, outgoing);
+                printf("%d, fl = %f, fr = %f, rl = %f, rr = %f, st = %f\n", i+1, ffl, ffr, frl, frr, fs);
+                //OSQPost(MotorQueue, outgoing);
 				break;
 
 			default:
