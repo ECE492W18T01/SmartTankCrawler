@@ -11,8 +11,8 @@
 #define UART_0_FCR_RT_ONE_CHAR (~DEF_BIT_07 & ~DEF_BIT_06) // and with this
 
 #define MSG_BUFFER_LEN 127
-bool serial_communication_init();
-char serial_getc();
+bool serial_communication_init(void);
+char serial_getc(void);
 void UART0_IRS_Handeler(CPU_INT32U cpu_id);
 
 // from http://pubs.opengroup.org/onlinepubs/009696799/functions/bzero.html

@@ -11,7 +11,7 @@
 #include "os_cpu.h"
 #include "os.h"
 #include "timer.h"
-
+#include "fpga_to_hps.h"
 #include "wrap.h"
 
 void InitHPSTimerInterrupt(void) {
@@ -38,7 +38,7 @@ void InitHPSTimerInterrupt(void) {
 	// 250000000 of the oscl_clk should be one second --> I think it's actually 10 seconds
 	//12500000 should be 2Hz
 	//125000000 should be every five seconds, or 0.2 Hz
-	ARM_OSCL_TIMER_0_REG_LOADCOUNT = 125000000; // 250000000 of the oscl_clk should be one second
+	ARM_OSCL_TIMER_0_REG_LOADCOUNT = 12500000; // 250000000 of the oscl_clk should be one second
 
 	BSP_IntVectSet   (201u,   // 201 is source for oscl_timer 0
 	                         1,	    // prio
@@ -55,15 +55,14 @@ void InitHPSTimerInterrupt(void) {
 
 void HPS_TimerISR_Handler(CPU_INT32U cpu_id) {
 
-	//TODO: Read the four motor speeds and set below;
-
-	MotorSpeedMessage msg;
-	msg.frontLeft = 0; 	//TODO: Plz give me output
-	msg.frontRight = 1;	//TODO: Plz give me output
-	msg.backLeft = 2;	//TODO: Plz give me output
-	msg.backRight = 3;	//TODO: Plz give me output
+	MotorSpeedMessage msg; 						  // Read Hall Sensor Raw Data
+	msg.frontLeft = alt_read_byte(F_LEFT_BASE);   // Front Left
+	msg.frontRight = alt_read_byte(F_RIGHT_BASE); // Front Right
+	msg.backLeft = alt_read_byte(R_LEFT_BASE);	  // Rear Left
+	msg.backRight = alt_read_byte(R_RIGHT_BASE);  // Rear Right
 
 	OSQPost(FuzzyQueue, &msg);
+	alt_write_byte(LEDR_BASE, alt_read_byte(LEDR_BASE) +1);
 
 	// READ EOI Reg to clear interrupt (PAGE 23-10/23-11 of Cyclone V Hard Processor System
 	// Technical Reference Manual

@@ -67,6 +67,7 @@
 #include "motor_control.h"
 #include "wrap.h"
 #include "serial_communication.h"
+#include "FuzzyLogicProcessor.h"
 
 #include <timer.h>
 
@@ -320,31 +321,20 @@ static void FuzzyTask (void *p_arg)
 {
 	INT8U err;
 	char *TaskName = "FuzzyTask";
-    MotorSpeedMessage *incoming;
+
+	// 'new' Variables, for incoming hall sensor information.
+	uint8_t newFrontLeft, newFrontRight, newRearLeft, newRearRight;
+
+	// 'old' Variables, since we take the different in Software
+	uint8_t oldFrontLeft = 0;
+	uint8_t oldFrontRight = 0;
+	uint8_t oldRearLeft = 0;
+	uint8_t oldRearRight = 0;
+
+	int8_t steeringAngle = 0;
+
+	MotorSpeedMessage *incoming;
     for(;;) {
-
-    	//TODO: Delete the below example until...
-
-//    	OSTimeDlyHMSM(0, 0, 1, 0);
-//
-//    	MotorChangeMessage *outgoing = malloc(sizeof(MotorChangeMessage));
-//    	outgoing->frontLeft = 1;
-//    	outgoing->frontRight = 2;
-//    	outgoing->backLeft = 3;
-//    	outgoing->backRight = 4;
-//    	outgoing->steeringServo = 5;
-//
-//    	MotorChangeMessage *outgoing2 = malloc(sizeof(MotorChangeMessage));
-//    	outgoing2->frontLeft = 1;
-//    	outgoing2->frontRight = 2;
-//    	outgoing2->backLeft = 3;
-//    	outgoing2->backRight = 40;
-//    	outgoing2->steeringServo = 15;
-//
-//    	OSQPost(MotorQueue, outgoing);
-//    	OSQPost(MotorQueue, outgoing2);
-
-    	//TODO: ...here.
 
     	incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
 
@@ -353,26 +343,46 @@ static void FuzzyTask (void *p_arg)
 			case OS_ERR_NONE:
 				//Message was received
 
-                uint8_t frontLeft = incoming->frontLeft;
-                uint8_t frontRight = incoming->frontRight;
-                uint8_t backLeft = incoming->backLeft;
-                uint8_t backRight = incoming->backRight;
+                newFrontLeft = incoming->frontLeft;
+                newFrontRight = incoming->frontRight;
+                newRearLeft = incoming->backLeft;
+                newRearRight = incoming->backRight;
 
-                //TODO: Delete this printf
-                printf("Incoming Message to FuzzyTask:\n fL = %d\n fR = %d\n rL = %d\n rR = %d\n", frontLeft, frontRight, backLeft, backRight);
+                uint8_t wheelSpeeds[4] = {newFrontLeft - oldFrontLeft,
+                		newFrontRight - oldFrontRight,
+						newRearLeft - oldRearLeft,
+						newRearRight - oldRearRight
+                };
 
-                /*
-				Here's where you can actually do what you want to do
-				...
-				Below is where you set the outgoing message
-				*/
+            	MotorChangeMessage *outgoing = malloc(sizeof(MotorChangeMessage));
 
-                MotorChangeMessage *outgoing = malloc(sizeof(MotorChangeMessage));
-                outgoing->frontLeft = 0; 	//TODO: Plz give me output
-                outgoing->frontRight = 1; 	//TODO: Plz give me output
-                outgoing->backLeft = 2; 	//TODO: Plz give me output
-                outgoing->backRight = 3; 	//TODO: Plz give me output
-                outgoing->steeringServo = 4;//TODO: Plz give me output
+            	// TO-DO Change '0' in the abs to the actual steering angle.
+                if (getMinWheelDiff(wheelSpeeds) < speedThres && abs(steeringAngle) < lowAngle) {
+
+                    outgoing->frontLeft = 0;
+                    outgoing->frontRight = 0;
+                    outgoing->backLeft = 0;
+                    outgoing->backRight = 0;
+                    outgoing->steeringServo = 0;
+                }
+
+                else {
+
+                	float *fuzzyOutput = calculateMotorModifiers(wheelSpeeds, steeringAngle);
+
+                    outgoing->frontLeft = fuzzyOutput[0];
+                    outgoing->frontRight = fuzzyOutput[1];
+                    outgoing->backLeft = fuzzyOutput[2];
+                    outgoing->backRight = fuzzyOutput[3];
+                    outgoing->steeringServo = fuzzyOutput[4];
+
+                    free(fuzzyOutput);
+                }
+
+                oldFrontLeft = newFrontLeft;
+                oldFrontRight = newFrontRight;
+                oldRearLeft = newRearLeft;
+                oldRearRight = newRearRight;
 
                 OSQPost(MotorQueue, outgoing);
 				break;
