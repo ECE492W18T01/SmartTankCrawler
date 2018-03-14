@@ -259,7 +259,7 @@ static  void  AppTaskStart (void *p_arg)
 
 
         //////////// Steer Servo Range 0x00 - 0x31 (markings on body).  Wrap functions work.
-        // For Actual use 0x00 - 0x10
+        // For Actual use 0x00 - 0x14
 
         //////////// Back Servo Range 0x00 - 0x2E, 0x2F servo makes noise
 
@@ -332,13 +332,13 @@ static void FuzzyTask (void *p_arg)
 	uint8_t oldRearRight = 0;
 
 	int8_t steeringAngle = 0;
-
-	int fl[12] = {40,25,128, 32, 50, 40, 54, 44, 6, 4, 5, 40};
-	int fr[12] = {54,25,32,128,40,50,44,54,4,6,15,40};
-	int rl[12] = {43,50,120,40,39,30,39,30,4,3,25,20};
-	int rr[12] = {50,50,40,120,30,39,30,39,3,4,25,40};
-	int8_t steer[12] = {-15,0,30,-30,25,-25,25,-25,10,0,0};
-
+	//                1    2   3   4    5    6  7   8   9  10 11  12
+	uint8_t fl[12] = {40, 25, 128, 32,  50, 40, 54, 44, 6, 4, 5,  40};
+	uint8_t fr[12] = {54, 25, 32,  128, 40, 50, 44, 54, 4, 6, 15, 40};
+	uint8_t rl[12] = {43, 50, 120, 40,  39, 30, 39, 30, 4, 3, 25, 20};
+	uint8_t rr[12] = {50, 50, 40,  120, 30, 39, 30, 39, 3, 4, 25, 40};
+	int8_t steer[12] = {-15, 0, 30, -30, 25, -25, 25, -25, 10, -10, 0, 0};
+	//                  1    2   3   4   5   6    7    8   9   10   11 12
 	float ffl, ffr, frl, frr, fs;
 
 	MotorSpeedMessage *incoming;
@@ -362,16 +362,14 @@ static void FuzzyTask (void *p_arg)
 						newRearRight
                 };
 
-            	MotorChangeMessage *outgoing = malloc(sizeof(MotorChangeMessage));
-
             	// TO-DO Change '0' in the abs to the actual steering angle.
                 if (getMinWheelDiff(wheelSpeeds) < speedThres && abs(steer[i]) < lowAngle) {
 
-                    outgoing->frontLeft = 0;
-                    outgoing->frontRight = 0;
-                    outgoing->backLeft = 0;
-                    outgoing->backRight = 0;
-                    outgoing->steeringServo = 0;
+                    ffl = 0;
+                    ffr = 0;
+                    frl = 0;
+                    frr = 0;
+                    st = 0;
                 }
 
                 else {
@@ -383,6 +381,7 @@ static void FuzzyTask (void *p_arg)
                     frl = fuzzyOutput[2];
                     frr = fuzzyOutput[3];
                     fs = fuzzyOutput[4];
+                    free(fuzzyOutput);
 
                 }
                 printf("%d, fl = %f, fr = %f, rl = %f, rr = %f, st = %f\n", i+1, ffl, ffr, frl, frr, fs);
