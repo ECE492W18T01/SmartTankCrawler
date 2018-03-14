@@ -4,7 +4,7 @@
 *	Team 1
 *	Part of the Fuzzy Logic Drive Controller Interface
 *	</p><p>
-*	Creates a C header file containing a 2-Dimensional Array of Integers
+*	Creates a C .c/.h file pair containing a 2-Dimensional Array of Integers
 *	corresponding to the ideal wheel speed ratios for a vehicle of specified dimensions
 *	over a range of incremental angles.
 *	Please note that the first ratio is always 512, as it is the ratio of front tire speeds to rear tire speeds.
@@ -13,15 +13,16 @@
 * 	</p><p>
 *	This program compiles using the command "javac AngleRatioCreator.java" command on a Windows 10 machine
 *	running Java 8 Update 161
-*	The compiled can be executed by running java AngleRatioCreator X Y Z
+*	The compiled can be executed by running java AngleRatioCreator X U Y Z
 *	X - Range of steering angles, e.g. for 45 degrees left or right, it would be 45.
-*	Y - Width of the vehicles axles (they must be the same length).
-*	Z - Length between the two axles. Must be in the units as Y. 
+*	U - Increments between angles
+*	Y - Length of the vehicles axles (they must be the same length).
+*	Z - Width between the two axles. Must be in the units as Y. 
 *	The program outputs a .h file with a name given by the input parameters. In the same directory there is
-*	a demo file sliplessSteeringRatios_45R_17W_30L.h (made by running the java class file with input args 45 17 30)
+*	a demo file sliplessSteeringRatios.c (made by running the java class file with input args 45 17 30)
 *	as well as a C file testCProgram.c. Compile these two using the provided Makefile and then run the output file "./ssr"
 *	to see the list of printed numbers (the ratios, multipled by 512 for the first column and 256 for the others).
-*	The purpose of the C program is to demostrate that the .h file generated can be inserted into a C program and used without modification.
+*	The purpose of the C program is to demostrate that the .c file generated can be inserted into a C program and used without modification.
 *	</p><p>
 *	Purpose of the file:
 *	The file generates the ideal (slipless) speed ratios between the front and rear tires, front left and 
@@ -41,10 +42,15 @@ import java.util.ArrayList;
 public class AngleRatioCreator {
 
 	private Integer angleRange;
+	private Integer increments;
 	private Double width;
 	private Double length;
 	private Integer midPoint;
 	private ArrayList<RatioStore> ratioSets;
+	private	String fileName = "sliplessSteeringRatios.c";
+	private String hFileName = "sliplessSteeringRatios.h";
+	private Double maxFrontRatio;
+	private Double maxRearRatio;
 
 	public Integer axleRatioMult = 256;
 	public Integer overallMult = 512;
@@ -70,7 +76,7 @@ public class AngleRatioCreator {
 			System.exit(0);
 		}
 
-		this.midPoint = this.angleRange;//(this.angleRange - 1) / 2;
+		this.midPoint = this.angleRange;
 		this.ratioSets = new ArrayList<RatioStore>();
 
 		//this.generateLeftTurnRatios();
@@ -85,17 +91,29 @@ public class AngleRatioCreator {
 	*/	
 	public void writeInfoToCFile() {
 
-		String fileName = "sliplessSteeringRatios_" + 
-			this.angleRange + "R_" + this.width.intValue() + "W_" 
-			+ this.length.intValue() + "L.h";
+		try {
+			BufferedWriter headerFile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.hFileName)));
+
+			headerFile.write("#ifndef sliplessSteeringRatios_H\n");
+			headerFile.write("#define sliplessSteeringRatios_H\n");
+			headerFile.write("extern const int SLIPRATIOS[" + ((this.angleRange/this.increments) + 1) + "][3];\n");
+			headerFile.write("#endif");
+
+			headerFile.close();
+			System.out.println(this.hFileName + " created.");
+
+		}
+
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
 
 		try {
-			BufferedWriter ratioFile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileName)));
+			BufferedWriter ratioFile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.fileName)));
 
-			ratioFile.write("#ifndef " + fileName.replace(".h", "_H") + "\n");
-			ratioFile.write("#define " + fileName.replace(".h", "_H") + "\n");
+			ratioFile.write("#include \"sliplessSteeringRatios.h\"\n");
 
-			ratioFile.write("const int SLIPRATIOS[" + this.angleRange + 1 + "][3] = {\n");
+			ratioFile.write("const int SLIPRATIOS[" + ((this.angleRange/this.increments) + 1) + "][3] = {\n");
 
 			RatioStore currentTuple;
 
@@ -109,7 +127,7 @@ public class AngleRatioCreator {
 				}
 
 				else {
-					toWrite += "\n};\n#endif";
+					toWrite += "\n};";
 				}
 
 				ratioFile.write(toWrite);
@@ -122,17 +140,18 @@ public class AngleRatioCreator {
 		catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
-
 	}
 
 	/**
 	*	Generates the ratios for left hand turn.
+	* 	Not used.
+	* 	@deprecated
 	*/
 	public void generateLeftTurnRatios() {
 
 		Double widthLengthRatio = this.width / this.length;
 		Double vfl, vfr, vrl, vrr, frontRatio, rearRatio;
-		for(int i = -this.midPoint; i < 0; i++) {
+		for(int i = -this.midPoint; i < 0; i = i + this.increments) {
 			
 			vfl = 1 - (widthLengthRatio*myTan(-i));
 			vfr = 1 + (widthLengthRatio*myTan(-i));
@@ -154,7 +173,7 @@ public class AngleRatioCreator {
 		
 		Double widthLengthRatio = this.width / this.length;
 		Double vfl, vfr, vrl, vrr, frontRatio, rearRatio;
-		for(int i = 1; i <= this.midPoint; i++) {
+		for(int i = this.increments; i <= this.midPoint; i = i + this.increments) {
 			
 			vfl = 1 + (widthLengthRatio*myTan(i));
 			vfr = 1 - (widthLengthRatio*myTan(i));
@@ -163,6 +182,14 @@ public class AngleRatioCreator {
 
 			frontRatio = axleRatioMult * (vfl/vfr);
 			rearRatio = axleRatioMult * (vrl/vrr);
+
+			if (frontRatio <= 0) {
+				frontRatio = this.maxFrontRatio;
+			}
+
+			if (rearRatio <= 0) {
+				rearRatio = this.maxRearRatio;
+			}
 
 			this.ratioSets.add(new RatioStore(overallMult, 
 				frontRatio.intValue(), rearRatio.intValue()));
@@ -180,19 +207,37 @@ public class AngleRatioCreator {
 	*/
 	public Boolean checkAndSetParams(String[] args) {
 
-		if (args.length != 3) {
+		if (args.length != 4) {
 			return false;
 		}
 
 		try {
 			this.angleRange = Integer.parseInt(args[0]);
-			this.width = Double.parseDouble(args[1]);
+			this.increments = Integer.parseInt(args[1]);
+			this.width = Double.parseDouble(args[3]);
 			this.length = Double.parseDouble(args[2]);
 		}
 
 		catch (NumberFormatException e) {
 			return false;
 		}
+
+		// I added this stuff to compute the angle ratio at the last possible angle
+		// Where the numerator is non-zero. 
+
+		Double frontVal = Math.toDegrees(Math.atan(this.length / this.width));
+		Double rearVal  = Math.toDegrees(Math.atan((2 * this.length) / this.width));
+		Integer maxFrontNonZeroDegree = frontVal.intValue();
+		Integer maxRearNonZeroDegree  = rearVal.intValue();
+
+		Double maxFL = 1 + ((this.width * myTan(maxFrontNonZeroDegree)) / this.length);
+		Double maxFR = 1 - ((this.width * myTan(maxFrontNonZeroDegree)) / this.length);
+
+		Double maxRL = 1 + ((this.width * myTan(maxRearNonZeroDegree)) / (2 * this.length));
+		Double maxRR = 1 - ((this.width * myTan(maxRearNonZeroDegree)) / (2 * this.length));
+
+		this.maxFrontRatio = (maxFL * axleRatioMult) / maxFR;
+		this.maxRearRatio = (maxRL * axleRatioMult) / maxRR;
 
 		return true;
 	}
@@ -201,8 +246,9 @@ public class AngleRatioCreator {
 	* A message that is printed in case the requirements of checkAndSetParams is not met.
 	*/
 	public static void printRequirements() {
-		System.out.println("Function takes three numerical arguments:");
+		System.out.println("Function takes four numerical arguments:");
 		System.out.println("Angle Range: The angle range in one direction.");
+		System.out.println("Increments: Spacing between each angle, an integer. E.g. 1 gives you 0, 1 ,2...; 6 gives you 0, 6, 12...");
 		System.out.println("Length: Distance between the axles in whatever units you so choose");
 		System.out.println("Width: Horizontal distance between the tires, same units as length ");
 	}

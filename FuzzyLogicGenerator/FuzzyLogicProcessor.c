@@ -143,7 +143,7 @@ int main(int argc, char **argv) {
 	rl = 50; // No traction, so faster. 
 	rr = 50;
 	index = 0;
-	dir = -1;
+	dir = 1;
 
 	frontDev = computeAxleDeviation(fl, fr, dir * SLIPRATIOS[index][1]);
 	rearDev = computeAxleDeviation(rl, rr, dir * SLIPRATIOS[index][2]);
