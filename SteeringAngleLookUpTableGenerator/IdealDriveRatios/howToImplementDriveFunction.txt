@@ -1,0 +1,95 @@
+Motor Driver Algorithm
+
+Apologies for this format – this is late for me. 
+Read ALL of this document first.
+The actual function should have a header like this:
+
+void driveMotors(float driveSpeed, float fuzzyMods[5], int8_t steering, Boolean stopMask);
+
+Where, 
+driveSpeed is the overall desired forward speed for the vehicle. Not for any particular wheel, for the ENITRE vehicle. Forward, or reverse. 
+fuzzyMods are the outputs of my fuzzyset, modifiers. The order is front left, front right, rear left, rear right, and then steering. 
+steering is the current steering angle.
+stopMask is from the emergency stop - do I kill the motors (true) or not (false)?
+
+So, what is the pseudocode?
+
+IF stopMask:
+	Cut power to all four motors. 0x00.
+
+ELSE IF driveSpeed is in reverse.
+	Look up the appropriate speed ratios for each wheel, given the value of steering. ** This will be described in greater detail below**
+	Convert the speed ratios to 8-bit numbers by multiplying by -127.
+	Output steering to steering servo.
+	Output motor values to motors.
+
+Else (Forward, with Fuzzy Logic):
+	Add the value of fuzzyMods[4] (the steering ratio) to the current steering value (update the global variable that the FS uses as an input).
+	Look up the appropriate speed ratios for each wheel, given the value of steering, and assign. ** This will be described in greater detail below**
+	Augment the speed values by the outputs of the fuzzy set. This is given by the formula speed_modified = speed_ideal * (1 + FuzzySetOutputForWheel)
+
+	If speed_modified > 1
+		speed_modified = 1
+
+	Convert the speed ratios to 8-bit numbers by 127.
+	Output steering to steering servo.
+	Output motor values to motors.
+
+
+Now, how to look up the ideal speed ratios?
+I've given you a .c/.h file pair with these values for our steering schema, in this folder. motorDriveR.c and motorDriveR.h.
+This REALLY should be it's own separate function that gets called. 
+
+What you need to realize is this:
+vfl - Front Left Speed
+vfr - Front right speed.
+vrl - Rear Left speed.
+vrr - Rear Right speed.
+When the front axle is straight, all four wheels are spinning at the same speed. 
+vfl = vfr = vrl = vrr; Hence, the first row of the table DRIVERATIOS is 1.0, 1.0, 1.0.
+All other rows, the speed ratios in increments of 6 degrees. E.g. the second row is 6 degrees, 3rd row 12... 11th row is 60 degrees.
+
+During a left turn, the right wheels spin faster than their left counterparts.
+vfr > vrr > vrl > vfl
+
+During a right turn, the outer (left) wheels spin faster than the inner (right) ones.
+vfl > vrl > vrr > vfr
+
+Therefore, vfl and vfr should be the fastest wheels during a right or left turn respectively.
+The speed of the other three wheels will be calculated relative to what the fastest wheel is.
+
+The array of floats is organized as follows.
+The first column is the speed ratio for the wheel on the opposite side. Front Left to Front Right and vis-versa.
+The second column is for the rear wheel directly behind the fastest wheel. Front Left to Rear Left (Right turn); front right to rear right (left turn).
+The final column is for the diagonal wheel. Front Left to rear right (right turn); front right to rear left (left turn).
+
+If the vehicle is turning LEFT, the value of the FRONT RIGHT wheel should be unmodified - feed driveSpeed * 127 into the VHDL PWM component (after augmenting with FS if applicable).
+Or driveSpeed * -127 if going in reverse.
+The value of the FRONT LEFT wheel would be (before Fuzzy Set mods) driveSpeed * DRIVERATIOS[steeringAngleIndex][0]... then augment by FS.
+The value of the REAR RIGHT wheel would be driveSpeed * DRIVERATIOS[steeringAngleIndex][1]... then augment by FS.
+The value of the REAR LEFT wheel would be driveSpeed * DRIVERATIOS[steeringAngleIndex][2]... then augment by FS.
+
+Opposite sides for a right turn.
+
+Finally, let's talk about steering. How you need to go from "values of angles in an int8_t" to values you feed your PWM.
+Again, this should also be a function with some abstraction.
+
+the int8_t variable steering SHOULD NOT have values of 0x00, 0x0f, 0xa... etc. That's bad. It's value should be in actual degrees, 0 degrees, 10 degrees, -60 degrees, etc.
+Negative values represent a LEFT turn.
+Positive values represent a RIGHT turn.
+These values should be mapped to their 8-bit PWM values, either by a LUT or a system of equations/logical conditionals, your choice, whatever you believe to be faster..
+We have a 60 degree swing in either direction from the centre, in increments of 6 degrees per increase to the PWM. 
+0x00 to 0x14 = 0 - 20. 10 Right, 1 centre, 10 left.
+
+So here's a map of a few values of steering so you can get an idea.
+If steering has a value of 60, the servo should have the axle angled all the way to the right, 0x00. This position should also be the "turned off" position for the servo.
+If steering has a value of 0, the servo should have the axle set in the middle, 0x0a (10 in decimal).
+If steering has  value of -12, the servo should have the axle set partially to the left, 0xc (12 in decimal). 
+If steering has a value of -54, the servo should have the axle set mostly to the left, 0x13 (19 in decimal)
+.....						-60										all the way to left, 0x14 (20 in decimal)
+
+If I give it an extraneous value that cannot be resolved by the resolution of our servo, like let's say 1 degree (to the right) it should go to the closest value, 0x0a or 0 degrees.
+If it was 5 degrees, round it to 0x0b (9 in decimal) or 6 degrees to the right.
+Etc. 
+
+Along those lines. 
