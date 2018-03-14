@@ -11,7 +11,7 @@
  * a program.
  * 
  * Compile using
- * gcc testFuzzyCRead.c fMatrices_servoFuzzyThree.h -o fr -std=c99 -Wall
+ * gcc testFuzzyCRead.c fMatrices_servoFuzzyThree.h fMatrices_servoFuzzyThree.c -o fr -std=c99 -Wall
  * And run using ./fuzzy
  * All it does is read the matrices.
 */

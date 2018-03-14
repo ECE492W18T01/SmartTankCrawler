@@ -12,15 +12,26 @@
 % less than 0.01 in absolute terms, is ignored. Steering angles are
 % rounded.
 
-function dMatFile = generateDecisionMatrices(fuzzySet)
+function [dMatFile, headerFile] = generateDecisionMatrices(fuzzySet)
+
+hFileName = strcat("fMatrices_", fuzzySet, ".h");
+headerFile = fopen(hFileName, 'w');
+
+fprintf(headerFile, '#ifndef fMatrices_%s_H\n', fuzzySet);
+fprintf(headerFile, '#define fMatrices_%s_H\n', fuzzySet);
+
+fprintf(headerFile, 'extern const float FUZZYLOOKUP[21][21][21][5];\n');
+
+fprintf(headerFile, '#endif');
+
+headerFile = fclose(headerFile);
 
 % Open the file with write permissions.
-fileName = strcat("fMatrices_", fuzzySet, ".h");
+fileName = strcat("fMatrices_", fuzzySet, ".c");
 dMatFile = fopen(fileName, 'w');
 
-% Declare it's headers.
-fprintf(dMatFile, '#ifndef fMatrices_%s_H\n', fuzzySet);
-fprintf(dMatFile, '#define fMatrices_%s_H\n', fuzzySet);
+% Declare it's headers
+fprintf(dMatFile, '#include "fMatrices_%s.h"\n', fuzzySet);
 
 % Declare the decision matrices
 fprintf(dMatFile, 'const float FUZZYLOOKUP[21][21][21][5] = {\n');
@@ -61,7 +72,7 @@ for fRatio = linspace(-1.0, 1.0, 21)
         end
     end
     if fRatio == 1
-        fprintf(dMatFile, '}};\n\n#endif');
+        fprintf(dMatFile, '}};\n\n');
         dMatFile = fclose(dMatFile);
     else
         fprintf(dMatFile, '},\n');
@@ -99,5 +110,5 @@ function [fl, fr, rl, rr, angle] = processOutput(raw)
         rr = raw(4);
     end
     
-    angle = round(raw(5), 0); 
+    angle = round(raw(5) / 6) * 6;
 end
