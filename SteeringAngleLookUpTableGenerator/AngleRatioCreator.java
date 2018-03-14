@@ -29,9 +29,13 @@
 *	front right, and rear left and rear right wheels, given the width and length (Y, Z) over an angle
 *	range Z. 
 *
+*	March 14th Edit
+*	This API has been expanded to give the wheel-to-wheel speed ratios between the fastest wheel and the slowest wheel.
+*	The C/H file pair is stored in the directory IdealDriveRatios, with a C/H file, a reading C file, a Makefile.
+*
 *	@since 2018-02-02
 *	@author kgmills
-*	@version 1.3
+*	@version 1.4
 *	@param args Three values, see above.
 */
 
@@ -47,13 +51,21 @@ public class AngleRatioCreator {
 	private Double length;
 	private Integer midPoint;
 	private ArrayList<RatioStore> ratioSets;
+	private ArrayList<DriveRatioStores> idealSets;
 	private	String fileName = "sliplessSteeringRatios.c";
 	private String hFileName = "sliplessSteeringRatios.h";
+	private String driveCFile = "IdealDriveRatios/motorDriveR.c";
+	private String driveHFile = "IdealDriveRatios/motorDriveR.h";
 	private Double maxFrontRatio;
 	private Double maxRearRatio;
+	private Double maxFL;
+	private Double maxFR;
+	private Double maxRL;
+	private Double maxRR;
 
 	public Integer axleRatioMult = 256;
 	public Integer overallMult = 512;
+	public Float StraightRatio = 1.0000000f;
 
 	/**
 	*	Main Function
@@ -78,12 +90,72 @@ public class AngleRatioCreator {
 
 		this.midPoint = this.angleRange;
 		this.ratioSets = new ArrayList<RatioStore>();
+		this.idealSets = new ArrayList<DriveRatioStores>();
 
 		//this.generateLeftTurnRatios();
 		this.ratioSets.add(new RatioStore(overallMult, axleRatioMult, axleRatioMult));
+		this.idealSets.add(new DriveRatioStores(StraightRatio, StraightRatio, StraightRatio));
 		this.generateRightTurnRatios();
 
 		this.writeInfoToCFile();
+		this.writeDriveRatiosToFile();
+	}
+
+	/** 
+	*	Writes information to newly created file, based on input parameters
+	*	For Motor Driver
+	*/	
+	public void writeDriveRatiosToFile() {
+
+		try {
+			BufferedWriter headerFile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.driveHFile)));
+
+			headerFile.write("#ifndef motorDriveR_H\n");
+			headerFile.write("#define motorDriveR_H\n");
+			headerFile.write("extern const float DRIVERATIOS[" + ((this.angleRange/this.increments) + 1) + "][3];\n");
+			headerFile.write("#endif");
+
+			headerFile.close();
+			System.out.println(this.driveHFile + " created.");
+
+		}
+
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
+
+		try {
+			BufferedWriter ratioFile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.driveCFile)));
+
+			ratioFile.write("#include \"motorDriveR.h\"\n");
+
+			ratioFile.write("const float DRIVERATIOS[" + ((this.angleRange/this.increments) + 1) + "][3] = {\n");
+
+			DriveRatioStores currentTuple;
+
+			for (int i = 0; i < this.idealSets.size(); i++) {
+				currentTuple = this.idealSets.get(i);
+				String toWrite = "{" + currentTuple.getOpposite() + ", " + currentTuple.getBehind() + ", " 
+					+ currentTuple.getDiag() + "}";
+
+				if (i != this.idealSets.size() - 1) {
+					toWrite += ",\n";
+				}
+
+				else {
+					toWrite += "\n};";
+				}
+
+				ratioFile.write(toWrite);
+			}
+
+			ratioFile.close();
+			System.out.println(this.driveCFile + " created.");
+		}
+
+		catch (Exception e) {
+			System.err.println(e.getMessage());
+		}
 	}
 
 	/** 
@@ -193,8 +265,24 @@ public class AngleRatioCreator {
 
 			this.ratioSets.add(new RatioStore(overallMult, 
 				frontRatio.intValue(), rearRatio.intValue()));
-		}
 
+			// Additions for drive task ratios. 
+
+			if (vfr <= 0 && vrr > 0) {
+				this.idealSets.add(new DriveRatioStores((float)(this.maxFR/vfl), (float)(vrl/vfl), 
+					(float)(vrr/vfl)));
+			}
+
+			else if (vfr <= 0 && vrr <= 0) {
+				this.idealSets.add(new DriveRatioStores((float)(this.maxFR/vfl), (float)(vrl/vfl), 
+					(float)(this.maxRR/vfl)));
+			}
+
+			else {
+				this.idealSets.add(new DriveRatioStores((float)(vfr/vfl), (float)(vrl/vfl), 
+					(float)(vrr/vfl)));
+			}
+		}
 	}
 
 	/**
@@ -230,11 +318,11 @@ public class AngleRatioCreator {
 		Integer maxFrontNonZeroDegree = frontVal.intValue();
 		Integer maxRearNonZeroDegree  = rearVal.intValue();
 
-		Double maxFL = 1 + ((this.width * myTan(maxFrontNonZeroDegree)) / this.length);
-		Double maxFR = 1 - ((this.width * myTan(maxFrontNonZeroDegree)) / this.length);
+		this.maxFL = 1 + ((this.width * myTan(maxFrontNonZeroDegree)) / this.length);
+		this.maxFR = 1 - ((this.width * myTan(maxFrontNonZeroDegree)) / this.length);
 
-		Double maxRL = 1 + ((this.width * myTan(maxRearNonZeroDegree)) / (2 * this.length));
-		Double maxRR = 1 - ((this.width * myTan(maxRearNonZeroDegree)) / (2 * this.length));
+		this.maxRL = 1 + ((this.width * myTan(maxRearNonZeroDegree)) / (2 * this.length));
+		this.maxRR = 1 - ((this.width * myTan(maxRearNonZeroDegree)) / (2 * this.length));
 
 		this.maxFrontRatio = (maxFL * axleRatioMult) / maxFR;
 		this.maxRearRatio = (maxRL * axleRatioMult) / maxRR;
@@ -291,5 +379,36 @@ class RatioStore {
 
 	public Integer getrLR() {
 		return this.rLeftRight;
+	}
+}
+
+/**
+*	Separate data-storage class
+*	For the ratios for normal driving
+* 	On a right turn
+*	vfl > vrl > vrr > vfr
+*/
+class DriveRatioStores {
+
+	private Float oppositeWheel;
+	private Float behindWheel;
+	private Float diagonalWheel;
+
+	public DriveRatioStores(Float oppositeWheel, Float behindWheel, Float diagonalWheel) {
+		this.oppositeWheel = oppositeWheel;
+		this.behindWheel = behindWheel;
+		this.diagonalWheel = diagonalWheel;
+	}
+
+	public Float getOpposite() {
+		return this.oppositeWheel;
+	}
+
+	public Float getBehind() {
+		return this.behindWheel;
+	}
+
+	public Float getDiag() {
+		return this.diagonalWheel;
 	}
 }
