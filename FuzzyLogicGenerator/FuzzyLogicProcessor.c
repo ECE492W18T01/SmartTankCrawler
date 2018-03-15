@@ -88,7 +88,7 @@ float* calculateMotorModifiers(uint8_t wheelSpeeds[4], int8_t steeringAngle) {
 	int rearAxleDeviation = computeAxleDeviation(wheelSpeeds[2], wheelSpeeds[3],
 		direction * SLIPRATIOS[angle][2]);
 	int overallDeviation = computeOverallDeviation(wheelSpeeds[0], wheelSpeeds[1],
-		wheelSpeeds[2], wheelSpeeds[3], direction * SLIPRATIOS[angle][0]);
+		wheelSpeeds[2], wheelSpeeds[3], SLIPRATIOS[angle][0]);
 
 	float* fsOutputs = malloc(sizeof(float) * 5);
 
@@ -246,6 +246,19 @@ int main(int argc, char **argv) {
 	printf("Fuzzy Set Adjustment Coefficients: FL %f, FR %f, RL %f, RR %f, Angle %f\n\n",
 		fsOutputs[0], fsOutputs[1], fsOutputs[2], fsOutputs[3], fsOutputs[4]);
 
+		// Test 5.5
+	uint8_t wheelSpeeds1[4] = {50, 40, 39, 30};
+	uint8_t angle = 25;
+
+	float* mallocFSOutputs = calculateMotorModifiers(wheelSpeeds1, angle);
+
+	printf("Test Case 5.5: 25 degree right turn, front wheels lose traction\n");
+	printf("Fuzzy Set Adjustment Coefficients: FL %f, FR %f, RL %f, RR %f, Angle %f\n\n",
+		mallocFSOutputs[0], mallocFSOutputs[1], mallocFSOutputs[2], mallocFSOutputs[3], mallocFSOutputs[4]);
+
+	// THIS IS CRITICALLY IMPORTANT!!!!
+	free(mallocFSOutputs);
+
 	/*
 	*	TEST CASE 6
 	*/
@@ -273,6 +286,19 @@ int main(int argc, char **argv) {
 
 	printf("Fuzzy Set Adjustment Coefficients: FL %f, FR %f, RL %f, RR %f, Angle %f\n\n",
 		fsOutputs[0], fsOutputs[1], fsOutputs[2], fsOutputs[3], fsOutputs[4]);
+
+	// Test 6.5
+	uint8_t wheelSpeeds2[4] = {40, 50, 30, 39};
+	angle = -25;
+
+	mallocFSOutputs = calculateMotorModifiers(wheelSpeeds2, angle);
+
+	printf("Test Case 6.5: 25 degree left turn, front wheels lose traction\n");
+	printf("Fuzzy Set Adjustment Coefficients: FL %f, FR %f, RL %f, RR %f, Angle %f\n\n",
+		mallocFSOutputs[0], mallocFSOutputs[1], mallocFSOutputs[2], mallocFSOutputs[3], mallocFSOutputs[4]);
+
+	// THIS IS CRITICALLY IMPORTANT!!!!
+	free(mallocFSOutputs);
 
 	/*
 	*	TEST CASE 7
@@ -443,9 +469,9 @@ int main(int argc, char **argv) {
 	// Test case for 0 degrees left turn, no rear axle slippage
 
 	uint8_t wheelSpeeds[4] = {25, 25, 50, 50};
-	uint8_t angle = 0;
+	angle = 0;
 
-	float* mallocFSOutputs = calculateMotorModifiers(wheelSpeeds, angle);
+	mallocFSOutputs = calculateMotorModifiers(wheelSpeeds, angle);
 
 	printf("Test Case 13: Same as Test 2, but with the overall wrapper. Just confirming functionality.\n");
 	printf("Fuzzy Set Adjustment Coefficients: FL %f, FR %f, RL %f, RR %f, Angle %f\n\n",
