@@ -1,29 +1,33 @@
 #ifndef __MOTOR_CONTROL_H__
 #define __MOTOR_CONTROL_H__
-// Drive Motor #1, Front Left
+// Drive Motor #0, Front Left
 // Type:  Input
 // Width: Byte
+// GPIO: Dir1 -> 1_0; Dir2 -> 1_3; PWM -> 1_1
 #define FRONT_LEFT_MOTOR_ADD 0x00000112
 #define FRONT_LEFT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(FRONT_LEFT_MOTOR_ADD)
 #define FRONT_LEFT_MOTOR 0
 
-// Drive Motor #2, Front Right
+// Drive Motor #1, Front Right
 // Type:  Input
 // Width: Byte
+// GPIO: Dir1 -> 1_4; Dir2 -> 1_7; PWM -> 1_5
 #define FRONT_RIGHT_MOTOR_ADD 0x00000113
 #define FRONT_RIGHT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(FRONT_RIGHT_MOTOR_ADD)
 #define FRONT_RIGHT_MOTOR 1
 
-// Drive Motor #3, Rear Left
+// Drive Motor #2, Rear Left
 // Type:  Input
 // Width: Byte
+// GPIO: Dir1 -> 1_8; Dir2 -> 1_16; PWM -> 1_9
 #define REAR_LEFT_MOTOR_ADD 0x00000114
 #define REAR_LEFT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(REAR_LEFT_MOTOR_ADD)
 #define REAR_LEFT_MOTOR 2
 
-// Drive Motor #4, Rear Right
+// Drive Motor #3, Rear Right
 // Type:  Input
 // Width: Byte
+// GPIO: Dir1 -> 1_10; Dir2 -> 1_13; PWM -> 1_11 
 #define REAR_RIGHT_MOTOR_ADD 0x00000115
 #define REAR_RIGHT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(REAR_RIGHT_MOTOR_ADD)
 #define REAR_RIGHT_MOTOR 3

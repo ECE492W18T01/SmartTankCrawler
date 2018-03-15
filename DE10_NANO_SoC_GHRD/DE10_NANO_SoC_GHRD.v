@@ -88,26 +88,44 @@ module DE10_NANO_SoC_GHRD(
     //////////// SW //////////
     input    [ 3: 0]    SW,
 	 
-	 //////////// GPIO ////////
-	 output					GPIO_0_0,
-	 output					GPIO_0_1,
+//=======================================================
+//	GPIO for our project
+//=======================================================
+
+    ////// Hall Sensors //////
+	 
+	 input 					GPIO_0_0,
+	 input					GPIO_0_2,
 	 input					GPIO_0_4,
-	 input					GPIO_0_5,
 	 input					GPIO_0_6,
-	 input					GPIO_0_7,
-	 input					GPIO_0_8,
-	 output					GPIO_0_10,
-	 output					GPIO_0_11,
-	 output					GPIO_0_12,
-	 output					GPIO_0_13,
-	 output					GPIO_0_14,
-	 output					GPIO_0_15,
-	 output					GPIO_0_16,
-	 output					GPIO_0_17,
-	 output					GPIO_0_18,
-	 output					GPIO_0_19,
-	 output					GPIO_0_20,
-	 output					GPIO_0_21	 
+	 
+	 ///////// Servos /////////
+	 
+	 output					GPIO_0_1,
+	 output					GPIO_0_3,
+	 
+	 ///////// Sonar //////////
+	 
+	 input					GPIO_0_5,
+	 
+	 ///////// Motors /////////
+	 
+	 output					GPIO_1_0,
+	 output					GPIO_1_1,
+	 output					GPIO_1_3,
+	 
+	 output					GPIO_1_4,
+	 output					GPIO_1_5,
+	 output					GPIO_1_7,
+	 
+	 output					GPIO_1_8,
+	 output					GPIO_1_9,
+	 output					GPIO_1_16,
+	 
+	 output					GPIO_1_10,
+	 output					GPIO_1_11,
+	 output					GPIO_1_13
+	 
 );
 
 
@@ -210,29 +228,48 @@ soc_system u0(
                .hps_0_hps_io_hps_io_gpio_inst_GPIO61(HPS_GSENSOR_INT),      //                               .hps_io_gpio_inst_GPIO61
                //FPGA Partion
                .hps_0_h2f_reset_reset_n(hps_fpga_reset_n),                  //                .hps_0_h2f_reset.reset_n
-					// DO NOT EDIT ABOVE THIS LINE
-					// TERASIC HPS/FPGA WIRES. DO NOT MESS WITH
+					
+					//=======================================================
+					//	DO NOT EDIT ABOVE THIS LINE
+					// TERASIC HPS/FPGA WIRES. DO NOT MESS WITH!
 					// WIRES FOR CUSTOM COMPONENTS GO BELOW HERE ONLY!
-					.green_leds_conn_export(LED[7: 0]),                    // green_leds_conn.export
-					.pwmservo_0_conduit_end_export(GPIO_0_0),              // pwmservo_0_conduit_end_export
-					.pwmservo_1_conduit_end_export(GPIO_0_1),              // pwmservo_1_conduit_end.export
-					.upcounter_0_hallsensorinput_export(GPIO_0_4),
-					.upcounter_1_hallsensorinput_export(GPIO_0_5),
-					.upcounter_2_hallsensorinput_export(GPIO_0_6),
-					.upcounter_3_hallsensorinput_export(GPIO_0_7),
-					.ultrasonicrangefinder_0_sonarin_import(GPIO_0_8),      // 	 output					GPIO_0_26,ultrasonicrangefinder_0_sonarin.import
-					.pwmbrushed_0_direction1_export(GPIO_0_10),                //                pwmbrushed_0_direction1.export
-					.pwmbrushed_0_direction2_export(GPIO_0_11),                //                pwmbrushed_0_direction2.export
-					.pwmbrushed_0_pulsewidthmodulatedsignal_export(GPIO_0_12), // pwmbrushed_0_pulsewidthmodulatedsignal.export
-					.pwmbrushed_1_direction1_export(GPIO_0_13),                //                pwmbrushed_0_direction1.export
-					.pwmbrushed_1_direction2_export(GPIO_0_14),                //                pwmbrushed_0_direction2.export
-					.pwmbrushed_1_pulsewidthmodulatedsignal_export(GPIO_0_15), // pwmbrushed_0_pulsewidthmodulatedsignal.export
-					.pwmbrushed_2_direction1_export(GPIO_0_16),                //                pwmbrushed_0_direction1.export
-					.pwmbrushed_2_direction2_export(GPIO_0_17),                //                pwmbrushed_0_direction2.export
-					.pwmbrushed_2_pulsewidthmodulatedsignal_export(GPIO_0_18), // pwmbrushed_0_pulsewidthmodulatedsignal.export
-					.pwmbrushed_3_direction1_export(GPIO_0_19),                //                pwmbrushed_0_direction1.export
-					.pwmbrushed_3_direction2_export(GPIO_0_20),                //                pwmbrushed_0_direction2.export
-					.pwmbrushed_3_pulsewidthmodulatedsignal_export(GPIO_0_21) // pwmbrushed_0_pulsewidthmodulatedsignal.export
+					//=======================================================
+					
+					// DE10-Nano's Array of 8 Green LEDS
+					.green_leds_conn_export(LED[7: 0]), 
+
+					// Servo's 0 (Steering) and 1 (E-Brake)
+					.pwmservo_0_conduit_end_export(GPIO_0_1),           
+					.pwmservo_1_conduit_end_export(GPIO_0_3),
+
+					// Hall Sensor Counters
+					.upcounter_0_hallsensorinput_export(GPIO_0_0), // FL
+					.upcounter_1_hallsensorinput_export(GPIO_0_2), // FR
+					.upcounter_2_hallsensorinput_export(GPIO_0_4), // RL
+					.upcounter_3_hallsensorinput_export(GPIO_0_6), // RR
+					
+					// Sonar
+					.ultrasonicrangefinder_0_sonarin_import(GPIO_0_5),  
+					
+					// Motor 0
+					.pwmbrushed_0_direction1_export(GPIO_1_0),                
+					.pwmbrushed_0_direction2_export(GPIO_1_3),                
+					.pwmbrushed_0_pulsewidthmodulatedsignal_export(GPIO_1_1), 
+					
+					// Motor 1
+					.pwmbrushed_1_direction1_export(GPIO_1_4),       
+					.pwmbrushed_1_direction2_export(GPIO_1_7),              
+					.pwmbrushed_1_pulsewidthmodulatedsignal_export(GPIO_1_5), 
+					
+					// Motor 2
+					.pwmbrushed_2_direction1_export(GPIO_1_8),              
+					.pwmbrushed_2_direction2_export(GPIO_1_16),              
+					.pwmbrushed_2_pulsewidthmodulatedsignal_export(GPIO_1_9), 
+					
+					// Motor 3
+					.pwmbrushed_3_direction1_export(GPIO_1_10),
+					.pwmbrushed_3_direction2_export(GPIO_1_13),               
+					.pwmbrushed_3_pulsewidthmodulatedsignal_export(GPIO_1_11) 
            );
 
 // Debounce logic to clean out glitches within 1ms

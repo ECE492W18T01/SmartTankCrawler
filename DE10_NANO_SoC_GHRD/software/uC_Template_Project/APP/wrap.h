@@ -74,14 +74,14 @@
 // Servo #1, Steering Control
 // Type:  Input
 // Width: Byte
-// GPIO:  0_0
+// GPIO:  0_1
 #define STEER_SERVO_ADD 0x00000110
 #define STEER_SERVO_BASE FPGA_TO_HPS_LW_ADDR(STEER_SERVO_ADD)
 
 // Servo #2, Emergency Braking System
 // Type:  Input
 // Width: Byte
-// GPIO:  0_1
+// GPIO:  0_3
 #define BRAKE_SERVO_ADD 0x00000111
 #define BRAKE_SERVO_BASE FPGA_TO_HPS_LW_ADDR(BRAKE_SERVO_ADD)
 
@@ -89,10 +89,10 @@
 
 
 /* Hall Sensor GPIO
-* FL - 0_4
-* FR - 0_5
-* RL - 0_6
-* RR - 0_7
+* FL - 0_0
+* FR - 0_2
+* RL - 0_4
+* RR - 0_5
 */
 // Front Left Byte
 #define F_LEFT_ADD 0x00000116
@@ -113,7 +113,7 @@
 // Ultrasonic Range Finder
 // Type:  Output
 // Width: Longword
-// GPIO:  0_8
+// GPIO:  0_5
 #define SONAR_ADD 0x00000120
 #define SONAR_BASE FPGA_TO_HPS_LW_ADDR(SONAR_ADD)
 
