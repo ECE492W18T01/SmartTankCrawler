@@ -10,8 +10,8 @@ void driveMotors(float driveSpeed, float fuzzyMods[5], int8_t steering, bool sto
 	
   int convert = OUTPUT_ABSOLUTE_MAX;
   // is the driveSpeed going reverse. and put the sign from driveSpeed to convert
-  // to avoid copying code for both forward and reverse
-  if (driveSpeed >= forward){
+  // to avoid copying code for both forward and reverse paths
+  if (driveSpeed < forward){
     covert = -127; 
     driveSpeed = abs(driveSpeed) 
       }
