@@ -1,5 +1,7 @@
 #ifndef __MOTOR_CONTROL_H__
 #define __MOTOR_CONTROL_H__
+
+
 // Drive Motor #1, Front Left
 // Type:  Input
 // Width: Byte
@@ -27,6 +29,9 @@
 #define REAR_RIGHT_MOTOR_ADD 0x00000115
 #define REAR_RIGHT_MOTOR_BASE FPGA_TO_HPS_LW_ADDR(REAR_RIGHT_MOTOR_ADD)
 #define REAR_RIGHT_MOTOR 3
+
+// Steering Motor
+#define STEERING_MOTOR  4
 
 #define INPUT_DRIVE_VALUE_MAX 1.0
 #define INPUT_DRIVE_VALUE_MIN -1.0
