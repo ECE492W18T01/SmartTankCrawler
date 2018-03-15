@@ -109,7 +109,7 @@ void driveMotors(float driveSpeed, float fuzzyMods[5], int8_t steering, bool sto
     }
     
     //reverse FL/RL with FR/RR variables if steering is negative.
-    if (steering < reverse){
+    if (steering < forward){
       fl_tmp = fl;
       fl = fr;
       fr = fl_tmp;
