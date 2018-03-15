@@ -142,7 +142,7 @@ void driveMotors(float driveSpeed, float fuzzyMods[5], int8_t steering, bool sto
     // ********************************************************************************************
     // Brian's wrapper should have the input as a range from -1 to 1
     // unsure which code we should change, Brian already multiples his input value by 127
-    // just delete above four lines or 
+    // but sign is currently kept in the 127 (convert in this code)
     // delete int8_t new_motor_val = drive_val * OUTPUT_ABSOLUTE_MAX; in motor_controls.c
     update_motor_control(fl, FRONT_LEFT_MOTOR );
     update_motor_control(fr, FRONT_RIGHT_MOTOR);
