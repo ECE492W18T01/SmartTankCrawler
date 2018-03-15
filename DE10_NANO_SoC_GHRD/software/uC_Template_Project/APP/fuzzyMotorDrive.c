@@ -43,63 +43,63 @@ void driveMotors(float driveSpeed, float fuzzyMods[5], int8_t steering, bool sto
   else{
     if (abs(steering) >= DegreeRange60){
       fl = driveSpeed;
-      fr = driveSpeed*DRIVERATIO[D60][opposite];
-      rl = driveSpeed*DRIVERATIO[D60][behind];
-      rr = driveSpeed*DRIVERATIO[D60][across]
+      fr = driveSpeed*DRIVERATIOS[D60][opposite];
+      rl = driveSpeed*DRIVERATIOS[D60][behind];
+      rr = driveSpeed*DRIVERATIOS[D60][across]
 	}
     else if (abs(steering) >= DegreeRange54){
 	    fl = driveSpeed;
-	    fr = driveSpeed*DRIVERATIO[D54][opposite];
-	    rl = driveSpeed*DRIVERATIO[D54][behind];
-	    rr = driveSpeed*DRIVERATIO[D54][across];
+	    fr = driveSpeed*DRIVERATIOS[D54][opposite];
+	    rl = driveSpeed*DRIVERATIOS[D54][behind];
+	    rr = driveSpeed*DRIVERATIOS[D54][across];
     }
     else if (abs(steering) >= DegreeRange48){
       fl = driveSpeed;
-      fr = driveSpeed*DRIVERATIO[D48][opposite];
-      rl = driveSpeed*DRIVERATIO[D48][behind];
-      rr = driveSpeed*DRIVERATIO[D48][across];
+      fr = driveSpeed*DRIVERATIOS[D48][opposite];
+      rl = driveSpeed*DRIVERATIOS[D48][behind];
+      rr = driveSpeed*DRIVERATIOS[D48][across];
     }
     else if (abs(steering) >= DegreeRange42){
       fl = driveSpeed;
-      fr = driveSpeed*DRIVERATIO[D42][opposite];
-      rl = driveSpeed*DRIVERATIO[D42][behind];
-      rr = driveSpeed*DRIVERATIO[D42][across];
+      fr = driveSpeed*DRIVERATIOS[D42][opposite];
+      rl = driveSpeed*DRIVERATIOS[D42][behind];
+      rr = driveSpeed*DRIVERATIOS[D42][across];
     }
     else if (abs(steering) >= DegreeRange36){
       fl = driveSpeed;
-      fr = driveSpeed*DRIVERATIO[D36][opposite];
-      rl = driveSpeed*DRIVERATIO[D36][behind];
-      rr = driveSpeed*DRIVERATIO[D36][across];
+      fr = driveSpeed*DRIVERATIOS[D36][opposite];
+      rl = driveSpeed*DRIVERATIOS[D36][behind];
+      rr = driveSpeed*DRIVERATIOS[D36][across];
     }
     else if (abs(steering) >= DegreeRange30){
       fl = driveSpeed;
-      fr = driveSpeed*DRIVERATIO[D30][opposite];
-      rl = driveSpeed*DRIVERATIO[D30][behind];
-      rr = driveSpeed*DRIVERATIO[D30][across];
+      fr = driveSpeed*DRIVERATIOS[D30][opposite];
+      rl = driveSpeed*DRIVERATIOS[D30][behind];
+      rr = driveSpeed*DRIVERATIOS[D30][across];
     }
     else if (abs(steering) >= DegreeRange24){
       fl = driveSpeed;
-      fr = driveSpeed*DRIVERATIO[D24][opposite];
-      rl = driveSpeed*DRIVERATIO[D24][behind];
-      rr = driveSpeed*DRIVERATIO[D24][across];
+      fr = driveSpeed*DRIVERATIOS[D24][opposite];
+      rl = driveSpeed*DRIVERATIOS[D24][behind];
+      rr = driveSpeed*DRIVERATIOS[D24][across];
     }
     else if (abs(steering) >= DegreeRange18){
       fl = driveSpeed;
-      fr = driveSpeed*DRIVERATIO[D18][opposite];
-      rl = driveSpeed*DRIVERATIO[D18][behind];
-      rr = driveSpeed*DRIVERATIO[D18][across];
+      fr = driveSpeed*DRIVERATIOS[D18][opposite];
+      rl = driveSpeed*DRIVERATIOS[D18][behind];
+      rr = driveSpeed*DRIVERATIOS[D18][across];
     }
     else if (abs(steering) >= DegreeRange12){
       fl = driveSpeed;
-      fr = driveSpeed*DRIVERATIO[D12][opposite];
-      rl = driveSpeed*DRIVERATIO[D12][behind];
-      rr = driveSpeed*DRIVERATIO[D12][across];
+      fr = driveSpeed*DRIVERATIOS[D12][opposite];
+      rl = driveSpeed*DRIVERATIOS[D12][behind];
+      rr = driveSpeed*DRIVERATIOS[D12][across];
     }
     else if (abs(steering) >= DegreeRange6){
       fl = driveSpeed;
-      fr = driveSpeed*DRIVERATIO[D6][opposite];
-      rl = driveSpeed*DRIVERATIO[D6][behind];
-      rr = driveSpeed*DRIVERATIO[D6][across];
+      fr = driveSpeed*DRIVERATIOS[D6][opposite];
+      rl = driveSpeed*DRIVERATIOS[D6][behind];
+      rr = driveSpeed*DRIVERATIOS[D6][across];
     }
     else {
       fl = driveSpeed;
