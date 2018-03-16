@@ -29,6 +29,18 @@
 #define		ARM_OSCL_TIMER_0_REG_EOI		(*((volatile CPU_REG32 *) (ARM_OSCL_TIMER_0_BASE + 0xC)))
 
 #define		ARM_OSCL_TIMER_1_BASE			0xFFD01000
+#define 	ARM_OSCL_TIMER_1_REG_LOADCOUNT	(*(( CPU_REG32 *) (ARM_OSCL_TIMER_1_BASE + 0x0)))
+
+#define 	ARM_OSCL_TIMER_1_REG_CONTROL	(*(( CPU_REG32 *) (ARM_OSCL_TIMER_1_BASE + 0x8)))
+#define 	ARM_OSCL_TIMER_1_ENABLE			DEF_BIT_00  	// or this
+#define		ARM_OSCL_TIMER_1_DISABLE		~DEF_BIT_00		// and this
+#define		ARM_OSCL_TIMER_1_USER_MODE		DEF_BIT_01		// or this
+#define		ARM_OSCL_TIMER_1_FREE_RUN_MODE	~DEF_BIT_01		// and this
+#define		ARM_OSCL_TIMER_1_INT_MASKED		DEF_BIT_02		// or this
+#define		ARM_OSCL_TIMER_1_INT_UNMASKED	~DEF_BIT_02		// and this
+
+#define		ARM_OSCL_TIMER_1_REG_EOI		(*((volatile CPU_REG32 *) (ARM_OSCL_TIMER_1_BASE + 0xC)))
+
 
 /*    QSYS Interval Timer Memory Map and Features*/
 
@@ -44,7 +56,14 @@
 #define		QSYS_TIMER_START			DEF_BIT_02
 #define		QSYS_TIMER_STOP				DEF_BIT_03
 
-void InitHPSTimerInterrupt (void);
-void HPS_TimerISR_Handler(CPU_INT32U cpu_id);
+void InitHallSensorInterrupt (void);
+void HallSensor_ISR_Handler(CPU_INT32U cpu_id);
+void InitDistanceSensorInterrupt (void);
+void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id);
+void InitCommunicationInterrupt (void);
+void Communication_ISR_Handler(CPU_INT32U cpu_id);
+
+extern void FPGA_LEDS_Off(void);
+extern void FPGA_LEDS_On(void);
 
 #endif /* TIMER_H_ */

@@ -117,11 +117,13 @@
 #define SONAR_ADD 0x00000120
 #define SONAR_BASE FPGA_TO_HPS_LW_ADDR(SONAR_ADD)
 
-typedef struct ErrorMessage ErrorMessage;
+typedef struct LogMessage LogMessage;
 typedef struct MotorSpeedMessage MotorSpeedMessage;
 typedef struct MotorChangeMessage MotorChangeMessage;
+typedef struct DistanceMessage DistanceMessage;
+typedef struct StatusMessage StatusMessage;
 
-struct ErrorMessage {
+struct LogMessage {
 	char *_taskName;
 	char *_sourceName;
 	INT8U _error;
@@ -142,7 +144,24 @@ struct MotorChangeMessage {
     uint8_t steeringServo;
 };
 
+struct DistanceMessage {
+	double distance;
+};
+
+struct StatusMessage {
+	int label;
+	char *data;
+};
+
 extern OS_EVENT *FuzzyQueue;
+extern OS_EVENT *CollisionQueue;
+
+extern OS_EVENT *CommunicationSemaphore;
+
+extern char* userMessage;
+extern bool motorMask;
+
+OS_MEM *FuzzyLogicProcessorStorage;
 
 // Function for controlling rear, emergency brake servo.
 void MoveBackServo(uint8_t hex);
