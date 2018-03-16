@@ -1,0 +1,13 @@
+BSP/OS/bsp_os.o: ../BSP/OS/bsp_os.c
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uC-LIBS/lib_def.h
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uC-CPU/cpu_def.h
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uC-CPU/ARM-Cortex-A/cpu.h
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/APP/cpu_cfg.h
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uCOS-II/Ports/os_cpu.h
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/BSP/bsp.h
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/BSP/OS/bsp_os.h
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uCOS-II/Source/os.h
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uCOS-II/Source/ucos_ii.h
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/APP/app_cfg.h
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/APP/os_cfg.h
+BSP/OS/bsp_os.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/BSP/bsp_int.h
