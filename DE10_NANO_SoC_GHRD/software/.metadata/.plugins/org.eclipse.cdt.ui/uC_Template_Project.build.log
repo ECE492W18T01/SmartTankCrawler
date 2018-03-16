@@ -1,4 +1,4 @@
-15:14:11 **** Build of configuration Debug for project uC_Template_Project ****
+15:23:36 **** Build of configuration Debug for project uC_Template_Project ****
 make all 
 'Building file: ../uCOS-II/Source/os_core.c'
 'Invoking: ARM C Compiler 5'
@@ -456,5 +456,5 @@ Image component sizes
 'Finished building target: uC_Template_Project.axf'
 ' '
 
-15:14:33 Build Finished (took 21s.926ms)
+15:23:57 Build Finished (took 20s.844ms)
 
