@@ -395,6 +395,7 @@ static  void  AppTaskStart (void *p_arg)
 //		    OSQPost(LogQueue, errorMessage);
 //		}
 //
+
 static void EmergencyTask (void *p_arg)
 {
 	INT8U err;
