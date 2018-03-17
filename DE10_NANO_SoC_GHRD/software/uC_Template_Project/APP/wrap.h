@@ -141,7 +141,7 @@ struct MotorChangeMessage {
     float frontRight;
     float backLeft;
     float backRight;
-    uint8_t steeringServo;
+    int8_t steeringServo;
 };
 
 struct DistanceMessage {
