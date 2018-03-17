@@ -79,19 +79,18 @@ float* calculateMotorModifiers(uint8_t wheelSpeeds[4], int8_t steeringAngle) {
 	INT8U err;
 
 	int direction = 1;
-	int angle = steeringAngle;
+	int index = abs(steeringAngle)/6;
 
 	if (steeringAngle < 0) {
 		direction = -1;
-		angle = angle * -1;
 	}
 
 	int frontAxleDeviation = computeAxleDeviation(wheelSpeeds[0], wheelSpeeds[1],
-		direction * SLIPRATIOS[angle][1]);
+		direction * SLIPRATIOS[index][1]);
 	int rearAxleDeviation = computeAxleDeviation(wheelSpeeds[2], wheelSpeeds[3],
-		direction * SLIPRATIOS[angle][2]);
+		direction * SLIPRATIOS[index][2]);
 	int overallDeviation = computeOverallDeviation(wheelSpeeds[0], wheelSpeeds[1],
-		wheelSpeeds[2], wheelSpeeds[3], direction * SLIPRATIOS[angle][0]);
+		wheelSpeeds[2], wheelSpeeds[3], SLIPRATIOS[index][0]);
 
 
 	float* fsOutputs = OSMemGet(FuzzyLogicProcessorStorage, &err);
