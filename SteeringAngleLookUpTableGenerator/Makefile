@@ -1,5 +1,5 @@
 PROG_NAME = ssr
-OBJ = sliplessSteeringRatios.c sliplessSteeringRatios.h testCProgram.c
+OBJ = slipLessSteeringRatios.c slipLessSteeringRatios.h testCProgram.c
 CFLAGS = gcc -std=c99 -Wall
 
 $(PROG_NAME): $(OBJ)

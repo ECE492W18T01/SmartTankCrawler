@@ -52,8 +52,8 @@ public class AngleRatioCreator {
 	private Integer midPoint;
 	private ArrayList<RatioStore> ratioSets;
 	private ArrayList<DriveRatioStores> idealSets;
-	private	String fileName = "sliplessSteeringRatios.c";
-	private String hFileName = "sliplessSteeringRatios.h";
+	private	String fileName = "slipLessSteeringRatios.c";
+	private String hFileName = "slipLessSteeringRatios.h";
 	private String driveCFile = "IdealDriveRatios/motorDriveR.c";
 	private String driveHFile = "IdealDriveRatios/motorDriveR.h";
 	private Double maxFrontRatio;
@@ -166,8 +166,8 @@ public class AngleRatioCreator {
 		try {
 			BufferedWriter headerFile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.hFileName)));
 
-			headerFile.write("#ifndef sliplessSteeringRatios_H\n");
-			headerFile.write("#define sliplessSteeringRatios_H\n");
+			headerFile.write("#ifndef slipLessSteeringRatios_H\n");
+			headerFile.write("#define slipLessSteeringRatios_H\n");
 			headerFile.write("extern const int SLIPRATIOS[" + ((this.angleRange/this.increments) + 1) + "][3];\n");
 			headerFile.write("#endif");
 
@@ -183,7 +183,7 @@ public class AngleRatioCreator {
 		try {
 			BufferedWriter ratioFile = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(this.fileName)));
 
-			ratioFile.write("#include \"sliplessSteeringRatios.h\"\n");
+			ratioFile.write("#include \"slipLessSteeringRatios.h\"\n");
 
 			ratioFile.write("const int SLIPRATIOS[" + ((this.angleRange/this.increments) + 1) + "][3] = {\n");
 

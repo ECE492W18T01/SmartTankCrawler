@@ -101,8 +101,8 @@ module DE10_NANO_SoC_GHRD(
 	 
 	 ///////// Servos /////////
 	 
-	 output					GPIO_1_31,
 	 output					GPIO_1_30,
+	 output					GPIO_1_31,
 	 
 	 ///////// Sonar //////////
 	 

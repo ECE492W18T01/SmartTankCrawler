@@ -3,8 +3,6 @@
 
 void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, int8_t steering, bool stopMask) {
 
-	//printf("%f, %f, %f, %f\n", fuzzyMods->frontLeft, fuzzyMods->frontRight, fuzzyMods->backLeft, fuzzyMods->backRight);
-
 	// Kill switch
 	if (stopMask){
 		// using Brian's wrapper function for the motors
@@ -19,10 +17,6 @@ void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, int8_t steerin
 	// Absolute value of speed
 	float magnitude = fabsf(driveSpeed);
 	int8_t dir = driveSpeed / magnitude;
-
-	// Now that I think about it this is better done outside this function call.
-	// Update the global steering variable.
-    steering += fuzzyMods->steeringServo;
 
     // Index to motoDriveR.
     int8_t steeringIndex = abs(steering) / 6;

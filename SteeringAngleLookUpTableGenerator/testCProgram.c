@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "sliplessSteeringRatios.h"
+#include "slipLessSteeringRatios.h"
 
 int main(int argc, char **argv) {
 

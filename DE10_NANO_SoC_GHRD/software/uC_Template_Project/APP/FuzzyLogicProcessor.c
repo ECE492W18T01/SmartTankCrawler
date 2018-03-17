@@ -78,12 +78,10 @@ float* calculateMotorModifiers(uint8_t wheelSpeeds[4], int8_t steeringAngle) {
 
 	INT8U err;
 
-	int direction = 1;
-	int index = abs(steeringAngle)/6;
+	int8_t absoluteSteering = abs(steeringAngle);
+	int8_t direction = steeringAngle / absoluteSteering;
 
-	if (steeringAngle < 0) {
-		direction = -1;
-	}
+	int8_t index = absoluteSteering/6;
 
 	int frontAxleDeviation = computeAxleDeviation(wheelSpeeds[0], wheelSpeeds[1],
 		direction * SLIPRATIOS[index][1]);
