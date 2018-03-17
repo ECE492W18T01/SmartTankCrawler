@@ -21,6 +21,7 @@ APP/app.o: C:/intelFPGA/17.0/embedded/ip/altera/hps/altera_hps/hwlib/include/soc
 APP/app.o: C:/intelFPGA/17.0/embedded/ip/altera/hps/altera_hps/hwlib/include/soc_cv_av/socal/socal.h
 APP/app.o: C:/intelFPGA/17.0/embedded/ip/altera/hps/altera_hps/hwlib/include/hwlib.h
 APP/app.o: ../APP/motor_control.h
+APP/app.o: ../APP/fpga_to_hps.h
 APP/app.o: ../APP/wrap.h
 APP/app.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/APP/app_cfg.h
 APP/app.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/uCOS-II/Source/os.h
@@ -28,4 +29,6 @@ APP/app.o: ../APP/serial_communication.h
 APP/app.o: ../APP/FuzzyLogicProcessor.h
 APP/app.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/APP/slipLessSteeringRatios.h
 APP/app.o: ../APP/fMatrices_servoFuzzyThree.h
+APP/app.o: ../APP/fuzzyMotorDrive.h
+APP/app.o: ../APP/motorDriveR.h
 APP/app.o: C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/APP/timer.h

@@ -101,8 +101,8 @@ module DE10_NANO_SoC_GHRD(
 	 
 	 ///////// Servos /////////
 	 
-	 output					GPIO_0_1,
-	 output					GPIO_0_3,
+	 output					GPIO_1_31,
+	 output					GPIO_1_30,
 	 
 	 ///////// Sonar //////////
 	 
@@ -239,8 +239,8 @@ soc_system u0(
 					.green_leds_conn_export(LED[7: 0]), 
 
 					// Servo's 0 (Steering) and 1 (E-Brake)
-					.pwmservo_0_conduit_end_export(GPIO_0_1),           
-					.pwmservo_1_conduit_end_export(GPIO_0_3),
+					.pwmservo_0_conduit_end_export(GPIO_1_31),           
+					.pwmservo_1_conduit_end_export(GPIO_1_30),
 
 					// Hall Sensor Counters
 					.upcounter_0_hallsensorinput_export(GPIO_0_0), // FL

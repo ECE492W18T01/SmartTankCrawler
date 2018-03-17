@@ -232,9 +232,9 @@ VCCIO4A                      : AF14      : power  :                   : 3.3V    
 RESERVED_INPUT_WITH_WEAK_PULLUP : AF15      :        :                   :         : 4A        :                
 VREFB4AN0                    : AF16      : power  :                   :         : 4A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AF17      :        :                   :         : 4A        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AF18      :        :                   :         : 4A        :                
+GPIO_1_30                    : AF18      : output : 3.3-V LVTTL       :         : 4A        : Y              
 VCCIO4A                      : AF19      : power  :                   : 3.3V    : 4A        :                
-RESERVED_INPUT_WITH_WEAK_PULLUP : AF20      :        :                   :         : 4A        :                
+GPIO_1_31                    : AF20      : output : 3.3-V LVTTL       :         : 4A        : Y              
 RESERVED_INPUT_WITH_WEAK_PULLUP : AF21      :        :                   :         : 4A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AF22      :        :                   :         : 4A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : AF23      :        :                   :         : 4A        :                
@@ -363,7 +363,7 @@ VCCBAT                       : D7        : power  :                   : 1.2V    
 GPIO_0_4                     : D8        : input  : 3.3-V LVTTL       :         : 8A        : Y              
 VREFB8AN0                    : D9        : power  :                   :         : 8A        :                
 GND                          : D10       : gnd    :                   :         :           :                
-GPIO_0_3                     : D11       : output : 3.3-V LVTTL       :         : 8A        : Y              
+RESERVED_INPUT_WITH_WEAK_PULLUP : D11       :        :                   :         : 8A        :                
 RESERVED_INPUT_WITH_WEAK_PULLUP : D12       :        :                   :         : 8A        :                
 GND                          : D13       : gnd    :                   :         :           :                
 HPS_SD_CMD                   : D14       : bidir  : 3.3-V LVTTL       :         : 7C        : Y              
@@ -388,7 +388,7 @@ RESERVED_INPUT_WITH_WEAK_PULLUP : E4        :        :                   :      
 HPS_USB_DIR                  : E5        : input  : 3.3-V LVTTL       :         : 7D        : Y              
 nCE                          : E6        :        :                   :         : 9A        :                
 VCCIO8A                      : E7        : power  :                   : 3.3V    : 8A        :                
-GPIO_0_1                     : E8        : output : 3.3-V LVTTL       :         : 8A        : Y              
+RESERVED_INPUT_WITH_WEAK_PULLUP : E8        :        :                   :         : 8A        :                
 GND                          : E9        : gnd    :                   :         :           :                
 VCCPD8A                      : E10       : power  :                   : 3.3V    : 8A        :                
 FPGA_CLK3_50                 : E11       : input  : 3.3-V LVTTL       :         : 8A        : Y              

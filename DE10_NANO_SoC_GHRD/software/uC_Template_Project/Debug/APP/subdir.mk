@@ -7,6 +7,8 @@ C_SRCS += \
 ../APP/FuzzyLogicProcessor.c \
 ../APP/app.c \
 ../APP/fMatrices_servoFuzzyThree.c \
+../APP/fuzzyMotorDrive.c \
+../APP/motorDriveR.c \
 ../APP/motor_controls.c \
 ../APP/red_leds.c \
 ../APP/serial_communication.c \
@@ -18,6 +20,8 @@ C_DEPS += \
 ./APP/FuzzyLogicProcessor.d \
 ./APP/app.d \
 ./APP/fMatrices_servoFuzzyThree.d \
+./APP/fuzzyMotorDrive.d \
+./APP/motorDriveR.d \
 ./APP/motor_controls.d \
 ./APP/red_leds.d \
 ./APP/serial_communication.d \
@@ -29,6 +33,8 @@ OBJS += \
 ./APP/FuzzyLogicProcessor.o \
 ./APP/app.o \
 ./APP/fMatrices_servoFuzzyThree.o \
+./APP/fuzzyMotorDrive.o \
+./APP/motorDriveR.o \
 ./APP/motor_controls.o \
 ./APP/red_leds.o \
 ./APP/serial_communication.o \
