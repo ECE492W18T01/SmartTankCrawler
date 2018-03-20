@@ -69,12 +69,16 @@ module soc_system (
 	memory_oct_rzqin,
 	pwmbrushed_0_direction1_export,
 	pwmbrushed_0_direction2_export,
+	pwmbrushed_0_pulsewidthmodulatedsignal_export,
 	pwmbrushed_1_direction1_export,
 	pwmbrushed_1_direction2_export,
+	pwmbrushed_1_pulsewidthmodulatedsignal_export,
 	pwmbrushed_2_direction1_export,
 	pwmbrushed_2_direction2_export,
+	pwmbrushed_2_pulsewidthmodulatedsignal_export,
 	pwmbrushed_3_direction1_export,
 	pwmbrushed_3_direction2_export,
+	pwmbrushed_3_pulsewidthmodulatedsignal_export,
 	pwmservo_0_conduit_end_export,
 	pwmservo_1_conduit_end_export,
 	reset_reset_n,
@@ -83,10 +87,7 @@ module soc_system (
 	upcounter_1_hallsensorinput_export,
 	upcounter_2_hallsensorinput_export,
 	upcounter_3_hallsensorinput_export,
-	pwmbrushed_0_pulsewidthmodulatedsignal_export,
-	pwmbrushed_1_pulsewidthmodulatedsignal_export,
-	pwmbrushed_3_pulsewidthmodulatedsignal_export,
-	pwmbrushed_2_pulsewidthmodulatedsignal_export);	
+	pio_0_external_connection_export);	
 
 	input		clk_clk;
 	output	[7:0]	green_leds_conn_export;
@@ -157,12 +158,16 @@ module soc_system (
 	input		memory_oct_rzqin;
 	output		pwmbrushed_0_direction1_export;
 	output		pwmbrushed_0_direction2_export;
+	output		pwmbrushed_0_pulsewidthmodulatedsignal_export;
 	output		pwmbrushed_1_direction1_export;
 	output		pwmbrushed_1_direction2_export;
+	output		pwmbrushed_1_pulsewidthmodulatedsignal_export;
 	output		pwmbrushed_2_direction1_export;
 	output		pwmbrushed_2_direction2_export;
+	output		pwmbrushed_2_pulsewidthmodulatedsignal_export;
 	output		pwmbrushed_3_direction1_export;
 	output		pwmbrushed_3_direction2_export;
+	output		pwmbrushed_3_pulsewidthmodulatedsignal_export;
 	output		pwmservo_0_conduit_end_export;
 	output		pwmservo_1_conduit_end_export;
 	input		reset_reset_n;
@@ -171,8 +176,5 @@ module soc_system (
 	input		upcounter_1_hallsensorinput_export;
 	input		upcounter_2_hallsensorinput_export;
 	input		upcounter_3_hallsensorinput_export;
-	output		pwmbrushed_0_pulsewidthmodulatedsignal_export;
-	output		pwmbrushed_1_pulsewidthmodulatedsignal_export;
-	output		pwmbrushed_3_pulsewidthmodulatedsignal_export;
-	output		pwmbrushed_2_pulsewidthmodulatedsignal_export;
+	output	[3:0]	pio_0_external_connection_export;
 endmodule

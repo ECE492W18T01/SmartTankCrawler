@@ -140,8 +140,8 @@ OS_EVENT *MaskSemaphore;
 OS_EVENT *CommunicationSemaphore;
 
 // Resources
-int8_t steeringAngle;
-bool motorMask = false; //TODO: Keith can you rename this to whatever you want?
+int8_t globalSteeringAngle;
+bool motorMask = false; //TO-DO: Keith can you rename this to whatever you want?
 char* userMessage;
 /* To access steering Angle:
 OSSemPend(SteeringSemaphore, 0, &err);
@@ -417,7 +417,7 @@ static void CollisionTask (void *p_arg)
     for(;;) {
 
     	incoming = (DistanceMessage*)OSQPend(CollisionQueue, 0, &err);
-    	// TODO: set data to local variables before freeing message
+    	// TO-DO: set data to local variables before freeing message
     	OSMemPut(DistanceMessageStorage, incoming);
 
 		if (err == OS_ERR_NONE)
@@ -440,28 +440,51 @@ static void MotorTask (void *p_arg)
     MotorChangeMessage *incoming;
     LogMessage *errorMessage;
 
-    float frontLeft, frontRight, backLeft, backRight;
-    uint8_t steeringServo;
+    float userDriveSpeed;
+
+    int8_t oldUserSteer = 0;
+    int8_t newUserSteer, actualSteeringAngle;
 
     for(;;) {
 
+    	// TO-DO: Replace this with a queue pend, or SOMETHING, to get the new user steering
+    	// AS AN INT8_T.
+    	newUserSteer = 0;
+
+    	// TO-DO: Mock object in case, Fuzzy Set has no output.
+    	// Only pend for so long.
     	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, 0, &err);
 
-//        printf("Motor Task: %f, %f, %f, %f, %d\n", incoming->frontLeft, incoming->frontRight,
-//        		incoming->backLeft, incoming->backRight, incoming->steeringServo);
+
+    	if ((newUserSteer - oldUserSteer) / 6 == 0) {
+    		OSSemPend(SteeringSemaphore, 0, &err);
+    		globalSteeringAngle += incoming->steeringServo;
+    		actualSteeringAngle = globalSteeringAngle;
+    		OSSemPost(SteeringSemaphore);
+    	}
+
+    	else {
+    		OSSemPend(SteeringSemaphore, 0, &err);
+    		globalSteeringAngle = newUserSteer;
+    		OSSemPost(SteeringSemaphore);
+
+    		actualSteeringAngle = newUserSteer;
+    	}
+
+
+
+        //printf("Motor Task: %f, %f, %f, %f, %d\n", incoming->frontLeft, incoming->frontRight,
+        //		incoming->backLeft, incoming->backRight, incoming->steeringServo);
+
 
 
 		if(err == OS_ERR_NONE) // Message was received
 		{
-            frontLeft = incoming->frontLeft;
-            frontRight = incoming->frontRight;
-            backLeft = incoming->backLeft;
-            backRight = incoming->backRight;
             steeringServo = incoming->steeringServo;
 
 
             driveMotors(0.85, incoming, 0, false);
-            //TODO: Delete printf
+            //TO-DO: Delete printf
             //printf("Incoming Message to MotorTask:\n fL = %f\n fR = %f\n rL = %f\n rR = %f\n sR = %d\n", frontLeft, frontRight, backLeft, backRight, steeringServo);
             MoveFrontServo(steeringServo);
 
@@ -475,28 +498,13 @@ static void MotorTask (void *p_arg)
     }
 }
 
-static void FuzzyTask (void *p_arg)
-{
-//	INT8U err;
-//	char *TaskName = "FuzzyTask";
-//
-    MotorSpeedMessage *incoming;
-    MotorChangeMessage outgoing;
-//    LogMessage *errorMessage;
-//
-//    uint8_t frontLeft, frontRight, backLeft, backRight;
-//	// 'new' Variables, for incoming hall sensor information.
-//	uint8_t newFrontLeft, newFrontRight, newRearLeft, newRearRight;
-//	// 'old' Variables, since we take the different in Software
-//	uint8_t oldFrontLeft = 0;
-//	uint8_t oldFrontRight = 0;
-//	uint8_t oldRearLeft = 0;
-//	uint8_t oldRearRight = 0;
-//	int8_t localSteeringAngle;
-//
-
+static void FuzzyTask (void *p_arg) {
 	INT8U err;
 	char *TaskName = "FuzzyTask";
+
+    MotorSpeedMessage *incoming;
+    MotorChangeMessage outgoing;
+    LogMessage *errorMessage;
 
 	// 'new' Variables, for incoming hall sensor information.
 	uint8_t newFrontLeft, newFrontRight, newRearLeft, newRearRight;
@@ -506,110 +514,63 @@ static void FuzzyTask (void *p_arg)
 	uint8_t oldFrontRight = 0;
 	uint8_t oldRearLeft = 0;
 	uint8_t oldRearRight = 0;
+	int8_t localSteeringAngle;
 
-	int8_t steeringAngle = 0;
-	//                1    2   3   4    5    6  7   8   9  10 11  12
-	uint8_t fl[12] = {40, 25, 128, 32,  50, 40, 54, 44, 6, 4, 5,  40};
-	uint8_t fr[12] = {54, 25, 32,  128, 40, 50, 44, 54, 4, 6, 15, 40};
-	uint8_t rl[12] = {43, 50, 120, 40,  39, 30, 39, 30, 4, 3, 25, 20};
-	uint8_t rr[12] = {50, 50, 40,  120, 30, 39, 30, 39, 3, 4, 25, 40};
-	int8_t steer[12] = {-15, 0, 30, -30, 25, -25, 25, -25, 10, -10, 0, 0};
-	//                  1    2   3   4   5   6    7    8   9   10   11 12
-	float ffl, ffr, frl, frr, fs;
+    for(;;) {
+     	incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
 
-	int8_t st;
+    	if (err == OS_ERR_NONE) {
+            newFrontLeft = incoming->frontLeft;
+            newFrontRight = incoming->frontRight;
+            newRearLeft = incoming->backLeft;
+            newRearRight = incoming->backRight;
+            OSMemPut(FuzzyMessageStorage, incoming);
 
-    //for(;;) {
-    for(int i = 0; i < 12; i++) {
-    	//incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
+    		OSSemPend(SteeringSemaphore, 0, &err);
+    		localSteeringAngle = globalSteeringAngle;
+    		OSSemPost(SteeringSemaphore);
 
-    	if (err == OS_ERR_NONE)
-    	{
-    		//	OSSemPend(SteeringSemaphore, 0, &err);
-    		//	localSteeringAngle = steeringAngle;
-    		//	OSSemPost(SteeringSemaphore);
-
-
-//            newFrontLeft = incoming->frontLeft;
-//            newFrontRight = incoming->frontRight;
-//            newRearLeft = incoming->backLeft;
-//            newRearRight = incoming->backRight;
-//            OSMemPut(FuzzyMessageStorage, incoming);
-//
-//            uint8_t wheelSpeeds[4] = {
-//            	newFrontLeft - oldFrontLeft,
-//            	newFrontRight - oldFrontRight,
-//				newRearLeft - oldRearLeft,
-//				newRearRight - oldRearRight
-//            };
-
-            newFrontLeft = fl[i];
-            newFrontRight = fr[i];
-            newRearLeft = rl[i];
-            newRearRight = rr[i];
-
-            uint8_t wheelSpeeds[4] = {newFrontLeft,
-            		newFrontRight,
-					newRearLeft,
-					newRearRight
+            uint8_t wheelSpeeds[4] = {
+            	newFrontLeft - oldFrontLeft,
+            	newFrontRight - oldFrontRight,
+				newRearLeft - oldRearLeft,
+				newRearRight - oldRearRight
             };
 
             // TO-DO Change '0' in the abs to the actual steering angle.
-            if (getMinWheelDiff(wheelSpeeds) < speedThres && abs(steeringAngle) < lowAngle) {
+            if (getMinWheelDiff(wheelSpeeds) < speedThres && abs(localSteeringAngle) < lowAngle) {
 
-//                outgoing.frontLeft = 0;
-//                outgoing.frontRight = 0;
-//                outgoing.backLeft = 0;
-//                outgoing.backRight = 0;
-//                outgoing.steeringServo = 0;
+				outgoing.frontLeft = 0;
+				outgoing.frontRight = 0;
+				outgoing.backLeft = 0;
+				outgoing.backRight = 0;
+				outgoing.steeringServo = 0;
 
-                ffl = 0;
-                ffr = 0;
-                frl = 0;
-                frr = 0;
-                st = 0;
+            }
 
-                outgoing.frontLeft = 0;
-                outgoing.frontRight = 0;
-                outgoing.backLeft = 0;
-                outgoing.backRight = 0;
-                outgoing.steeringServo = 0;
-            } else {
+            else {
 
-//                float *fuzzyOutput = calculateMotorModifiers(wheelSpeeds, steeringAngle);
-//
-//                outgoing.frontLeft = fuzzyOutput[0];
-//                outgoing.frontRight = fuzzyOutput[1];
-//                outgoing.backLeft = fuzzyOutput[2];
-//                outgoing.backRight = fuzzyOutput[3];
-//                outgoing.steeringServo = fuzzyOutput[4];
-//
-//                OSMemPut(FuzzyLogicProcessorStorage, fuzzyOutput);
-
-            	float *fuzzyOutput = calculateMotorModifiers(wheelSpeeds, steer[i]);
-
-                ffl = fuzzyOutput[0];
-                ffr = fuzzyOutput[1];
-                frl = fuzzyOutput[2];
-                frr = fuzzyOutput[3];
-                fs = fuzzyOutput[4];
+                float *fuzzyOutput = calculateMotorModifiers(wheelSpeeds, localSteeringAngle);
 
                 outgoing.frontLeft = fuzzyOutput[0];
                 outgoing.frontRight = fuzzyOutput[1];
                 outgoing.backLeft = fuzzyOutput[2];
                 outgoing.backRight = fuzzyOutput[3];
                 outgoing.steeringServo = fuzzyOutput[4];
-                free(fuzzyOutput);
+
+                OSMemPut(FuzzyLogicProcessorStorage, fuzzyOutput);
 
             }
 
+            oldFrontLeft = newFrontLeft;
+            oldFrontRight = newFrontRight;
+            oldRearLeft = newRearLeft;
+            oldRearRight = newRearRight;
 
-//            oldFrontLeft = newFrontLeft;
-//            oldFrontRight = newFrontRight;
-//            oldRearLeft = newRearLeft;
-//            oldRearRight = newRearRight;
-    	} else {
-    		;//Send to log through function
+    	}
+
+    	else {
+    		; // TO-DO Send to log function
         }
 
     	MotorChangeMessage *_;
@@ -646,7 +607,7 @@ static void CommunicationTask (void *p_arg)
     		// First thing copy to a local version so you're not working off a global variable
 
     		// I just copy the whole 100 characters. I'm assuming you'll having a parsing scheme
-    		// TODO: Parse
+    		// TO-DO: Parse
 
     	} else {
     		; //Send to log through function
@@ -662,7 +623,7 @@ static void LogTask (void *p_arg)
     for(;;) {
 
     	incoming = (LogMessage*)OSQPend(LogQueue, 0, &err);
-        //TODO: Do something with the error.
+        //TO-DO: Do something with the error.
 
     	OSMemPut(LogMessageStorage, incoming);
     }

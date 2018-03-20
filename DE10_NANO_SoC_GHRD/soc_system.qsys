@@ -259,6 +259,27 @@
          type = "String";
       }
    }
+   element switches
+   {
+      datum _sortIndex
+      {
+         value = "16";
+         type = "int";
+      }
+   }
+   element switches.s1
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "304";
+         type = "String";
+      }
+   }
    element sysid_qsys
    {
       datum _sortIndex
@@ -434,6 +455,11 @@
  <interface name="hps_0_h2f_user0_clock" internal="hps_0.h2f_user0_clock" />
  <interface name="hps_0_hps_io" internal="hps_0.hps_io" type="conduit" dir="end" />
  <interface name="memory" internal="hps_0.memory" type="conduit" dir="end" />
+ <interface
+   name="pio_0_external_connection"
+   internal="switches.external_connection"
+   type="conduit"
+   dir="end" />
  <interface name="pwmbrushed_0_direction" internal="pwmBrushed_0.direction" />
  <interface
    name="pwmbrushed_0_direction1"
@@ -1111,6 +1137,20 @@
  <module name="pwmClk_0" kind="pwmClk" version="1.0" enabled="1" />
  <module name="pwmServo_0" kind="pwmServo" version="1.0" enabled="1" />
  <module name="pwmServo_1" kind="pwmServo" version="1.0" enabled="1" />
+ <module name="switches" kind="altera_avalon_pio" version="17.0" enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Output" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="4" />
+ </module>
  <module
    name="sysid_qsys"
    kind="altera_avalon_sysid_qsys"
@@ -1249,6 +1289,15 @@
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
+   kind="avalon"
+   version="17.0"
+   start="hps_0.h2f_lw_axi_master"
+   end="switches.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0130" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
    kind="clock"
    version="17.0"
    start="clk_0.clk"
@@ -1270,6 +1319,7 @@
    end="upCounter_3.SystemClock" />
  <connection kind="clock" version="17.0" start="clk_0.clk" end="sysid_qsys.clk" />
  <connection kind="clock" version="17.0" start="clk_0.clk" end="green_leds.clk" />
+ <connection kind="clock" version="17.0" start="clk_0.clk" end="switches.clk" />
  <connection kind="clock" version="17.0" start="clk_0.clk" end="pwmClk_0.clock" />
  <connection
    kind="clock"
@@ -1361,6 +1411,11 @@
    version="17.0"
    start="clk_0.clk_reset"
    end="pwmBrushed_3.reset" />
+ <connection
+   kind="reset"
+   version="17.0"
+   start="clk_0.clk_reset"
+   end="switches.reset" />
  <connection
    kind="reset"
    version="17.0"

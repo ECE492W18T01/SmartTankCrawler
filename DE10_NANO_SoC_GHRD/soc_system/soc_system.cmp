@@ -67,6 +67,7 @@
 			memory_mem_odt                                : out   std_logic;                                        -- mem_odt
 			memory_mem_dm                                 : out   std_logic_vector(3 downto 0);                     -- mem_dm
 			memory_oct_rzqin                              : in    std_logic                     := 'X';             -- oct_rzqin
+			pio_0_external_connection_export              : out   std_logic_vector(3 downto 0);                     -- export
 			pwmbrushed_0_direction1_export                : out   std_logic;                                        -- export
 			pwmbrushed_0_direction2_export                : out   std_logic;                                        -- export
 			pwmbrushed_0_pulsewidthmodulatedsignal_export : out   std_logic;                                        -- export

@@ -17,7 +17,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <math.h>
-#include <slipLessSteeringRatios.h>
+#include "slipLessSteeringRatios.h"
 #include "fMatrices_servoFuzzyThree.h"
 
 // Front and Rear Axle Multiplier, Overall Multiplier, two numbers to adjust the calculation

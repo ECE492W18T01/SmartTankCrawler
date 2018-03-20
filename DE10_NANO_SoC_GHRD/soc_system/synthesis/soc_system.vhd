@@ -75,6 +75,7 @@ entity soc_system is
 		memory_mem_odt                                : out   std_logic;                                        --                                       .mem_odt
 		memory_mem_dm                                 : out   std_logic_vector(3 downto 0);                     --                                       .mem_dm
 		memory_oct_rzqin                              : in    std_logic                     := '0';             --                                       .oct_rzqin
+		pio_0_external_connection_export              : out   std_logic_vector(3 downto 0);                     --              pio_0_external_connection.export
 		pwmbrushed_0_direction1_export                : out   std_logic;                                        --                pwmbrushed_0_direction1.export
 		pwmbrushed_0_direction2_export                : out   std_logic;                                        --                pwmbrushed_0_direction2.export
 		pwmbrushed_0_pulsewidthmodulatedsignal_export : out   std_logic;                                        -- pwmbrushed_0_pulsewidthmodulatedsignal.export
@@ -260,6 +261,19 @@ architecture rtl of soc_system is
 		);
 	end component servo_pwm;
 
+	component soc_system_switches is
+		port (
+			clk        : in  std_logic                     := 'X';             -- clk
+			reset_n    : in  std_logic                     := 'X';             -- reset_n
+			address    : in  std_logic_vector(1 downto 0)  := (others => 'X'); -- address
+			write_n    : in  std_logic                     := 'X';             -- write_n
+			writedata  : in  std_logic_vector(31 downto 0) := (others => 'X'); -- writedata
+			chipselect : in  std_logic                     := 'X';             -- chipselect
+			readdata   : out std_logic_vector(31 downto 0);                    -- readdata
+			out_port   : out std_logic_vector(3 downto 0)                      -- export
+		);
+	end component soc_system_switches;
+
 	component soc_system_sysid_qsys is
 		port (
 			clock    : in  std_logic                     := 'X'; -- clk
@@ -354,6 +368,11 @@ architecture rtl of soc_system is
 			pwmServo_0_avalon_slave_0_writedata                                 : out std_logic_vector(7 downto 0);                     -- writedata
 			pwmServo_1_avalon_slave_0_write                                     : out std_logic;                                        -- write
 			pwmServo_1_avalon_slave_0_writedata                                 : out std_logic_vector(7 downto 0);                     -- writedata
+			switches_s1_address                                                 : out std_logic_vector(1 downto 0);                     -- address
+			switches_s1_write                                                   : out std_logic;                                        -- write
+			switches_s1_readdata                                                : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
+			switches_s1_writedata                                               : out std_logic_vector(31 downto 0);                    -- writedata
+			switches_s1_chipselect                                              : out std_logic;                                        -- chipselect
 			sysid_qsys_control_slave_address                                    : out std_logic_vector(0 downto 0);                     -- address
 			sysid_qsys_control_slave_readdata                                   : in  std_logic_vector(31 downto 0) := (others => 'X'); -- readdata
 			ultraSonicRangeFinder_0_rangeValue_read                             : out std_logic;                                        -- read
@@ -510,6 +529,11 @@ architecture rtl of soc_system is
 	signal mm_interconnect_0_green_leds_s1_address                       : std_logic_vector(1 downto 0);  -- mm_interconnect_0:green_leds_s1_address -> green_leds:address
 	signal mm_interconnect_0_green_leds_s1_write                         : std_logic;                     -- mm_interconnect_0:green_leds_s1_write -> mm_interconnect_0_green_leds_s1_write:in
 	signal mm_interconnect_0_green_leds_s1_writedata                     : std_logic_vector(31 downto 0); -- mm_interconnect_0:green_leds_s1_writedata -> green_leds:writedata
+	signal mm_interconnect_0_switches_s1_chipselect                      : std_logic;                     -- mm_interconnect_0:switches_s1_chipselect -> switches:chipselect
+	signal mm_interconnect_0_switches_s1_readdata                        : std_logic_vector(31 downto 0); -- switches:readdata -> mm_interconnect_0:switches_s1_readdata
+	signal mm_interconnect_0_switches_s1_address                         : std_logic_vector(1 downto 0);  -- mm_interconnect_0:switches_s1_address -> switches:address
+	signal mm_interconnect_0_switches_s1_write                           : std_logic;                     -- mm_interconnect_0:switches_s1_write -> mm_interconnect_0_switches_s1_write:in
+	signal mm_interconnect_0_switches_s1_writedata                       : std_logic_vector(31 downto 0); -- mm_interconnect_0:switches_s1_writedata -> switches:writedata
 	signal hps_0_f2h_irq0_irq                                            : std_logic_vector(31 downto 0); -- irq_mapper:sender_irq -> hps_0:f2h_irq_p0
 	signal hps_0_f2h_irq1_irq                                            : std_logic_vector(31 downto 0); -- irq_mapper_001:sender_irq -> hps_0:f2h_irq_p1
 	signal rst_controller_reset_out_reset                                : std_logic;                     -- rst_controller:reset_out -> [mm_interconnect_0:pwmBrushed_0_reset_reset_bridge_in_reset_reset, pwmClk_0:reset, rst_controller_reset_out_reset:in, upCounter_0:reset, upCounter_1:reset, upCounter_2:reset, upCounter_3:reset]
@@ -522,7 +546,8 @@ architecture rtl of soc_system is
 	signal mm_interconnect_0_pwmbrushed_2_avalon_slave_write_ports_inv   : std_logic;                     -- mm_interconnect_0_pwmbrushed_2_avalon_slave_write:inv -> pwmBrushed_2:avalon_slave_write_n
 	signal mm_interconnect_0_pwmbrushed_3_avalon_slave_write_ports_inv   : std_logic;                     -- mm_interconnect_0_pwmbrushed_3_avalon_slave_write:inv -> pwmBrushed_3:avalon_slave_write_n
 	signal mm_interconnect_0_green_leds_s1_write_ports_inv               : std_logic;                     -- mm_interconnect_0_green_leds_s1_write:inv -> green_leds:write_n
-	signal rst_controller_reset_out_reset_ports_inv                      : std_logic;                     -- rst_controller_reset_out_reset:inv -> [green_leds:reset_n, pwmBrushed_0:reset_n, pwmBrushed_1:reset_n, pwmBrushed_2:reset_n, pwmBrushed_3:reset_n, sysid_qsys:reset_n, ultraSonicRangeFinder_0:reset_n]
+	signal mm_interconnect_0_switches_s1_write_ports_inv                 : std_logic;                     -- mm_interconnect_0_switches_s1_write:inv -> switches:write_n
+	signal rst_controller_reset_out_reset_ports_inv                      : std_logic;                     -- rst_controller_reset_out_reset:inv -> [green_leds:reset_n, pwmBrushed_0:reset_n, pwmBrushed_1:reset_n, pwmBrushed_2:reset_n, pwmBrushed_3:reset_n, switches:reset_n, sysid_qsys:reset_n, ultraSonicRangeFinder_0:reset_n]
 
 begin
 
@@ -739,6 +764,18 @@ begin
 			position => pwmservo_1_conduit_end_export                          --    conduit_end.export
 		);
 
+	switches : component soc_system_switches
+		port map (
+			clk        => clk_clk,                                       --                 clk.clk
+			reset_n    => rst_controller_reset_out_reset_ports_inv,      --               reset.reset_n
+			address    => mm_interconnect_0_switches_s1_address,         --                  s1.address
+			write_n    => mm_interconnect_0_switches_s1_write_ports_inv, --                    .write_n
+			writedata  => mm_interconnect_0_switches_s1_writedata,       --                    .writedata
+			chipselect => mm_interconnect_0_switches_s1_chipselect,      --                    .chipselect
+			readdata   => mm_interconnect_0_switches_s1_readdata,        --                    .readdata
+			out_port   => pio_0_external_connection_export               -- external_connection.export
+		);
+
 	sysid_qsys : component soc_system_sysid_qsys
 		port map (
 			clock    => clk_clk,                                               --           clk.clk
@@ -857,6 +894,11 @@ begin
 			pwmServo_0_avalon_slave_0_writedata                                 => mm_interconnect_0_pwmservo_0_avalon_slave_0_writedata,         --                                                              .writedata
 			pwmServo_1_avalon_slave_0_write                                     => mm_interconnect_0_pwmservo_1_avalon_slave_0_write,             --                                     pwmServo_1_avalon_slave_0.write
 			pwmServo_1_avalon_slave_0_writedata                                 => mm_interconnect_0_pwmservo_1_avalon_slave_0_writedata,         --                                                              .writedata
+			switches_s1_address                                                 => mm_interconnect_0_switches_s1_address,                         --                                                   switches_s1.address
+			switches_s1_write                                                   => mm_interconnect_0_switches_s1_write,                           --                                                              .write
+			switches_s1_readdata                                                => mm_interconnect_0_switches_s1_readdata,                        --                                                              .readdata
+			switches_s1_writedata                                               => mm_interconnect_0_switches_s1_writedata,                       --                                                              .writedata
+			switches_s1_chipselect                                              => mm_interconnect_0_switches_s1_chipselect,                      --                                                              .chipselect
 			sysid_qsys_control_slave_address                                    => mm_interconnect_0_sysid_qsys_control_slave_address,            --                                      sysid_qsys_control_slave.address
 			sysid_qsys_control_slave_readdata                                   => mm_interconnect_0_sysid_qsys_control_slave_readdata,           --                                                              .readdata
 			ultraSonicRangeFinder_0_rangeValue_read                             => mm_interconnect_0_ultrasonicrangefinder_0_rangevalue_read,     --                            ultraSonicRangeFinder_0_rangeValue.read
@@ -1093,6 +1135,8 @@ begin
 	mm_interconnect_0_pwmbrushed_3_avalon_slave_write_ports_inv <= not mm_interconnect_0_pwmbrushed_3_avalon_slave_write;
 
 	mm_interconnect_0_green_leds_s1_write_ports_inv <= not mm_interconnect_0_green_leds_s1_write;
+
+	mm_interconnect_0_switches_s1_write_ports_inv <= not mm_interconnect_0_switches_s1_write;
 
 	rst_controller_reset_out_reset_ports_inv <= not rst_controller_reset_out_reset;
 

@@ -69,12 +69,16 @@
 			memory_oct_rzqin                              : in    std_logic                     := 'X';             -- oct_rzqin
 			pwmbrushed_0_direction1_export                : out   std_logic;                                        -- export
 			pwmbrushed_0_direction2_export                : out   std_logic;                                        -- export
+			pwmbrushed_0_pulsewidthmodulatedsignal_export : out   std_logic;                                        -- export
 			pwmbrushed_1_direction1_export                : out   std_logic;                                        -- export
 			pwmbrushed_1_direction2_export                : out   std_logic;                                        -- export
+			pwmbrushed_1_pulsewidthmodulatedsignal_export : out   std_logic;                                        -- export
 			pwmbrushed_2_direction1_export                : out   std_logic;                                        -- export
 			pwmbrushed_2_direction2_export                : out   std_logic;                                        -- export
+			pwmbrushed_2_pulsewidthmodulatedsignal_export : out   std_logic;                                        -- export
 			pwmbrushed_3_direction1_export                : out   std_logic;                                        -- export
 			pwmbrushed_3_direction2_export                : out   std_logic;                                        -- export
+			pwmbrushed_3_pulsewidthmodulatedsignal_export : out   std_logic;                                        -- export
 			pwmservo_0_conduit_end_export                 : out   std_logic;                                        -- export
 			pwmservo_1_conduit_end_export                 : out   std_logic;                                        -- export
 			reset_reset_n                                 : in    std_logic                     := 'X';             -- reset_n
@@ -83,10 +87,7 @@
 			upcounter_1_hallsensorinput_export            : in    std_logic                     := 'X';             -- export
 			upcounter_2_hallsensorinput_export            : in    std_logic                     := 'X';             -- export
 			upcounter_3_hallsensorinput_export            : in    std_logic                     := 'X';             -- export
-			pwmbrushed_0_pulsewidthmodulatedsignal_export : out   std_logic;                                        -- export
-			pwmbrushed_1_pulsewidthmodulatedsignal_export : out   std_logic;                                        -- export
-			pwmbrushed_3_pulsewidthmodulatedsignal_export : out   std_logic;                                        -- export
-			pwmbrushed_2_pulsewidthmodulatedsignal_export : out   std_logic                                         -- export
+			pio_0_external_connection_export              : out   std_logic_vector(3 downto 0)                      -- export
 		);
 	end component soc_system;
 
@@ -161,12 +162,16 @@
 			memory_oct_rzqin                              => CONNECTED_TO_memory_oct_rzqin,                              --                                       .oct_rzqin
 			pwmbrushed_0_direction1_export                => CONNECTED_TO_pwmbrushed_0_direction1_export,                --                pwmbrushed_0_direction1.export
 			pwmbrushed_0_direction2_export                => CONNECTED_TO_pwmbrushed_0_direction2_export,                --                pwmbrushed_0_direction2.export
+			pwmbrushed_0_pulsewidthmodulatedsignal_export => CONNECTED_TO_pwmbrushed_0_pulsewidthmodulatedsignal_export, -- pwmbrushed_0_pulsewidthmodulatedsignal.export
 			pwmbrushed_1_direction1_export                => CONNECTED_TO_pwmbrushed_1_direction1_export,                --                pwmbrushed_1_direction1.export
 			pwmbrushed_1_direction2_export                => CONNECTED_TO_pwmbrushed_1_direction2_export,                --                pwmbrushed_1_direction2.export
+			pwmbrushed_1_pulsewidthmodulatedsignal_export => CONNECTED_TO_pwmbrushed_1_pulsewidthmodulatedsignal_export, -- pwmbrushed_1_pulsewidthmodulatedsignal.export
 			pwmbrushed_2_direction1_export                => CONNECTED_TO_pwmbrushed_2_direction1_export,                --                pwmbrushed_2_direction1.export
 			pwmbrushed_2_direction2_export                => CONNECTED_TO_pwmbrushed_2_direction2_export,                --                pwmbrushed_2_direction2.export
+			pwmbrushed_2_pulsewidthmodulatedsignal_export => CONNECTED_TO_pwmbrushed_2_pulsewidthmodulatedsignal_export, -- pwmbrushed_2_pulsewidthmodulatedsignal.export
 			pwmbrushed_3_direction1_export                => CONNECTED_TO_pwmbrushed_3_direction1_export,                --                pwmbrushed_3_direction1.export
 			pwmbrushed_3_direction2_export                => CONNECTED_TO_pwmbrushed_3_direction2_export,                --                pwmbrushed_3_direction2.export
+			pwmbrushed_3_pulsewidthmodulatedsignal_export => CONNECTED_TO_pwmbrushed_3_pulsewidthmodulatedsignal_export, -- pwmbrushed_3_pulsewidthmodulatedsignal.export
 			pwmservo_0_conduit_end_export                 => CONNECTED_TO_pwmservo_0_conduit_end_export,                 --                 pwmservo_0_conduit_end.export
 			pwmservo_1_conduit_end_export                 => CONNECTED_TO_pwmservo_1_conduit_end_export,                 --                 pwmservo_1_conduit_end.export
 			reset_reset_n                                 => CONNECTED_TO_reset_reset_n,                                 --                                  reset.reset_n
@@ -175,9 +180,6 @@
 			upcounter_1_hallsensorinput_export            => CONNECTED_TO_upcounter_1_hallsensorinput_export,            --            upcounter_1_hallsensorinput.export
 			upcounter_2_hallsensorinput_export            => CONNECTED_TO_upcounter_2_hallsensorinput_export,            --            upcounter_2_hallsensorinput.export
 			upcounter_3_hallsensorinput_export            => CONNECTED_TO_upcounter_3_hallsensorinput_export,            --            upcounter_3_hallsensorinput.export
-			pwmbrushed_0_pulsewidthmodulatedsignal_export => CONNECTED_TO_pwmbrushed_0_pulsewidthmodulatedsignal_export, -- pwmbrushed_0_pulsewidthmodulatedsignal.export
-			pwmbrushed_1_pulsewidthmodulatedsignal_export => CONNECTED_TO_pwmbrushed_1_pulsewidthmodulatedsignal_export, -- pwmbrushed_1_pulsewidthmodulatedsignal.export
-			pwmbrushed_3_pulsewidthmodulatedsignal_export => CONNECTED_TO_pwmbrushed_3_pulsewidthmodulatedsignal_export, -- pwmbrushed_3_pulsewidthmodulatedsignal.export
-			pwmbrushed_2_pulsewidthmodulatedsignal_export => CONNECTED_TO_pwmbrushed_2_pulsewidthmodulatedsignal_export  -- pwmbrushed_2_pulsewidthmodulatedsignal.export
+			pio_0_external_connection_export              => CONNECTED_TO_pio_0_external_connection_export               --              pio_0_external_connection.export
 		);
 
