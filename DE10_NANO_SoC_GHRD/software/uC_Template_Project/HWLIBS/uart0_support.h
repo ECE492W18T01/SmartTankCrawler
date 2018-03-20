@@ -42,6 +42,7 @@ ALT_STATUS_CODE uart0_uninit(void);
 ALT_STATUS_CODE uart0_print(const char *in_str);
 int uart0_printf(const char *fmt, ...);
 int uart0_getc(void);
+ALT_STATUS_CODE uart0_fifo_clear_rx(void);
 
 #endif /* UART0_SUPPORT_H_ */
 /* md5sum:92afebd032496f820e400acbb3658d11 2013-09-28 20:48:16 */

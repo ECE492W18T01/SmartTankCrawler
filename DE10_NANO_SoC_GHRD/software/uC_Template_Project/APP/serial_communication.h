@@ -11,10 +11,21 @@
 #define UART_0_FCR_RT_ONE_CHAR (~DEF_BIT_07 & ~DEF_BIT_06) // and with this
 
 #define MSG_BUFFER_LEN 127
+
+#define START_CHARACTER '*'
+#define STOP_CHARACTER '&'
+#define ACKNOWLEDGE_STR "@"
+
 bool serial_communication_init(void);
 char serial_getc(void);
-void UART0_IRS_Handeler(CPU_INT32U cpu_id);
+void UART0_IRS_handeler(CPU_INT32U cpu_id);
 
 // from http://pubs.opengroup.org/onlinepubs/009696799/functions/bzero.html
 #define bzero(b,len) (memset((b), '\0', (len)), (void) 0)
+
+typedef struct incoming_msg{
+	float motor_level;
+	int8_t steering_value;
+}incoming_msg;
+
 #endif

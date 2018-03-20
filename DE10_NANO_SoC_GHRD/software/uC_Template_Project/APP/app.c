@@ -201,7 +201,7 @@ int main ()
 
     OSInit();
 
-    serial_communication_init();
+
 
     void *LogMessageArray[100];
     void *MotorMessageArray[10];
@@ -376,8 +376,8 @@ static  void  AppTaskStart (void *p_arg)
 
     BSP_OS_TmrTickInit(OS_TICKS_PER_SEC);                       /* Configure and enable OS tick interrupt.              */
     InitHallSensorInterrupt();
-    //InitDistanceSensorInterrupt();
-    //InitCommunicationInterrupt();
+    InitDistanceSensorInterrupt();
+    InitCommunicationInterrupt();
 
 
     for(;;) {
@@ -447,8 +447,8 @@ static void MotorTask (void *p_arg)
 
     	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, 0, &err);
 
-        printf("Motor Task: %f, %f, %f, %f, %d\n", incoming->frontLeft, incoming->frontRight,
-        		incoming->backLeft, incoming->backRight, incoming->steeringServo);
+//        printf("Motor Task: %f, %f, %f, %f, %d\n", incoming->frontLeft, incoming->frontRight,
+//        		incoming->backLeft, incoming->backRight, incoming->steeringServo);
 
 
 		if(err == OS_ERR_NONE) // Message was received

@@ -56,10 +56,15 @@ ALT_STATUS_CODE uart0_init(void) {
     status += alt_16550_fifo_enable(&g_uart0_handle);
 
     status += alt_16550_enable(&g_uart0_handle);
-    // remove RX buffer
+    // clear RX buffer
     status += alt_16550_fifo_clear_rx(&g_uart0_handle);
 
 
+	return status;
+}
+
+ALT_STATUS_CODE uart0_fifo_clear_rx(void){
+	ALT_STATUS_CODE status  = alt_16550_fifo_clear_rx(&g_uart0_handle);
 	return status;
 }
 
