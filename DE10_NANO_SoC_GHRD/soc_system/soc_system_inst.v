@@ -68,12 +68,16 @@
 		.memory_oct_rzqin                              (<connected-to-memory_oct_rzqin>),                              //                                       .oct_rzqin
 		.pwmbrushed_0_direction1_export                (<connected-to-pwmbrushed_0_direction1_export>),                //                pwmbrushed_0_direction1.export
 		.pwmbrushed_0_direction2_export                (<connected-to-pwmbrushed_0_direction2_export>),                //                pwmbrushed_0_direction2.export
+		.pwmbrushed_0_pulsewidthmodulatedsignal_export (<connected-to-pwmbrushed_0_pulsewidthmodulatedsignal_export>), // pwmbrushed_0_pulsewidthmodulatedsignal.export
 		.pwmbrushed_1_direction1_export                (<connected-to-pwmbrushed_1_direction1_export>),                //                pwmbrushed_1_direction1.export
 		.pwmbrushed_1_direction2_export                (<connected-to-pwmbrushed_1_direction2_export>),                //                pwmbrushed_1_direction2.export
+		.pwmbrushed_1_pulsewidthmodulatedsignal_export (<connected-to-pwmbrushed_1_pulsewidthmodulatedsignal_export>), // pwmbrushed_1_pulsewidthmodulatedsignal.export
 		.pwmbrushed_2_direction1_export                (<connected-to-pwmbrushed_2_direction1_export>),                //                pwmbrushed_2_direction1.export
 		.pwmbrushed_2_direction2_export                (<connected-to-pwmbrushed_2_direction2_export>),                //                pwmbrushed_2_direction2.export
+		.pwmbrushed_2_pulsewidthmodulatedsignal_export (<connected-to-pwmbrushed_2_pulsewidthmodulatedsignal_export>), // pwmbrushed_2_pulsewidthmodulatedsignal.export
 		.pwmbrushed_3_direction1_export                (<connected-to-pwmbrushed_3_direction1_export>),                //                pwmbrushed_3_direction1.export
 		.pwmbrushed_3_direction2_export                (<connected-to-pwmbrushed_3_direction2_export>),                //                pwmbrushed_3_direction2.export
+		.pwmbrushed_3_pulsewidthmodulatedsignal_export (<connected-to-pwmbrushed_3_pulsewidthmodulatedsignal_export>), // pwmbrushed_3_pulsewidthmodulatedsignal.export
 		.pwmservo_0_conduit_end_export                 (<connected-to-pwmservo_0_conduit_end_export>),                 //                 pwmservo_0_conduit_end.export
 		.pwmservo_1_conduit_end_export                 (<connected-to-pwmservo_1_conduit_end_export>),                 //                 pwmservo_1_conduit_end.export
 		.reset_reset_n                                 (<connected-to-reset_reset_n>),                                 //                                  reset.reset_n
@@ -82,9 +86,6 @@
 		.upcounter_1_hallsensorinput_export            (<connected-to-upcounter_1_hallsensorinput_export>),            //            upcounter_1_hallsensorinput.export
 		.upcounter_2_hallsensorinput_export            (<connected-to-upcounter_2_hallsensorinput_export>),            //            upcounter_2_hallsensorinput.export
 		.upcounter_3_hallsensorinput_export            (<connected-to-upcounter_3_hallsensorinput_export>),            //            upcounter_3_hallsensorinput.export
-		.pwmbrushed_0_pulsewidthmodulatedsignal_export (<connected-to-pwmbrushed_0_pulsewidthmodulatedsignal_export>), // pwmbrushed_0_pulsewidthmodulatedsignal.export
-		.pwmbrushed_1_pulsewidthmodulatedsignal_export (<connected-to-pwmbrushed_1_pulsewidthmodulatedsignal_export>), // pwmbrushed_1_pulsewidthmodulatedsignal.export
-		.pwmbrushed_3_pulsewidthmodulatedsignal_export (<connected-to-pwmbrushed_3_pulsewidthmodulatedsignal_export>), // pwmbrushed_3_pulsewidthmodulatedsignal.export
-		.pwmbrushed_2_pulsewidthmodulatedsignal_export (<connected-to-pwmbrushed_2_pulsewidthmodulatedsignal_export>)  // pwmbrushed_2_pulsewidthmodulatedsignal.export
+		.pio_0_external_connection_export              (<connected-to-pio_0_external_connection_export>)               //              pio_0_external_connection.export
 	);
 

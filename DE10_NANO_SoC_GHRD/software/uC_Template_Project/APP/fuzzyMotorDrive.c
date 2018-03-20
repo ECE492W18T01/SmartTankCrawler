@@ -1,6 +1,5 @@
 #include "fuzzyMotorDrive.h"
 
-
 void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, int8_t steering, bool stopMask) {
 
 	// Kill switch
