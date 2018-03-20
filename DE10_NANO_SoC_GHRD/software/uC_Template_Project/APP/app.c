@@ -480,13 +480,13 @@ static void MotorTask (void *p_arg)
 
 		if(err == OS_ERR_NONE) // Message was received
 		{
-            steeringServo = incoming->steeringServo;
+			globalSteeringAngle = incoming->steeringServo;
 
 
             driveMotors(0.85, incoming, 0, false);
             //TO-DO: Delete printf
             //printf("Incoming Message to MotorTask:\n fL = %f\n fR = %f\n rL = %f\n rR = %f\n sR = %d\n", frontLeft, frontRight, backLeft, backRight, steeringServo);
-            MoveFrontServo(steeringServo);
+            MoveFrontServo(globalSteeringAngle);
 
             OSMemPut(MotorMessageStorage, incoming);
             /*

@@ -160,6 +160,7 @@ extern OS_EVENT *CommunicationSemaphore;
 
 extern char* userMessage;
 extern bool motorMask;
+extern int8_t globalSteeringAngle;
 
 extern OS_MEM *FuzzyLogicProcessorStorage;
 extern OS_MEM *DistanceMessageStorage;
