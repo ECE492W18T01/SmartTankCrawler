@@ -38,7 +38,7 @@ bool serial_communication_init(){
 						UART0_IRS_handeler  // ISR
 						);
 		BSP_IntSrcEn(194u);
-		init_communication_watchdog();
+		//init_communication_watchdog();
 		return true;
 	}else{
 		return false;

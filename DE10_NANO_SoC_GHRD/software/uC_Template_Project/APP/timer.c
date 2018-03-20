@@ -91,7 +91,7 @@ void InitCommunicationInterrupt(void) {
 
 	//TODO: Set this up for FPGA interrupt
 	serial_communication_init();
-	enable_communication_watchdog();
+	//enable_communication_watchdog();
 }
 
 
