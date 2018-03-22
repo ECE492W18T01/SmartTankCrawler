@@ -3,6 +3,7 @@
 
 void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, int8_t steering, bool stopMask) {
 
+	printf("Steering Input: %d\n", steering);
 	// Kill switch
 	if (stopMask){
 		// using Brian's wrapper function for the motors
@@ -20,7 +21,7 @@ void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, int8_t steerin
 
     // Index to motoDriveR.
     int8_t steeringIndex = abs(steering) / 6;
-
+    printf("Index %d\n", steeringIndex);
     // Relative speed ratios, assuming a right turn (steering > 0)
     // The speeds from greatest to least are fl > rl > rr >fr
     float fl = magnitude;

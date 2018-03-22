@@ -69,9 +69,7 @@
 #include "serial_communication.h"
 #include "FuzzyLogicProcessor.h"
 #include "fuzzyMotorDrive.h"
-
-#include <timer.h>
-
+#include "timer.h"
 
 #define APP_TASK_PRIO 5
 #define EMERGENCY_TASK_PRIORITY 6
@@ -140,8 +138,8 @@ OS_EVENT *MaskSemaphore;
 OS_EVENT *CommunicationSemaphore;
 
 // Resources
-int8_t steeringAngle;
-bool motorMask = false; //TODO: Keith can you rename this to whatever you want?
+int8_t globalSteeringAngle; // TO-DO: Give this an intial value in MAIN
+bool motorMask = false; //TO-DO: Keith can you rename this to whatever you want?
 char* userMessage;
 /* To access steering Angle:
 OSSemPend(SteeringSemaphore, 0, &err);
@@ -201,7 +199,7 @@ int main ()
 
     OSInit();
 
-    serial_communication_init();
+
 
     void *LogMessageArray[100];
     void *MotorMessageArray[10];
@@ -216,6 +214,8 @@ int main ()
     SteeringSemaphore = OSSemCreate(1);			// One shared resource
     MaskSemaphore = OSSemCreate(1);				// One shared resource
     CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
+
+    globalSteeringAngle = 0; // Initlalize steering to be straight ahead.
 
     INT8U err;
     MotorMessageStorage = OSMemCreate(MotorMessageMemory, 10, sizeof(MotorChangeMessage), &err);
@@ -438,37 +438,73 @@ static void MotorTask (void *p_arg)
 	char *TaskName = "MotorTask";
 
     MotorChangeMessage *incoming;
+    MotorChangeMessage staticFuzzy = { 0 };
     LogMessage *errorMessage;
 
-    float frontLeft, frontRight, backLeft, backRight;
-    uint8_t steeringServo;
+    float userDriveSpeed = 0.85;
+    bool allStop = false;
+
+    int8_t oldUserSteer = 0;
+    int8_t newUserSteer, actualSteeringAngle = 0;
 
     for(;;) {
 
-    	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, 0, &err);
+    	// TO-DO: Replace this with a queue pend, or SOMETHING, to get the new user steering
+    	// AS AN INT8_T.
+    	newUserSteer = 0;
 
-        printf("Motor Task: %f, %f, %f, %f, %d\n", incoming->frontLeft, incoming->frontRight,
-        		incoming->backLeft, incoming->backRight, incoming->steeringServo);
+    	// TO-DO: Mock object in case, Fuzzy Set has no output.
+    	// Only pend for so long - Change timeout value to be define, but the number now is 1/4 of a second.
+    	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, OS_TICKS_PER_SEC / 4, &err);
+
+    	if (err == OS_ERR_TIMEOUT) {
+    		staticFuzzy.frontLeft = 0;
+    		staticFuzzy.frontRight = 0;
+    		staticFuzzy.backLeft = 0;
+    		staticFuzzy.backRight = 0;
+    		staticFuzzy.steeringServo = 0;
+
+    		err = OS_ERR_NONE;
+    	}
+
+    	else {
+    		staticFuzzy.frontLeft = incoming->frontLeft;
+    		staticFuzzy.frontRight = incoming->frontRight;
+    		staticFuzzy.backLeft = incoming->backLeft;
+    		staticFuzzy.backRight = incoming->backRight;
+    		staticFuzzy.steeringServo = incoming->steeringServo;
+
+    		OSMemPut(MotorMessageStorage, incoming);
+    	}
+
+		if(err == OS_ERR_NONE) {
+
+			if ((newUserSteer - oldUserSteer) / 6 == 0) {
+				OSSemPend(SteeringSemaphore, 0, &err);
+				globalSteeringAngle += staticFuzzy.steeringServo;
+				actualSteeringAngle = globalSteeringAngle;
+				OSSemPost(SteeringSemaphore);
+			}
+
+			else {
+				OSSemPend(SteeringSemaphore, 0, &err);
+				globalSteeringAngle = newUserSteer;
+				OSSemPost(SteeringSemaphore);
+
+				actualSteeringAngle = newUserSteer;
+			}
 
 
-		if(err == OS_ERR_NONE) // Message was received
-		{
-            frontLeft = incoming->frontLeft;
-            frontRight = incoming->frontRight;
-            backLeft = incoming->backLeft;
-            backRight = incoming->backRight;
-            steeringServo = incoming->steeringServo;
 
+			oldUserSteer = newUserSteer;
 
-            driveMotors(0.85, incoming, 0, false);
-            //TODO: Delete printf
-            //printf("Incoming Message to MotorTask:\n fL = %f\n fR = %f\n rL = %f\n rR = %f\n sR = %d\n", frontLeft, frontRight, backLeft, backRight, steeringServo);
-            MoveFrontServo(steeringServo);
+			OSSemPend(MaskSemaphore, 0, &err);
+			allStop = motorMask;
+			OSSemPost(MaskSemaphore);
 
-            OSMemPut(MotorMessageStorage, incoming);
-            /*
-			Here's where you can actually do what you want to do
-			*/
+			MoveFrontServo(actualSteeringAngle);
+			driveMotors(userDriveSpeed, &staticFuzzy, actualSteeringAngle, allStop);
+
 		} else {
 			;//Send to log through function
 		}
@@ -509,19 +545,19 @@ static void FuzzyTask (void *p_arg)
 
 	int8_t steeringAngle = 0;
 	//                1    2   3   4    5    6  7   8   9  10 11  12
-	uint8_t fl[12] = {40, 25, 128, 32,  50, 40, 54, 44, 6, 4, 5,  40};
-	uint8_t fr[12] = {54, 25, 32,  128, 40, 50, 44, 54, 4, 6, 15, 40};
-	uint8_t rl[12] = {43, 50, 120, 40,  39, 30, 39, 30, 4, 3, 25, 20};
-	uint8_t rr[12] = {50, 50, 40,  120, 30, 39, 30, 39, 3, 4, 25, 40};
-	int8_t steer[12] = {-15, 0, 30, -30, 25, -25, 25, -25, 10, -10, 0, 0};
+	uint8_t fl[12] = {40, 25, 128, 16,  16, 128, 54, 44, 6, 4, 5,  40};
+	uint8_t fr[12] = {54, 25, 16,  128, 128, 16, 44, 54, 4, 6, 15, 40};
+	uint8_t rl[12] = {43, 50, 120, 20,  20, 120, 39, 30, 4, 3, 25, 20};
+	uint8_t rr[12] = {50, 50, 20,  120, 120, 20, 30, 39, 3, 4, 25, 40};
+	int8_t steer[12] = {-15, 0, 30, -30, -30, 30, 25, -25, 10, -10, 0, 0};
 	//                  1    2   3   4   5   6    7    8   9   10   11 12
 	float ffl, ffr, frl, frr, fs;
 
 	int8_t st;
-
-    //for(;;) {
-    for(int i = 0; i < 12; i++) {
-    	//incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
+	int i = 0;
+    for(;;) {
+    //for(int i = 0; i < 12; i++) {
+    	incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
 
     	if (err == OS_ERR_NONE)
     	{
@@ -534,7 +570,7 @@ static void FuzzyTask (void *p_arg)
 //            newFrontRight = incoming->frontRight;
 //            newRearLeft = incoming->backLeft;
 //            newRearRight = incoming->backRight;
-//            OSMemPut(FuzzyMessageStorage, incoming);
+            OSMemPut(FuzzyMessageStorage, incoming);
 //
 //            uint8_t wheelSpeeds[4] = {
 //            	newFrontLeft - oldFrontLeft,
@@ -576,16 +612,6 @@ static void FuzzyTask (void *p_arg)
                 outgoing.steeringServo = 0;
             } else {
 
-//                float *fuzzyOutput = calculateMotorModifiers(wheelSpeeds, steeringAngle);
-//
-//                outgoing.frontLeft = fuzzyOutput[0];
-//                outgoing.frontRight = fuzzyOutput[1];
-//                outgoing.backLeft = fuzzyOutput[2];
-//                outgoing.backRight = fuzzyOutput[3];
-//                outgoing.steeringServo = fuzzyOutput[4];
-//
-//                OSMemPut(FuzzyLogicProcessorStorage, fuzzyOutput);
-
             	float *fuzzyOutput = calculateMotorModifiers(wheelSpeeds, steer[i]);
 
                 ffl = fuzzyOutput[0];
@@ -599,11 +625,12 @@ static void FuzzyTask (void *p_arg)
                 outgoing.backLeft = fuzzyOutput[2];
                 outgoing.backRight = fuzzyOutput[3];
                 outgoing.steeringServo = fuzzyOutput[4];
-                free(fuzzyOutput);
+                OSMemPut(FuzzyLogicProcessorStorage, fuzzyOutput);
 
             }
 
-
+            i++;
+            if (i == 12) i = 0;
 //            oldFrontLeft = newFrontLeft;
 //            oldFrontRight = newFrontRight;
 //            oldRearLeft = newRearLeft;

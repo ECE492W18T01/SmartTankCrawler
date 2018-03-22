@@ -1,0 +1,660 @@
+/*
+*********************************************************************************************************
+*                                            EXAMPLE CODE
+*
+*                          (c) Copyright 2009-2014; Micrium, Inc.; Weston, FL
+*
+*               All rights reserved.  Protected by international copyright laws.
+*
+*               Please feel free to use any application code labeled as 'EXAMPLE CODE' in
+*               your application products.  Example code may be used as is, in whole or in
+*               part, or may be used as a reference only.
+*
+*               Please help us continue to provide the Embedded community with the finest
+*               software available.  Your honesty is greatly appreciated.
+*
+*               You can contact us at www.micrium.com.
+*********************************************************************************************************
+*/
+
+/*
+*********************************************************************************************************
+*
+*                                          APPLICATION CODE
+*
+*                                            CYCLONE V SOC
+*
+* Filename      : app.h (used to be app.c)
+* Version       : V1.00
+* Programmer(s) : JBL
+* Modifications	: Nancy Minderman nancy.minderman@ualberta.ca, Brendan Bruner bbruner@ualberta.ca
+* 				  Changes to this project include scatter file changes and BSP changes for port from
+* 				  Cyclone V dev kit board to DE1-SoC
+*
+*				  Keith Mills kgmills@ualberta.ca
+*				  Reworked for project, testing of components, for usage on the DE10-Nano.
+*
+*				  Joshua Robertson jcrobert@ualberta.ca
+*				  Further reworked to add our necessary tasks, queues, and other data structures.
+*********************************************************************************************************
+* Note(s)       : none.
+*********************************************************************************************************
+*/
+
+
+/*
+*********************************************************************************************************
+*                                            INCLUDE FILES
+*********************************************************************************************************
+*/
+
+#include  <app_cfg.h>
+#include  <lib_mem.h>
+
+#include  <bsp.h>
+#include  <bsp_int.h>
+#include  <bsp_os.h>
+#include  <cpu_cache.h>
+
+#include  <cpu.h>
+#include  <cpu_core.h>
+
+#include  <os.h>
+#include  <hps.h>
+#include  <socal.h>
+#include  <hwlib.h>
+
+#include "motor_control.h"
+#include "wrap.h"
+#include "serial_communication.h"
+#include "FuzzyLogicProcessor.h"
+#include "fuzzyMotorDrive.h"
+
+#include <timer.h>
+
+
+#define APP_TASK_PRIO 5
+#define EMERGENCY_TASK_PRIORITY 6
+#define COLLISION_TASK_PRIO 7
+#define MOTOR_TASK_PRIO 8
+#define FUZZY_TASK_PRIO 9
+#define COMMUNICATION_TASK_PRIO 10
+#define LOG_TASK_PRIO 11
+
+#define TASK_STACK_SIZE 4096
+
+/*
+*********************************************************************************************************
+*                                       LOCAL GLOBAL VARIABLES
+*********************************************************************************************************
+*/
+
+CPU_STK AppTaskStartStk[TASK_STACK_SIZE];
+CPU_STK EmgTaskStk[TASK_STACK_SIZE];
+CPU_STK ColTaskStk[TASK_STACK_SIZE];
+CPU_STK MotorTaskStk[TASK_STACK_SIZE];
+CPU_STK FuzzyTaskStk[TASK_STACK_SIZE];
+CPU_STK ComTaskStk[TASK_STACK_SIZE];
+CPU_STK LogTaskStk[TASK_STACK_SIZE];
+
+
+/*
+*********************************************************************************************************
+*                                      LOCAL FUNCTION PROTOTYPES
+*********************************************************************************************************
+*/
+
+static  void  AppTaskStart              (void        *p_arg);
+static  void  EmergencyTask             (void        *p_arg);
+static  void  CollisionTask             (void        *p_arg);
+static  void  MotorTask                 (void        *p_arg);
+static  void  FuzzyTask                 (void        *p_arg);
+static  void  CommunicationTask         (void        *p_arg);
+static  void  LogTask               	(void        *p_arg);
+
+
+/*
+*********************************************************************************************************
+*                                               main()
+*
+* Description : Entry point for C code.
+*
+* Arguments   : none.
+*
+* Returns     : none.
+*
+* Note(s)     : (1) It is assumed that your code will call main() once you have performed all necessary
+*                   initialisation.
+*********************************************************************************************************
+*/
+
+// MessageQueues
+OS_EVENT *LogQueue;
+OS_EVENT *MotorQueue;
+OS_EVENT *FuzzyQueue;
+OS_EVENT *CollisionQueue;
+
+// Semaphores
+OS_EVENT *SteeringSemaphore;
+OS_EVENT *MaskSemaphore;
+OS_EVENT *CommunicationSemaphore;
+
+// Resources
+int8_t steeringAngle;
+bool motorMask = false; //TODO: Keith can you rename this to whatever you want?
+char* userMessage;
+/* To access steering Angle:
+OSSemPend(SteeringSemaphore, 0, &err);
+// Do your thing
+OSSemPost(SteeringSemaphore);
+*/
+
+/* To access mask (In non protected code):
+OSSemPend(MaskSemaphore, 0, &err);
+// Do your thing
+OSSemPost(MaskSemaphore);
+*/
+
+OS_MEM *MotorMessageStorage;
+INT8U MotorMessageMemory[10][sizeof(MotorChangeMessage)];
+
+OS_MEM *FuzzyMessageStorage;
+INT8U FuzzyMessageMemory[10][sizeof(MotorSpeedMessage)];
+
+OS_MEM *LogMessageStorage;
+INT8U LogMessageMemory[100][sizeof(LogMessage)];
+
+OS_MEM *DistanceMessageStorage;
+INT8U DistanceMessageMemory[10][sizeof(DistanceMessage)];
+
+OS_MEM *StatusMessageStorage;
+INT8U StatusMessageMemory[100][sizeof(StatusMessage)];
+
+OS_MEM *MessageStorage;
+INT8U MessageMemory[100][100]; //100 is a 100 character string
+
+OS_MEM *_UserInputStorage;
+INT8U UserInputMemory[1][100];
+
+OS_MEM *FuzzyLogicProcessorStorage;
+INT8U FuzzyLogicProcessorMemory[5][sizeof(float) * 5];
+
+
+int main ()
+{
+    INT8U os_err;
+
+    BSP_WatchDog_Reset();                                       /* Reset the watchdog as soon as possible.              */
+
+                                                                /* Scatter loading is complete. Now the caches can be activated.*/
+    BSP_BranchPredictorEn();                                    /* Enable branch prediction.                            */
+    BSP_L2C310Config();                                         /* Configure the L2 cache controller.                   */
+    BSP_CachesEn();                                             /* Enable L1 I&D caches + L2 unified cache.             */
+
+
+    CPU_Init();
+
+    Mem_Init();
+
+    BSP_Init();
+
+
+    OSInit();
+
+    serial_communication_init();
+
+    void *LogMessageArray[100];
+    void *MotorMessageArray[10];
+    void *FuzzyMessageArray[10];
+    void *CollisionMessageArray[10];
+
+    CollisionQueue = OSQCreate(CollisionMessageArray, 10);
+    LogQueue = OSQCreate(LogMessageArray, 10);
+    MotorQueue = OSQCreate(MotorMessageArray, 10);
+    FuzzyQueue = OSQCreate(FuzzyMessageArray, 10);
+
+    SteeringSemaphore = OSSemCreate(1);			// One shared resource
+    MaskSemaphore = OSSemCreate(1);				// One shared resource
+    CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
+
+    INT8U err;
+    MotorMessageStorage = OSMemCreate(MotorMessageMemory, 10, sizeof(MotorChangeMessage), &err);
+    if (err != OS_ERR_NONE) {
+    	; /* Handle error. */
+    }
+    FuzzyMessageStorage = OSMemCreate(FuzzyMessageMemory, 10, sizeof(MotorSpeedMessage), &err);
+    if (err != OS_ERR_NONE) {
+    	; /* Handle error. */
+    }
+    LogMessageStorage = OSMemCreate(LogMessageMemory, 100, sizeof(LogMessage), &err);
+    if (err != OS_ERR_NONE) {
+    	; /* Handle error. */
+    }
+    DistanceMessageStorage = OSMemCreate(DistanceMessageMemory, 10, sizeof(DistanceMessage), &err);
+    if (err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    StatusMessageStorage = OSMemCreate(StatusMessageMemory, 100, sizeof(StatusMessage), &err);
+    if (err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    MessageStorage = OSMemCreate(MessageMemory, 100, 100, &err);
+    if (err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    _UserInputStorage = OSMemCreate(UserInputMemory, 1, 100, &err);
+    if (err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    userMessage =  OSMemGet(_UserInputStorage, &err);
+    if (err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    FuzzyLogicProcessorStorage =  OSMemGet(FuzzyLogicProcessorMemory, &err);
+    if (err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+
+    os_err = OSTaskCreateExt((void (*)(void *)) AppTaskStart,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&AppTaskStartStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) APP_TASK_PRIO,
+                             (INT16U          ) APP_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&AppTaskStartStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    os_err = OSTaskCreateExt((void (*)(void *)) EmergencyTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&EmgTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) EMERGENCY_TASK_PRIORITY,
+                             (INT16U          ) EMERGENCY_TASK_PRIORITY,  // reuse prio for ID
+                             (OS_STK        * )&EmgTaskStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    os_err = OSTaskCreateExt((void (*)(void *)) CollisionTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&ColTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) COLLISION_TASK_PRIO,
+                             (INT16U          ) COLLISION_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&ColTaskStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    os_err = OSTaskCreateExt((void (*)(void *)) MotorTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&MotorTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) MOTOR_TASK_PRIO,
+                             (INT16U          ) MOTOR_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&MotorTaskStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    os_err = OSTaskCreateExt((void (*)(void *)) FuzzyTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&FuzzyTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) FUZZY_TASK_PRIO,
+                             (INT16U          ) FUZZY_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&FuzzyTaskStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    os_err = OSTaskCreateExt((void (*)(void *)) CommunicationTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&ComTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) COMMUNICATION_TASK_PRIO,
+                             (INT16U          ) COMMUNICATION_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&ComTaskStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+         ; /* Handle error. */
+     }
+
+    os_err = OSTaskCreateExt((void (*)(void *)) LogTask,   /* Create the start task.                               */
+                             (void          * ) 0,
+                             (OS_STK        * )&LogTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) LOG_TASK_PRIO,
+                             (INT16U          ) LOG_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&LogTaskStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+    if (os_err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+
+    CPU_IntEn();
+
+    OSStart();
+
+}
+
+
+/*
+*********************************************************************************************************
+*                                           App_TaskStart()
+*
+* Description : Startup task example code.
+*
+* Arguments   : p_arg       Argument passed by 'OSTaskCreate()'.
+*
+* Returns     : none.
+*
+* Created by  : main().
+*
+* Notes       : (1) The ticker MUST be initialised AFTER multitasking has started.
+*********************************************************************************************************
+*/
+
+static  void  AppTaskStart (void *p_arg)
+{
+
+    BSP_OS_TmrTickInit(OS_TICKS_PER_SEC);                       /* Configure and enable OS tick interrupt.              */
+    InitHallSensorInterrupt();
+    //InitDistanceSensorInterrupt();
+    //InitCommunicationInterrupt();
+
+
+    for(;;) {
+        BSP_WatchDog_Reset();
+        OSTimeDlyHMSM(0, 0, 1, 0);
+    }
+}
+
+//This is going to be made into a function:
+//			OSSemPend(logMessageStorageAccess, 10, &send_err);
+//			errorMessage = OSMemGet(logMessageStorage, &send_err);
+//			errorMessage = malloc(sizeof(LogMessage));
+//			errorMessage->_taskName = TaskName;
+//			errorMessage->_sourceName = "OSQPend";
+//			errorMessage->_error = err;
+//		    OSQPost(LogQueue, errorMessage);
+//		}
+//
+
+static void EmergencyTask (void *p_arg)
+{
+	INT8U err;
+	char *TaskName = "EmergencyTask";
+	LogMessage *errorMessage;
+
+    for(;;) {OSTimeDlyHMSM(1,0,0,0);} //Task does nothing currently
+}
+
+static void CollisionTask (void *p_arg)
+{
+	INT8U err, send_err;
+	char *TaskName = "CollisionTask";
+	LogMessage *errorMessage;
+
+	DistanceMessage *incoming;
+
+    for(;;) {
+
+    	incoming = (DistanceMessage*)OSQPend(CollisionQueue, 0, &err);
+    	// TODO: set data to local variables before freeing message
+    	OSMemPut(DistanceMessageStorage, incoming);
+
+		if (err == OS_ERR_NONE)
+		{
+			/*
+			 * You have received a distance measurement. TODO: Implement
+			 */
+		} else {
+			;//Send to log through function
+        }
+    }
+}
+
+
+static void MotorTask (void *p_arg)
+{
+	INT8U err, send_err;
+	char *TaskName = "MotorTask";
+
+    MotorChangeMessage *incoming;
+    LogMessage *errorMessage;
+
+    float frontLeft, frontRight, backLeft, backRight;
+    uint8_t steeringServo;
+
+    for(;;) {
+
+    	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, OS_TICKS_PER_SEC / 2, &err);
+
+        printf("Motor Task: %f, %f, %f, %f, %d\n", incoming->frontLeft, incoming->frontRight,
+        		incoming->backLeft, incoming->backRight, incoming->steeringServo);
+
+
+		if(err == OS_ERR_NONE) // Message was received
+		{
+            frontLeft = incoming->frontLeft;
+            frontRight = incoming->frontRight;
+            backLeft = incoming->backLeft;
+            backRight = incoming->backRight;
+            steeringServo = incoming->steeringServo;
+
+
+            driveMotors(0.85, incoming, 0, false);
+            //TODO: Delete printf
+            //printf("Incoming Message to MotorTask:\n fL = %f\n fR = %f\n rL = %f\n rR = %f\n sR = %d\n", frontLeft, frontRight, backLeft, backRight, steeringServo);
+            MoveFrontServo(steeringServo);
+
+            OSMemPut(MotorMessageStorage, incoming);
+            /*
+			Here's where you can actually do what you want to do
+			*/
+		} else {
+			;//Send to log through function
+		}
+    }
+}
+
+static void FuzzyTask (void *p_arg)
+{
+//	INT8U err;
+//	char *TaskName = "FuzzyTask";
+//
+    MotorSpeedMessage *incoming;
+    MotorChangeMessage outgoing;
+//    LogMessage *errorMessage;
+//
+//    uint8_t frontLeft, frontRight, backLeft, backRight;
+//	// 'new' Variables, for incoming hall sensor information.
+//	uint8_t newFrontLeft, newFrontRight, newRearLeft, newRearRight;
+//	// 'old' Variables, since we take the different in Software
+//	uint8_t oldFrontLeft = 0;
+//	uint8_t oldFrontRight = 0;
+//	uint8_t oldRearLeft = 0;
+//	uint8_t oldRearRight = 0;
+//	int8_t localSteeringAngle;
+//
+
+	INT8U err;
+	char *TaskName = "FuzzyTask";
+
+	// 'new' Variables, for incoming hall sensor information.
+	uint8_t newFrontLeft, newFrontRight, newRearLeft, newRearRight;
+
+	// 'old' Variables, since we take the different in Software
+	uint8_t oldFrontLeft = 0;
+	uint8_t oldFrontRight = 0;
+	uint8_t oldRearLeft = 0;
+	uint8_t oldRearRight = 0;
+
+	int8_t steeringAngle = 0;
+	//                1    2   3   4    5    6  7   8   9  10 11  12
+	uint8_t fl[12] = {40, 25, 128, 16}//,  50, 40, 54, 44, 6, 4, 5,  40};
+	uint8_t fr[12] = {54, 25, 16,  128}//, 40, 50, 44, 54, 4, 6, 15, 40};
+	uint8_t rl[12] = {43, 50, 120, 20}//,  39, 30, 39, 30, 4, 3, 25, 20};
+	uint8_t rr[12] = {50, 50, 20,  120}//, 30, 39, 30, 39, 3, 4, 25, 40};
+	int8_t steer[12] = {-15, 0, 30, -30}//, 25, -25, 25, -25, 10, -10, 0, 0};
+	//                  1    2   3   4   5   6    7    8   9   10   11 12
+	float ffl, ffr, frl, frr, fs;
+
+	int8_t st;
+
+	int i = 0;
+    for(;;) {
+
+    	incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
+
+    	if (err == OS_ERR_NONE)
+    	{
+    		//	OSSemPend(SteeringSemaphore, 0, &err);
+    		//	localSteeringAngle = steeringAngle;
+    		//	OSSemPost(SteeringSemaphore);
+
+
+//            newFrontLeft = incoming->frontLeft;
+//            newFrontRight = incoming->frontRight;
+//            newRearLeft = incoming->backLeft;
+//            newRearRight = incoming->backRight;
+            OSMemPut(FuzzyMessageStorage, incoming);
+//
+//            uint8_t wheelSpeeds[4] = {
+//            	newFrontLeft - oldFrontLeft,
+//            	newFrontRight - oldFrontRight,
+//				newRearLeft - oldRearLeft,
+//				newRearRight - oldRearRight
+//            };
+
+            newFrontLeft = fl[i];
+            newFrontRight = fr[i];
+            newRearLeft = rl[i];
+            newRearRight = rr[i];
+
+            uint8_t wheelSpeeds[4] = {newFrontLeft,
+            		newFrontRight,
+					newRearLeft,
+					newRearRight
+            };
+
+            // TO-DO Change '0' in the abs to the actual steering angle.
+            if (getMinWheelDiff(wheelSpeeds) < speedThres && abs(steeringAngle) < lowAngle) {
+
+//                outgoing.frontLeft = 0;
+//                outgoing.frontRight = 0;
+//                outgoing.backLeft = 0;
+//                outgoing.backRight = 0;
+//                outgoing.steeringServo = 0;
+
+                ffl = 0;
+                ffr = 0;
+                frl = 0;
+                frr = 0;
+                st = 0;
+
+                outgoing.frontLeft = 0;
+                outgoing.frontRight = 0;
+                outgoing.backLeft = 0;
+                outgoing.backRight = 0;
+                outgoing.steeringServo = 0;
+            } else {
+
+                float *fuzzyOutput = calculateMotorModifiers(wheelSpeeds, steeringAngle);
+
+                ffl = fuzzyOutput[0];
+                ffr = fuzzyOutput[1];
+                frl = fuzzyOutput[2];
+                frr = fuzzyOutput[3];
+                fs = fuzzyOutput[4];
+                outgoing.frontLeft = fuzzyOutput[0];
+                outgoing.frontRight = fuzzyOutput[1];
+                outgoing.backLeft = fuzzyOutput[2];
+                outgoing.backRight = fuzzyOutput[3];
+                outgoing.steeringServo = (int8_t)fuzzyOutput[4];
+
+                OSMemPut(FuzzyLogicProcessorStorage, fuzzyOutput);
+            }
+
+            i++;
+			if (i == 4) i = 0;
+//            oldFrontLeft = newFrontLeft;
+//            oldFrontRight = newFrontRight;
+//            oldRearLeft = newRearLeft;
+//            oldRearRight = newRearRight;
+    	} else {
+    		;//Send to log through function
+        }
+
+    	MotorChangeMessage *_;
+    	if (err == OS_ERR_NONE) _ = OSMemGet(MotorMessageStorage, &err);
+    	if (err == OS_ERR_NONE)
+    	{
+    		_->frontLeft = outgoing.frontLeft;
+    		_->frontRight = outgoing.frontRight;
+    		_->backLeft = outgoing.backLeft;
+    		_->backRight = outgoing.backRight;
+    		_->steeringServo = outgoing.steeringServo;
+
+    		OSQPost(MotorQueue, _);
+    	} else {
+    		; //Send to log through function
+        }
+    }
+}
+
+static void CommunicationTask (void *p_arg)
+{
+	INT8U err;
+	char *TaskName = "CommunicationTask";
+	char localCopy[100];
+
+
+
+    for(;;) {
+    	OSSemPend(CommunicationSemaphore, 0, &err);
+
+    	if (err == OS_ERR_NONE)
+    	{
+    	strncpy(localCopy, userMessage, 100);
+    		// First thing copy to a local version so you're not working off a global variable
+
+    		// I just copy the whole 100 characters. I'm assuming you'll having a parsing scheme
+    		// TODO: Parse
+
+    	} else {
+    		; //Send to log through function
+    	}
+    }
+}
+
+static void LogTask (void *p_arg)
+{
+	INT8U err;
+	LogMessage *incoming;
+
+    for(;;) {
+
+    	incoming = (LogMessage*)OSQPend(LogQueue, 0, &err);
+        //TODO: Do something with the error.
+
+    	OSMemPut(LogMessageStorage, incoming);
+    }
+}

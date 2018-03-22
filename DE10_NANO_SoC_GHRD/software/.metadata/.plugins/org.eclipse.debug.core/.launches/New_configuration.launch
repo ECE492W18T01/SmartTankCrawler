@@ -1,46 +1,46 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="com.arm.debugger.launcher2">
 <mapAttribute key="AverageDurationTracker">
-<mapEntry key="*Fetching Data" value="54417380"/>
-<mapEntry key="*Fetching Data Model" value="170170"/>
+<mapEntry key="*Fetching Data" value="85213114"/>
+<mapEntry key="*Fetching Data Model" value="173080"/>
 <mapEntry key="*FunctionLoader" value="41964455"/>
-<mapEntry key="*list global low level symbols" value="7012726"/>
-<mapEntry key="*loading values from target" value="39238457"/>
+<mapEntry key="*list global low level symbols" value="506823"/>
+<mapEntry key="*loading values from target" value="21872438"/>
 <mapEntry key="*updating expressions" value="79846"/>
 <mapEntry key="*updating registers" value="320972206"/>
-<mapEntry key="*updating variables" value="1041467"/>
+<mapEntry key="*updating variables" value="939863"/>
 <mapEntry key="Add Watchpoint" value="30694674"/>
-<mapEntry key="AddEventObserver" value="568185"/>
-<mapEntry key="Evaluate" value="9616083"/>
-<mapEntry key="Retrieving globals list" value="6121114"/>
+<mapEntry key="AddEventObserver" value="171765"/>
+<mapEntry key="Evaluate" value="24936942"/>
+<mapEntry key="Retrieving globals list" value="5929510"/>
 <mapEntry key="break" value="8187772"/>
-<mapEntry key="continue" value="44218533"/>
+<mapEntry key="continue" value="41410272"/>
 <mapEntry key="core" value="4921359"/>
 <mapEntry key="disable" value="14369016"/>
-<mapEntry key="disassemble" value="17730834"/>
+<mapEntry key="disassemble" value="22291862"/>
 <mapEntry key="evaluate address" value="467770"/>
-<mapEntry key="get capabilities" value="86872"/>
-<mapEntry key="get execution addresss" value="287873"/>
-<mapEntry key="get source lines" value="317824"/>
-<mapEntry key="initialize command help" value="22663677"/>
-<mapEntry key="interrupt" value="36033411"/>
-<mapEntry key="list breakpoints" value="258104"/>
-<mapEntry key="list instruction sets" value="101240"/>
-<mapEntry key="list signals" value="10006719"/>
-<mapEntry key="list watchpoints" value="215539"/>
-<mapEntry key="loadfile" value="1668966621"/>
+<mapEntry key="get capabilities" value="88769"/>
+<mapEntry key="get execution addresss" value="422387"/>
+<mapEntry key="get source lines" value="426732"/>
+<mapEntry key="initialize command help" value="17395543"/>
+<mapEntry key="interrupt" value="20403292"/>
+<mapEntry key="list breakpoints" value="156378"/>
+<mapEntry key="list instruction sets" value="90819"/>
+<mapEntry key="list signals" value="56398959"/>
+<mapEntry key="list watchpoints" value="227057"/>
+<mapEntry key="loadfile" value="1490353017"/>
 <mapEntry key="next" value="57291845"/>
-<mapEntry key="remove" value="17160913"/>
-<mapEntry key="set CWD" value="545767"/>
+<mapEntry key="remove" value="24858826"/>
+<mapEntry key="set CWD" value="485690"/>
 <mapEntry key="set breakpoint properties" value="15649550"/>
-<mapEntry key="set debug-from" value="316498"/>
+<mapEntry key="set debug-from" value="691161"/>
 <mapEntry key="set watchpoint properties" value="316680"/>
-<mapEntry key="source altera_target_check.py" value="235003009"/>
-<mapEntry key="source preloader.ds" value="6123911010"/>
-<mapEntry key="start" value="49445618"/>
+<mapEntry key="source altera_target_check.py" value="213445655"/>
+<mapEntry key="source preloader.ds" value="6015820336"/>
+<mapEntry key="start" value="46857978"/>
 <mapEntry key="step" value="69548738"/>
-<mapEntry key="toggleBreakpoint" value="27817856"/>
-<mapEntry key="waitForTargetToStop" value="440689010"/>
+<mapEntry key="toggleBreakpoint" value="35597647"/>
+<mapEntry key="waitForTargetToStop" value="450902674"/>
 </mapAttribute>
 <intAttribute key="DEBUG_TAB..RESOURCES.COUNT" value="0"/>
 <intAttribute key="FILES.CONNECT_TO_GDB_SERVER.RESOURCES.COUNT" value="0"/>
@@ -153,7 +153,7 @@
 <stringAttribute key="debugger.view.NewRegisterView:DebugOutlineColumnState" value="OutlineConfig1&#9;8&#9;0&#9;true&#9;true&#9;108&#9;-1&#9;true&#9;1&#9;false&#9;true&#9;90&#9;-1&#9;true&#9;2&#9;true&#9;true&#9;135&#9;-1&#9;true&#9;3&#9;false&#9;true&#9;43&#9;-1&#9;true&#9;4&#9;false&#9;true&#9;50&#9;-1&#9;true&#9;5&#9;true&#9;true&#9;37&#9;-1&#9;true&#9;6&#9;false&#9;true&#9;62&#9;-1&#9;true&#9;7&#9;true&#9;true&#9;53&#9;-1&#9;true"/>
 <stringAttribute key="debugger.view.NewRegisterView:_selectedRegisterSet" value="All registers"/>
 <mapAttribute key="debugger.view.NewRegisterView_registerSets"/>
-<stringAttribute key="debugger.view.VariableTreeView:DebugOutlineColumnState" value="OutlineConfig1&#9;8&#9;0&#9;true&#9;true&#9;150&#9;-1&#9;true&#9;1&#9;false&#9;true&#9;90&#9;-1&#9;true&#9;2&#9;true&#9;true&#9;95&#9;-1&#9;true&#9;3&#9;true&#9;true&#9;43&#9;-1&#9;true&#9;4&#9;true&#9;true&#9;50&#9;-1&#9;true&#9;5&#9;true&#9;true&#9;37&#9;-1&#9;true&#9;6&#9;true&#9;true&#9;62&#9;-1&#9;true&#9;7&#9;true&#9;true&#9;53&#9;-1&#9;true"/>
+<stringAttribute key="debugger.view.VariableTreeView:DebugOutlineColumnState" value="OutlineConfig1&#9;8&#9;0&#9;true&#9;false&#9;140&#9;-1&#9;true&#9;1&#9;false&#9;true&#9;90&#9;-1&#9;true&#9;2&#9;true&#9;true&#9;95&#9;-1&#9;true&#9;3&#9;true&#9;false&#9;47&#9;-1&#9;true&#9;4&#9;true&#9;true&#9;50&#9;-1&#9;true&#9;5&#9;true&#9;true&#9;37&#9;-1&#9;true&#9;6&#9;true&#9;true&#9;62&#9;-1&#9;true&#9;7&#9;true&#9;true&#9;53&#9;-1&#9;true"/>
 <listAttribute key="debugger.view.VariableTreeView:USER_ADDED_FILE_STATICS"/>
 <listAttribute key="debugger.view.VariableTreeView:USER_ADDED_GLOBALS"/>
 <booleanAttribute key="debugger.view.expression.DrawAsHex" value="false"/>

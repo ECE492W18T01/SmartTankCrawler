@@ -69,10 +69,10 @@ endif
 all: uC_Template_Project.axf
 
 # Tool invocations
-uC_Template_Project.axf: $(OBJS) C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/BSP/ARM_COMPILER/scatter.scat $(USER_OBJS) $(LIBS)
+uC_Template_Project.axf: $(OBJS) C:/Users/kgmills/Desktop/Project/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/BSP/ARM_COMPILER/scatter.scat $(USER_OBJS) $(LIBS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: ARM Linker 5'
-	armlink --cpu=Cortex-A9 --entry=Start --scatter=""C:/Users/jcrobert/Documents/Repositories/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/BSP/ARM_COMPILER/scatter.scat"" --info=sizes -o "uC_Template_Project.axf" $(OBJS) $(USER_OBJS) $(LIBS)
+	armlink --cpu=Cortex-A9 --entry=Start --scatter=""C:/Users/kgmills/Desktop/Project/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/BSP/ARM_COMPILER/scatter.scat"" --info=sizes -o "uC_Template_Project.axf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
