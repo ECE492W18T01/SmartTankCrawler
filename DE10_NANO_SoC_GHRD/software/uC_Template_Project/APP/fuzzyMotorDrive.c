@@ -1,5 +1,6 @@
 #include "fuzzyMotorDrive.h"
 
+
 void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, int8_t steering, bool stopMask) {
 
 	// Kill switch
@@ -19,7 +20,6 @@ void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, int8_t steerin
 
     // Index to motoDriveR.
     int8_t steeringIndex = abs(steering) / 6;
-
     // Relative speed ratios, assuming a right turn (steering > 0)
     // The speeds from greatest to least are fl > rl > rr >fr
     float fl = magnitude;

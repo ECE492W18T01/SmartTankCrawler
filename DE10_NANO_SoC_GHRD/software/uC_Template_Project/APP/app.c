@@ -230,6 +230,8 @@ int main ()
     CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
     RxDataAvailabeSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
 
+    globalSteeringAngle = 0;
+
     INT8U err;
     MotorMessageStorage = OSMemCreate(MotorMessageMemory, 10, sizeof(MotorChangeMessage), &err);
     if (err != OS_ERR_NONE) {
@@ -449,61 +451,80 @@ static void CollisionTask (void *p_arg)
     }
 }
 
-
+/*
+ * Motor Task
+ * Responsible for accruing information from other tasks and sending output
+ * instructions to the PWMs for the H_bridges and steering servo.
+ */
 static void MotorTask (void *p_arg)
 {
 	INT8U err, send_err;
 	char *TaskName = "MotorTask";
 
+	// Incoming from Fuzzy Task, staticFuzzy is local and static allocated
     MotorChangeMessage *incoming;
     MotorChangeMessage staticFuzzy = { 0 };
     LogMessage *errorMessage;
 
-    float userDriveSpeed;
+    // TO-DO assign this as something from the communication task.
+    float userDriveSpeed = 0.85;
+
+    // This should not be changes; it should be initalized to zero and then changed later.
+    // This is NOT the global emergency brake variable, but later in the code it is assigned that variable's value.
     bool allStop = false;
 
-    int8_t oldUserSteer = 0;
-    int8_t newUserSteer, actualSteeringAngle;
+    // Old steering, new steering, and the actual value to be plugged.
+    int8_t oldUserSteer, newUserSteer, actualSteeringAngle = 0;
 
+    // Loop forever.
     for(;;) {
 
     	// TO-DO: Replace this with a queue pend, or SOMETHING, to get the new user steering
     	// AS AN INT8_T.
     	newUserSteer = 0;
 
-    	// TO-DO: Mock object in case, Fuzzy Set has no output.
     	// Only pend for so long - Change timeout value to be define, but the number now is 1/4 of a second.
-    	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, 200000000, &err);
+    	// Subject to change alongside timeouts for other queues.
+    	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, OS_TICKS_PER_SEC / 4, &err);
 
+    	// We timed out, set the static struct's parameters to zero. Aka zero fuzzy mods.
     	if (err == OS_ERR_TIMEOUT) {
+    		printf("Not here");
     		staticFuzzy.frontLeft = 0;
     		staticFuzzy.frontRight = 0;
     		staticFuzzy.backLeft = 0;
     		staticFuzzy.backRight = 0;
     		staticFuzzy.steeringServo = 0;
 
+    		// And let us know that everything is fine.
     		err = OS_ERR_NONE;
     	}
 
+    	// We got info from the Fuzzy Task, so assign it to the static task.
     	else {
+    		printf("Here");
     		staticFuzzy.frontLeft = incoming->frontLeft;
     		staticFuzzy.frontRight = incoming->frontRight;
     		staticFuzzy.backLeft = incoming->backLeft;
     		staticFuzzy.backRight = incoming->backRight;
     		staticFuzzy.steeringServo = incoming->steeringServo;
 
+    		// Free Fuzzy Task struct memory
     		OSMemPut(MotorMessageStorage, incoming);
     	}
 
 		if(err == OS_ERR_NONE) {
 
+			// If the user wants the servo "moved", don't listen to the fuzzy task.
 			if ((newUserSteer - oldUserSteer) / 6 == 0) {
+				// But if they didn't move the joystick enough, move it.
 				OSSemPend(SteeringSemaphore, 0, &err);
-				globalSteeringAngle += incoming->steeringServo;
+				globalSteeringAngle += staticFuzzy.steeringServo;
 				actualSteeringAngle = globalSteeringAngle;
 				OSSemPost(SteeringSemaphore);
 			}
 
+			// Only listen to the user.
 			else {
 				OSSemPend(SteeringSemaphore, 0, &err);
 				globalSteeringAngle = newUserSteer;
@@ -512,13 +533,15 @@ static void MotorTask (void *p_arg)
 				actualSteeringAngle = newUserSteer;
 			}
 
-
+			// Old = new, for the next iteration.
 			oldUserSteer = newUserSteer;
 
+			// Check if we're supposed to cut the engines.
 			OSSemPend(MaskSemaphore, 0, &err);
 			allStop = motorMask;
 			OSSemPost(MaskSemaphore);
 
+			// Move the servo, then the motors. Should probably protect this with OS_ENTER_CRITICAL...? TO-DO
 			MoveFrontServo(actualSteeringAngle);
 			driveMotors(userDriveSpeed, &staticFuzzy, actualSteeringAngle, allStop);
 
@@ -528,10 +551,21 @@ static void MotorTask (void *p_arg)
     }
 }
 
+/**
+ * Fuzzy Task
+ * Gets information from Hall Sensors at a 2Hz rate.
+ * Processes information to determine relative speeds.
+ * Accesses global variable on steering for lookup table, does not modify though.
+ * Uses Fuzzy Logic LUTs to determine fuzzy modifiers.
+ * Sends to Motor Task.
+ */
 static void FuzzyTask (void *p_arg) {
 	INT8U err;
 	char *TaskName = "FuzzyTask";
 
+	// First struct from Hall Sensor Interrupt.
+	// Second to Motor Task.
+	// Third to log task - if necessary.
     MotorSpeedMessage *incoming;
     MotorChangeMessage outgoing;
     LogMessage *errorMessage;
@@ -544,22 +578,32 @@ static void FuzzyTask (void *p_arg) {
 	uint8_t oldFrontRight = 0;
 	uint8_t oldRearLeft = 0;
 	uint8_t oldRearRight = 0;
-	int8_t localSteeringAngle;
 
+	// Local variable for steering, we only access the semaphore once.
+	int8_t localSteeringAngle = 0;
+
+	// Loop forever.
     for(;;) {
+
+    	// Await incoming Hall Sensor information at 2Hz.
      	incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
 
+     	// Assumming nothing bad happened, get new hall sensor information.
     	if (err == OS_ERR_NONE) {
             newFrontLeft = incoming->frontLeft;
             newFrontRight = incoming->frontRight;
             newRearLeft = incoming->backLeft;
             newRearRight = incoming->backRight;
+
+            // And 'free' the memory.
             OSMemPut(FuzzyMessageStorage, incoming);
 
+            // Get the steering angle.
     		OSSemPend(SteeringSemaphore, 0, &err);
     		localSteeringAngle = globalSteeringAngle;
     		OSSemPost(SteeringSemaphore);
 
+    		// Calculate relative speeds, new - old.
             uint8_t wheelSpeeds[4] = {
             	newFrontLeft - oldFrontLeft,
             	newFrontRight - oldFrontRight,
@@ -567,9 +611,10 @@ static void FuzzyTask (void *p_arg) {
 				newRearRight - oldRearRight
             };
 
-            // TO-DO Change '0' in the abs to the actual steering angle.
+            // Decide whether or not we even want to access the Fuzzy Logic Matrix.
             if (getMinWheelDiff(wheelSpeeds) < speedThres && abs(localSteeringAngle) < lowAngle) {
 
+            	// Assign zero to all modifiers.
 				outgoing.frontLeft = 0;
 				outgoing.frontRight = 0;
 				outgoing.backLeft = 0;
@@ -578,20 +623,25 @@ static void FuzzyTask (void *p_arg) {
 
             }
 
+            // If we do access the matrix,
             else {
 
+            	// Insert inputs, get outputs. See FuzzyLogicProcessor.c for more info on how this works.
                 float *fuzzyOutput = calculateMotorModifiers(wheelSpeeds, localSteeringAngle);
 
+                // Assign outgoing variables to be these.
                 outgoing.frontLeft = fuzzyOutput[0];
                 outgoing.frontRight = fuzzyOutput[1];
                 outgoing.backLeft = fuzzyOutput[2];
                 outgoing.backRight = fuzzyOutput[3];
                 outgoing.steeringServo = fuzzyOutput[4];
 
+                // Put the temporary memory borrowed by calculateMotorModifiers back.
                 OSMemPut(FuzzyLogicProcessorStorage, fuzzyOutput);
 
             }
 
+            // Old is now new.
             oldFrontLeft = newFrontLeft;
             oldFrontRight = newFrontRight;
             oldRearLeft = newRearLeft;
@@ -603,6 +653,7 @@ static void FuzzyTask (void *p_arg) {
     		; // TO-DO Send to log function
         }
 
+    	// Send the message off.
     	MotorChangeMessage *_;
     	if (err == OS_ERR_NONE) _ = OSMemGet(MotorMessageStorage, &err);
     	if (err == OS_ERR_NONE)
