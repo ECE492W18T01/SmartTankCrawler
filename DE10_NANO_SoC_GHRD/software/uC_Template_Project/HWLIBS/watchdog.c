@@ -3,6 +3,8 @@
 #include <stdio.h>
 
 void init_communication_watchdog(){
+	WD_DBG_PAUSE_REG &= WD_DBG_PAUSE_REG_CLEAR;
+
 	// to set initial timeout period
 	WDT1_TORR &= WTD_TIMEOUR_INIT_CLEAR;
 	WDT1_TORR |=  WTD_TIMEOUT_INIT;
@@ -13,6 +15,7 @@ void init_communication_watchdog(){
 
 	// set the response mode to inturrupt
 	WDT1_CR |= WDT_INTERUPT_MODE;
+
 
 	BSP_IntVectSet(204u,   // 194 is for UART0 interrupt
 					1,	    // prio

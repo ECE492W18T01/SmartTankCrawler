@@ -64,6 +64,7 @@
 #include  <socal.h>
 #include  <hwlib.h>
 
+#include "globals.h"
 #include "motor_control.h"
 #include "wrap.h"
 #include "serial_communication.h"
@@ -97,6 +98,13 @@ CPU_STK FuzzyTaskStk[TASK_STACK_SIZE];
 CPU_STK ComTaskStk[TASK_STACK_SIZE];
 CPU_STK LogTaskStk[TASK_STACK_SIZE];
 
+/*
+*********************************************************************************************************
+*                                       GLOBAL COMMUNICATION STATE VARIABLES
+*********************************************************************************************************
+*/
+
+static bool communications_established = false;
 
 /*
 *********************************************************************************************************
@@ -138,6 +146,7 @@ OS_EVENT *CollisionQueue;
 OS_EVENT *SteeringSemaphore;
 OS_EVENT *MaskSemaphore;
 OS_EVENT *CommunicationSemaphore;
+OS_EVENT *RxDataAvailabeSemaphore;
 
 // Resources
 int8_t globalSteeringAngle;
@@ -154,6 +163,8 @@ OSSemPend(MaskSemaphore, 0, &err);
 // Do your thing
 OSSemPost(MaskSemaphore);
 */
+
+#define RX_FIFO_SIZE 127
 
 OS_MEM *MotorMessageStorage;
 INT8U MotorMessageMemory[10][sizeof(MotorChangeMessage)];
@@ -172,6 +183,9 @@ INT8U StatusMessageMemory[100][sizeof(StatusMessage)];
 
 OS_MEM *MessageStorage;
 INT8U MessageMemory[100][100]; //100 is a 100 character string
+
+OS_MEM *IncomingMessageStorage;
+INT8U IncomingMessageMemory[RX_FIFO_SIZE];
 
 OS_MEM *_UserInputStorage;
 INT8U UserInputMemory[1][100];
@@ -216,6 +230,7 @@ int main ()
     SteeringSemaphore = OSSemCreate(1);			// One shared resource
     MaskSemaphore = OSSemCreate(1);				// One shared resource
     CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
+    RxDataAvailabeSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
 
     INT8U err;
     MotorMessageStorage = OSMemCreate(MotorMessageMemory, 10, sizeof(MotorChangeMessage), &err);
@@ -246,6 +261,11 @@ int main ()
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
+    IncomingMessageStorage = OSMemCreate(IncomingMessageMemory, 1,RX_FIFO_SIZE,&err);
+    if (err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+
     userMessage =  OSMemGet(_UserInputStorage, &err);
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
@@ -596,11 +616,52 @@ static void CommunicationTask (void *p_arg)
 	char *TaskName = "CommunicationTask";
 	char localCopy[100];
 
-
+	communications_established = false;
+	bzero(IncomingMessageStorage, MSG_BUFFER_LEN);
 
     for(;;) {
-    	OSSemPend(CommunicationSemaphore, 0, &err);
+    	OSSemPend(RxDataAvailabeSemaphore, 0, &err);
+    	char local_char_buffer[RX_FIFO_SIZE];
+    	uint32_t chars_read = 0;
+    	bool status = read_rx_buffer(local_char_buffer, &chars_read);
+    	if(chars_read > 0 && status == true){
+    		int incoming_buffer_len = strlen(IncomingMessageStorage);
+    		if(incoming_buffer_len + chars_read > RX_FIFO_SIZE){
+    			// overflow error
+    		}else{
+    			strncat(IncomingMessageStorage,local_char_buffer,chars_read);
+    			// now determine what to do with the incoming message
+    			if(communications_established == true){
+    				// parse message if entire message has been received
+    				if(complete_message_revived(IncomingMessageStorage) == true){
+    					if(look_for_end_byte(IncomingMessageStorage) == true){
+    						// termination character received
+    						bzero(IncomingMessageStorage, RX_FIFO_SIZE);
+    						communications_established = false;
+    					}else{
+        					incoming_msg *new_msg = parse_incomming_msg(IncomingMessageStorage);
+        					if(new_msg != NULL){
+        						// valid message received
+        						serial_send(ACKNOWLEDGE_STR);
+        						bzero(IncomingMessageStorage, RX_FIFO_SIZE);
+        						// TO DO: send to Keith
+        					}
+    					}
+    				}
+    			}else{
+    				//look for start byte
+    				communications_established = look_for_start_byte(IncomingMessageStorage, incoming_buffer_len);
+    				if(communications_established == true){
+    					serial_send(ACKNOWLEDGE_STR);
+    					OSSemPost(RxDataAvailabeSemaphore);
+    				}else{
+    					// garbage, clear incoming buffer
+    					bzero(IncomingMessageStorage, RX_FIFO_SIZE);
+    				}
+    			}
+    		}
 
+    	}
     	if (err == OS_ERR_NONE)
     	{
     	strncpy(localCopy, userMessage, 100);
