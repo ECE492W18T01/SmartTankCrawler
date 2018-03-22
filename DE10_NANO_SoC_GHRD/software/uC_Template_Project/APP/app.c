@@ -70,9 +70,7 @@
 #include "serial_communication.h"
 #include "FuzzyLogicProcessor.h"
 #include "fuzzyMotorDrive.h"
-
-#include <timer.h>
-
+#include "timer.h"
 
 #define APP_TASK_PRIO 5
 #define EMERGENCY_TASK_PRIORITY 6
@@ -149,7 +147,7 @@ OS_EVENT *CommunicationSemaphore;
 OS_EVENT *RxDataAvailabeSemaphore;
 
 // Resources
-int8_t globalSteeringAngle;
+int8_t globalSteeringAngle; // TO-DO: Give this an intial value in MAIN
 bool motorMask = false; //TO-DO: Keith can you rename this to whatever you want?
 char* userMessage;
 /* To access steering Angle:
@@ -458,9 +456,11 @@ static void MotorTask (void *p_arg)
 	char *TaskName = "MotorTask";
 
     MotorChangeMessage *incoming;
+    MotorChangeMessage staticFuzzy = { 0 };
     LogMessage *errorMessage;
 
     float userDriveSpeed;
+    bool allStop = false;
 
     int8_t oldUserSteer = 0;
     int8_t newUserSteer, actualSteeringAngle;
@@ -472,46 +472,56 @@ static void MotorTask (void *p_arg)
     	newUserSteer = 0;
 
     	// TO-DO: Mock object in case, Fuzzy Set has no output.
-    	// Only pend for so long.
-    	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, 0, &err);
+    	// Only pend for so long - Change timeout value to be define, but the number now is 1/4 of a second.
+    	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, 200000000, &err);
 
+    	if (err == OS_ERR_TIMEOUT) {
+    		staticFuzzy.frontLeft = 0;
+    		staticFuzzy.frontRight = 0;
+    		staticFuzzy.backLeft = 0;
+    		staticFuzzy.backRight = 0;
+    		staticFuzzy.steeringServo = 0;
 
-    	if ((newUserSteer - oldUserSteer) / 6 == 0) {
-    		OSSemPend(SteeringSemaphore, 0, &err);
-    		globalSteeringAngle += incoming->steeringServo;
-    		actualSteeringAngle = globalSteeringAngle;
-    		OSSemPost(SteeringSemaphore);
+    		err = OS_ERR_NONE;
     	}
 
     	else {
-    		OSSemPend(SteeringSemaphore, 0, &err);
-    		globalSteeringAngle = newUserSteer;
-    		OSSemPost(SteeringSemaphore);
+    		staticFuzzy.frontLeft = incoming->frontLeft;
+    		staticFuzzy.frontRight = incoming->frontRight;
+    		staticFuzzy.backLeft = incoming->backLeft;
+    		staticFuzzy.backRight = incoming->backRight;
+    		staticFuzzy.steeringServo = incoming->steeringServo;
 
-    		actualSteeringAngle = newUserSteer;
+    		OSMemPut(MotorMessageStorage, incoming);
     	}
 
+		if(err == OS_ERR_NONE) {
+
+			if ((newUserSteer - oldUserSteer) / 6 == 0) {
+				OSSemPend(SteeringSemaphore, 0, &err);
+				globalSteeringAngle += incoming->steeringServo;
+				actualSteeringAngle = globalSteeringAngle;
+				OSSemPost(SteeringSemaphore);
+			}
+
+			else {
+				OSSemPend(SteeringSemaphore, 0, &err);
+				globalSteeringAngle = newUserSteer;
+				OSSemPost(SteeringSemaphore);
+
+				actualSteeringAngle = newUserSteer;
+			}
 
 
-        //printf("Motor Task: %f, %f, %f, %f, %d\n", incoming->frontLeft, incoming->frontRight,
-        //		incoming->backLeft, incoming->backRight, incoming->steeringServo);
+			oldUserSteer = newUserSteer;
 
+			OSSemPend(MaskSemaphore, 0, &err);
+			allStop = motorMask;
+			OSSemPost(MaskSemaphore);
 
+			MoveFrontServo(actualSteeringAngle);
+			driveMotors(userDriveSpeed, &staticFuzzy, actualSteeringAngle, allStop);
 
-		if(err == OS_ERR_NONE) // Message was received
-		{
-			globalSteeringAngle = incoming->steeringServo;
-
-
-            driveMotors(0.85, incoming, 0, false);
-            //TO-DO: Delete printf
-            //printf("Incoming Message to MotorTask:\n fL = %f\n fR = %f\n rL = %f\n rR = %f\n sR = %d\n", frontLeft, frontRight, backLeft, backRight, steeringServo);
-            MoveFrontServo(globalSteeringAngle);
-
-            OSMemPut(MotorMessageStorage, incoming);
-            /*
-			Here's where you can actually do what you want to do
-			*/
 		} else {
 			;//Send to log through function
 		}
