@@ -72,6 +72,11 @@
 #include "fuzzyMotorDrive.h"
 #include "timer.h"
 
+/*
+*********************************************************************************************************
+*                              Priority Definitions and Task Stack Size
+*********************************************************************************************************
+*/
 #define APP_TASK_PRIO 5
 #define EMERGENCY_TASK_PRIORITY 6
 #define COLLISION_TASK_PRIO 7
@@ -81,6 +86,13 @@
 #define LOG_TASK_PRIO 11
 
 #define TASK_STACK_SIZE 4096
+
+/*
+*********************************************************************************************************
+*                                            Communication Size
+*********************************************************************************************************
+*/
+#define RX_FIFO_SIZE 127
 
 /*
 *********************************************************************************************************
@@ -98,7 +110,7 @@ CPU_STK LogTaskStk[TASK_STACK_SIZE];
 
 /*
 *********************************************************************************************************
-*                                       GLOBAL COMMUNICATION STATE VARIABLES
+*                                 GLOBAL COMMUNICATION STATE VARIABLES
 *********************************************************************************************************
 */
 
@@ -121,16 +133,7 @@ static  void  LogTask               	(void        *p_arg);
 
 /*
 *********************************************************************************************************
-*                                               main()
-*
-* Description : Entry point for C code.
-*
-* Arguments   : none.
-*
-* Returns     : none.
-*
-* Note(s)     : (1) It is assumed that your code will call main() once you have performed all necessary
-*                   initialisation.
+*                                          GLOBAL ITEMS
 *********************************************************************************************************
 */
 
@@ -144,25 +147,43 @@ OS_EVENT *CollisionQueue;
 OS_EVENT *SteeringSemaphore;
 OS_EVENT *MaskSemaphore;
 OS_EVENT *CommunicationSemaphore;
-OS_EVENT *RxDataAvailabeSemaphore;
+OS_EVENT *RxDataAvailableSemaphore;
 
 // Resources
-int8_t globalSteeringAngle; // TO-DO: Give this an intial value in MAIN
-bool motorMask = false; //TO-DO: Keith can you rename this to whatever you want?
+int8_t globalSteeringAngle;
+bool motorMask = false;
 char* userMessage;
+
 /* To access steering Angle:
 OSSemPend(SteeringSemaphore, 0, &err);
-// Do your thing
+/* Example:
+ *
+ * globalSteeringAngle = newSteeringAngle;
+ *
 OSSemPost(SteeringSemaphore);
 */
 
 /* To access mask (In non protected code):
 OSSemPend(MaskSemaphore, 0, &err);
-// Do your thing
+/*
+ * Example:
+ *
+ * if (motorMask) NewMotorSpeed = OldMotorSpeed*Change;
+ * else NewMotorSpeed = 0;
+ *
 OSSemPost(MaskSemaphore);
 */
 
-#define RX_FIFO_SIZE 127
+
+/* Memory:
+ * --Name--Storage:
+ * 		The object you use to get and put back memory blocks.
+ * --Name--Memory:
+ * 		The actual memory block.
+ * 		This should only ever be touched once, to create the memory block.
+ * 		The first number is the amount of blocks to create.
+ * 		The second number is the size of each block. These --should-- be the size of a word. I'll fix later.
+*/
 
 OS_MEM *MotorMessageStorage;
 INT8U MotorMessageMemory[10][sizeof(MotorChangeMessage)];
@@ -183,7 +204,7 @@ OS_MEM *MessageStorage;
 INT8U MessageMemory[100][100]; //100 is a 100 character string
 
 OS_MEM *IncomingMessageStorage;
-INT8U IncomingMessageMemory[RX_FIFO_SIZE];
+INT8U IncomingMessageMemory[1][RX_FIFO_SIZE];
 
 OS_MEM *_UserInputStorage;
 INT8U UserInputMemory[1][100];
@@ -191,6 +212,20 @@ INT8U UserInputMemory[1][100];
 OS_MEM *FuzzyLogicProcessorStorage;
 INT8U FuzzyLogicProcessorMemory[5][sizeof(float) * 5];
 
+/*
+*********************************************************************************************************
+*                                               main()
+*
+* Description : Entry point for C code.
+*
+* Arguments   : none.
+*
+* Returns     : none.
+*
+* Note(s)     : (1) It is assumed that your code will call main() once you have performed all necessary
+*                   Initialization.
+*********************************************************************************************************
+*/
 
 int main ()
 {
@@ -210,32 +245,37 @@ int main ()
 
     BSP_Init();
 
-
     OSInit();
 
+    // Set the global steering angle to 0 on start.
+    globalSteeringAngle = 0;
 
-
+    //Array of pointers that the Queues will use. Should never be touched again.
     void *LogMessageArray[100];
     void *MotorMessageArray[10];
     void *FuzzyMessageArray[10];
     void *CollisionMessageArray[10];
 
+    // Create the Queues using above arrays to save message pointers.
     CollisionQueue = OSQCreate(CollisionMessageArray, 10);
     LogQueue = OSQCreate(LogMessageArray, 10);
     MotorQueue = OSQCreate(MotorMessageArray, 10);
     FuzzyQueue = OSQCreate(FuzzyMessageArray, 10);
 
+    /* Create the semaphores
+     * Zero means that the semaphore will be used as a flag
+     * NonZero means the semaphore will be used to control access to shared resource(s).
+     */
     SteeringSemaphore = OSSemCreate(1);			// One shared resource
     MaskSemaphore = OSSemCreate(1);				// One shared resource
     CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
-    RxDataAvailabeSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
-
-    globalSteeringAngle = 0;
-
+    RxDataAvailableSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
+    // TODO get rid of all the magic numbers, I'll do this later as its low priority (Josh)
+    // Initialize the Memory.
     INT8U err;
     MotorMessageStorage = OSMemCreate(MotorMessageMemory, 10, sizeof(MotorChangeMessage), &err);
     if (err != OS_ERR_NONE) {
-    	; /* Handle error. */
+    	; /* Handle error. TODO what's the best way to do this?...*/
     }
     FuzzyMessageStorage = OSMemCreate(FuzzyMessageMemory, 10, sizeof(MotorSpeedMessage), &err);
     if (err != OS_ERR_NONE) {
@@ -270,10 +310,11 @@ int main ()
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
-    FuzzyLogicProcessorStorage =  OSMemGet(FuzzyLogicProcessorMemory, &err);
+    FuzzyLogicProcessorStorage = OSMemCreate(FuzzyLogicProcessorMemory, 5,sizeof(float) * 5,&err);
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
+
 
     os_err = OSTaskCreateExt((void (*)(void *)) AppTaskStart,   /* Create the start task.                               */
                              (void          * ) 0,
@@ -419,18 +460,18 @@ static  void  AppTaskStart (void *p_arg)
 
 static void EmergencyTask (void *p_arg)
 {
-	INT8U err;
-	char *TaskName = "EmergencyTask";
-	LogMessage *errorMessage;
+//	INT8U err;
+//	char *TaskName = "EmergencyTask";
+//	LogMessage *errorMessage;
 
     for(;;) {OSTimeDlyHMSM(1,0,0,0);} //Task does nothing currently
 }
 
 static void CollisionTask (void *p_arg)
 {
-	INT8U err, send_err;
-	char *TaskName = "CollisionTask";
-	LogMessage *errorMessage;
+	INT8U err; //, send_err;
+//	char *TaskName = "CollisionTask";
+//	LogMessage *errorMessage;
 
 	DistanceMessage *incoming;
 
@@ -458,13 +499,13 @@ static void CollisionTask (void *p_arg)
  */
 static void MotorTask (void *p_arg)
 {
-	INT8U err, send_err;
-	char *TaskName = "MotorTask";
+	INT8U err; //, send_err;
+//	char *TaskName = "MotorTask";
 
 	// Incoming from Fuzzy Task, staticFuzzy is local and static allocated
     MotorChangeMessage *incoming;
     MotorChangeMessage staticFuzzy = { 0 };
-    LogMessage *errorMessage;
+//    LogMessage *errorMessage;
 
     // TO-DO assign this as something from the communication task.
     float userDriveSpeed = 0.85;
@@ -489,13 +530,6 @@ static void MotorTask (void *p_arg)
 
     	// We timed out, set the static struct's parameters to zero. Aka zero fuzzy mods.
     	if (err == OS_ERR_TIMEOUT) {
-    		printf("Not here");
-    		staticFuzzy.frontLeft = 0;
-    		staticFuzzy.frontRight = 0;
-    		staticFuzzy.backLeft = 0;
-    		staticFuzzy.backRight = 0;
-    		staticFuzzy.steeringServo = 0;
-
     		// And let us know that everything is fine.
     		err = OS_ERR_NONE;
     	}
@@ -561,14 +595,14 @@ static void MotorTask (void *p_arg)
  */
 static void FuzzyTask (void *p_arg) {
 	INT8U err;
-	char *TaskName = "FuzzyTask";
+//	char *TaskName = "FuzzyTask";
 
 	// First struct from Hall Sensor Interrupt.
 	// Second to Motor Task.
 	// Third to log task - if necessary.
     MotorSpeedMessage *incoming;
     MotorChangeMessage outgoing;
-    LogMessage *errorMessage;
+//    LogMessage *errorMessage;
 
 	// 'new' Variables, for incoming hall sensor information.
 	uint8_t newFrontLeft, newFrontRight, newRearLeft, newRearRight;
@@ -612,7 +646,7 @@ static void FuzzyTask (void *p_arg) {
             };
 
             // Decide whether or not we even want to access the Fuzzy Logic Matrix.
-            if (getMinWheelDiff(wheelSpeeds) < speedThres && abs(localSteeringAngle) < lowAngle) {
+            if (getMinWheelDiff(wheelSpeeds) < speedThres && abs(localSteeringAngle) < lowAngle) { // TODO Switch flipper
 
             	// Assign zero to all modifiers.
 				outgoing.frontLeft = 0;
@@ -674,14 +708,15 @@ static void FuzzyTask (void *p_arg) {
 static void CommunicationTask (void *p_arg)
 {
 	INT8U err;
-	char *TaskName = "CommunicationTask";
+//	char *TaskName = "CommunicationTask";
 	char localCopy[100];
 
 	communications_established = false;
+	//Get memory IncomingMessageStorage-->incomingMessage
 	bzero(IncomingMessageStorage, MSG_BUFFER_LEN);
 
     for(;;) {
-    	OSSemPend(RxDataAvailabeSemaphore, 0, &err);
+    	OSSemPend(RxDataAvailableSemaphore, 0, &err);
     	char local_char_buffer[RX_FIFO_SIZE];
     	uint32_t chars_read = 0;
     	bool status = read_rx_buffer(local_char_buffer, &chars_read);
@@ -700,6 +735,7 @@ static void CommunicationTask (void *p_arg)
     						bzero(IncomingMessageStorage, RX_FIFO_SIZE);
     						communications_established = false;
     					}else{
+    						//TODO marker for josh grab this and send to c
         					incoming_msg *new_msg = parse_incomming_msg(IncomingMessageStorage);
         					if(new_msg != NULL){
         						// valid message received
@@ -714,7 +750,7 @@ static void CommunicationTask (void *p_arg)
     				communications_established = look_for_start_byte(IncomingMessageStorage, incoming_buffer_len);
     				if(communications_established == true){
     					serial_send(ACKNOWLEDGE_STR);
-    					OSSemPost(RxDataAvailabeSemaphore);
+    					OSSemPost(RxDataAvailableSemaphore);
     				}else{
     					// garbage, clear incoming buffer
     					bzero(IncomingMessageStorage, RX_FIFO_SIZE);

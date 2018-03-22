@@ -113,7 +113,7 @@ bool complete_message_revived(char * incoming_message){
 
 
 void UART0_IRS_handeler(CPU_INT32U cpu_id){
-	INT8U err = OSSemPost(RxDataAvailabeSemaphore);
+	INT8U err = OSSemPost(RxDataAvailableSemaphore);
 }
 
 
