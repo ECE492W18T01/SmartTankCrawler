@@ -157,7 +157,7 @@ char* userMessage;
 
 /* To access steering Angle:
 OSSemPend(SteeringSemaphore, 0, &err);
-/* Example:
+ * Example:
  *
  * globalSteeringAngle = newSteeringAngle;
  *
@@ -166,7 +166,7 @@ OSSemPost(SteeringSemaphore);
 
 /* To access mask (In non protected code):
 OSSemPend(MaskSemaphore, 0, &err);
-/*
+ *
  * Example:
  *
  * if (motorMask) NewMotorSpeed = OldMotorSpeed*Change;
@@ -533,7 +533,6 @@ static void MotorTask (void *p_arg)
 
     	// We got info from the Fuzzy Task, so assign it to the static task.
     	else {
-    		printf("Here");
     		staticFuzzy.frontLeft = incoming->frontLeft;
     		staticFuzzy.frontRight = incoming->frontRight;
     		staticFuzzy.backLeft = incoming->backLeft;
@@ -706,11 +705,10 @@ static void CommunicationTask (void *p_arg)
 {
 	INT8U err;
 //	char *TaskName = "CommunicationTask";
-	char localCopy[100];
 
 	communications_established = false;
 	char *incomingMessage = OSMemGet(IncomingMessageStorage, &err);
-	if (err != OS_ERR_NONE) /*TODO this should probably be dealt with*/ ;
+	if (err != OS_ERR_NONE) /*TODO this should probably be dealt with*/ {;}
 	bzero(IncomingMessageStorage, MSG_BUFFER_LEN);
 
     for(;;) {
@@ -768,18 +766,6 @@ static void CommunicationTask (void *p_arg)
     				}
     			}
     		}
-
-    	}
-    	if (err == OS_ERR_NONE)
-    	{
-    	strncpy(localCopy, userMessage, 100);
-    		// First thing copy to a local version so you're not working off a global variable
-
-    		// I just copy the whole 100 characters. I'm assuming you'll having a parsing scheme
-    		// TODO: Parse
-
-    	} else {
-    		; //Send to log through function
     	}
     }
 }
