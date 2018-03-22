@@ -142,6 +142,7 @@ OS_EVENT *LogQueue;
 OS_EVENT *MotorQueue;
 OS_EVENT *FuzzyQueue;
 OS_EVENT *CollisionQueue;
+OS_EVENT *InputQueue;
 
 // Semaphores
 OS_EVENT *SteeringSemaphore;
@@ -206,11 +207,11 @@ INT8U MessageMemory[100][100]; //100 is a 100 character string
 OS_MEM *IncomingMessageStorage;
 INT8U IncomingMessageMemory[1][RX_FIFO_SIZE];
 
-OS_MEM *_UserInputStorage;
-INT8U UserInputMemory[1][100];
-
 OS_MEM *FuzzyLogicProcessorStorage;
 INT8U FuzzyLogicProcessorMemory[5][sizeof(float) * 5];
+
+OS_MEM *UserInputStorage;
+INT8U UserInputMemory[5][sizeof(incoming_msg)];
 
 /*
 *********************************************************************************************************
@@ -255,13 +256,14 @@ int main ()
     void *MotorMessageArray[10];
     void *FuzzyMessageArray[10];
     void *CollisionMessageArray[10];
+    void *InputMessageArray[10];
 
     // Create the Queues using above arrays to save message pointers.
     CollisionQueue = OSQCreate(CollisionMessageArray, 10);
     LogQueue = OSQCreate(LogMessageArray, 10);
     MotorQueue = OSQCreate(MotorMessageArray, 10);
     FuzzyQueue = OSQCreate(FuzzyMessageArray, 10);
-
+    InputQueue = OSQCreate(InputMessageArray, 10);
     /* Create the semaphores
      * Zero means that the semaphore will be used as a flag
      * NonZero means the semaphore will be used to control access to shared resource(s).
@@ -297,16 +299,11 @@ int main ()
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
-    _UserInputStorage = OSMemCreate(UserInputMemory, 1, 100, &err);
+    UserInputStorage = OSMemCreate(UserInputMemory, 5, sizeof(incoming_msg), &err);
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
     IncomingMessageStorage = OSMemCreate(IncomingMessageMemory, 1,RX_FIFO_SIZE,&err);
-    if (err != OS_ERR_NONE) {
-        ; /* Handle error. */
-    }
-
-    userMessage =  OSMemGet(_UserInputStorage, &err);
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
@@ -478,7 +475,7 @@ static void CollisionTask (void *p_arg)
     for(;;) {
 
     	incoming = (DistanceMessage*)OSQPend(CollisionQueue, 0, &err);
-    	// TO-DO: set data to local variables before freeing message
+    	// TODO: set data to local variables before freeing message
     	OSMemPut(DistanceMessageStorage, incoming);
 
 		if (err == OS_ERR_NONE)
@@ -507,7 +504,7 @@ static void MotorTask (void *p_arg)
     MotorChangeMessage staticFuzzy = { 0 };
 //    LogMessage *errorMessage;
 
-    // TO-DO assign this as something from the communication task.
+    // TODO assign this as something from the communication task.
     float userDriveSpeed = 0.85;
 
     // This should not be changes; it should be initalized to zero and then changed later.
@@ -520,7 +517,7 @@ static void MotorTask (void *p_arg)
     // Loop forever.
     for(;;) {
 
-    	// TO-DO: Replace this with a queue pend, or SOMETHING, to get the new user steering
+    	// TODO: Replace this with a queue pend, or SOMETHING, to get the new user steering
     	// AS AN INT8_T.
     	newUserSteer = 0;
 
@@ -575,7 +572,7 @@ static void MotorTask (void *p_arg)
 			allStop = motorMask;
 			OSSemPost(MaskSemaphore);
 
-			// Move the servo, then the motors. Should probably protect this with OS_ENTER_CRITICAL...? TO-DO
+			// Move the servo, then the motors. Should probably protect this with OS_ENTER_CRITICAL...? TODO
 			MoveFrontServo(actualSteeringAngle);
 			driveMotors(userDriveSpeed, &staticFuzzy, actualSteeringAngle, allStop);
 
@@ -622,7 +619,7 @@ static void FuzzyTask (void *p_arg) {
     	// Await incoming Hall Sensor information at 2Hz.
      	incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
 
-     	// Assumming nothing bad happened, get new hall sensor information.
+     	// Assuming nothing bad happened, get new hall sensor information.
     	if (err == OS_ERR_NONE) {
             newFrontLeft = incoming->frontLeft;
             newFrontRight = incoming->frontRight;
@@ -684,7 +681,7 @@ static void FuzzyTask (void *p_arg) {
     	}
 
     	else {
-    		; // TO-DO Send to log function
+    		; // TODO Send to log function
         }
 
     	// Send the message off.
@@ -712,7 +709,8 @@ static void CommunicationTask (void *p_arg)
 	char localCopy[100];
 
 	communications_established = false;
-	//Get memory IncomingMessageStorage-->incomingMessage
+	char *incomingMessage = OSMemGet(IncomingMessageStorage, &err);
+	if (err != OS_ERR_NONE) /*TODO this should probably be dealt with*/ ;
 	bzero(IncomingMessageStorage, MSG_BUFFER_LEN);
 
     for(;;) {
@@ -721,33 +719,46 @@ static void CommunicationTask (void *p_arg)
     	uint32_t chars_read = 0;
     	bool status = read_rx_buffer(local_char_buffer, &chars_read);
     	if(chars_read > 0 && status == true){
-    		int incoming_buffer_len = strlen(IncomingMessageStorage);
+    		int incoming_buffer_len = strlen(incomingMessage);
     		if(incoming_buffer_len + chars_read > RX_FIFO_SIZE){
     			// overflow error
     		}else{
-    			strncat(IncomingMessageStorage,local_char_buffer,chars_read);
+    			strncat(incomingMessage,local_char_buffer,chars_read);
     			// now determine what to do with the incoming message
     			if(communications_established == true){
     				// parse message if entire message has been received
-    				if(complete_message_revived(IncomingMessageStorage) == true){
-    					if(look_for_end_byte(IncomingMessageStorage) == true){
+    				if(complete_message_revived(incomingMessage) == true){
+    					if(look_for_end_byte(incomingMessage) == true){
     						// termination character received
     						bzero(IncomingMessageStorage, RX_FIFO_SIZE);
     						communications_established = false;
     					}else{
     						//TODO marker for josh grab this and send to c
-        					incoming_msg *new_msg = parse_incomming_msg(IncomingMessageStorage);
+        					incoming_msg *new_msg = parse_incomming_msg(incomingMessage);
         					if(new_msg != NULL){
         						// valid message received
         						serial_send(ACKNOWLEDGE_STR);
         						bzero(IncomingMessageStorage, RX_FIFO_SIZE);
-        						// TO DO: send to Keith
+
+        						incoming_msg *outgoing = OSMemGet(UserInputStorage, &err);
+        						outgoing->motor_level = new_msg->motor_level;
+								outgoing->steering_value = new_msg->steering_value;
+								OSQPost(InputQueue, outgoing);
+
+								// TODO: Here you go Keith
+								/*
+								incoming_msg *incoming;
+								(incoming_msg*)OSQPend(InputQueue, 0, &err);
+								float temp1 = incoming->motor_level;
+								int8_t temp2 = incoming->steering_value;
+								OSMemPut(UserInputStorage, incoming);
+								*/
         					}
     					}
     				}
     			}else{
     				//look for start byte
-    				communications_established = look_for_start_byte(IncomingMessageStorage, incoming_buffer_len);
+    				communications_established = look_for_start_byte(incomingMessage, incoming_buffer_len);
     				if(communications_established == true){
     					serial_send(ACKNOWLEDGE_STR);
     					OSSemPost(RxDataAvailableSemaphore);
@@ -765,7 +776,7 @@ static void CommunicationTask (void *p_arg)
     		// First thing copy to a local version so you're not working off a global variable
 
     		// I just copy the whole 100 characters. I'm assuming you'll having a parsing scheme
-    		// TO-DO: Parse
+    		// TODO: Parse
 
     	} else {
     		; //Send to log through function
@@ -781,7 +792,7 @@ static void LogTask (void *p_arg)
     for(;;) {
 
     	incoming = (LogMessage*)OSQPend(LogQueue, 0, &err);
-        //TO-DO: Do something with the error.
+        //TODO: Do something with the error.
 
     	OSMemPut(LogMessageStorage, incoming);
     }

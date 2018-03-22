@@ -20,10 +20,6 @@
 #define ACKNOWLEDGE_STR "@"
 #define DELIMINATING_STR ","
 
-typedef struct incoming_msg{
-	float motor_level;
-	int8_t steering_value;
-}incoming_msg;
 
 bool serial_communication_init();
 int rx_fifo_level();
