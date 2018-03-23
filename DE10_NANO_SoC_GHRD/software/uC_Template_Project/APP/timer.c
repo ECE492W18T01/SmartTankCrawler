@@ -143,6 +143,6 @@ void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id) {
 	}
 
 
-	ARM_OSCL_TIMER_0_REG_EOI;
+	ARM_OSCL_TIMER_1_REG_EOI;
 }
 
