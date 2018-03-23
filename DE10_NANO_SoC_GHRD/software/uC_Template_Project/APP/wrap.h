@@ -163,9 +163,8 @@ extern OS_EVENT *CommunicationSemaphore;
 extern bool motorMask;
 extern int8_t globalSteeringAngle;
 
-extern OS_MEM *FuzzyLogicProcessorStorage;
-extern OS_MEM *DistanceMessageStorage;
-extern OS_MEM *FuzzyMessageStorage;
+extern OS_MEM *StandardMemoryStorage;
+extern OS_MEM *LargeMemoryStorage;
 
 // Function for controlling rear, emergency brake servo.
 void MoveBackServo(uint8_t hex);

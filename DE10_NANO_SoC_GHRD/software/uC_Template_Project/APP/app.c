@@ -187,30 +187,36 @@ OSSemPost(MaskSemaphore);
  * 		The second number is the size of each block. These --should-- be the size of a word. I'll fix later.
 */
 
-OS_MEM *MotorMessageStorage;
-INT8U MotorMessageMemory[4][sizeof(MotorChangeMessage)];
+//OS_MEM *MotorMessageStorage;
+//INT8U MotorMessageMemory[4][sizeof(MotorChangeMessage)];
+//
+//OS_MEM *FuzzyMessageStorage;
+//INT8U FuzzyMessageMemory[4][sizeof(MotorSpeedMessage)];
+//
+//OS_MEM *LogMessageStorage;
+//INT8U LogMessageMemory[4][sizeof(LogMessage)];
+//
+//OS_MEM *DistanceMessageStorage;
+//INT8U DistanceMessageMemory[4][sizeof(DistanceMessage)];
+//
+//OS_MEM *StatusMessageStorage;
+//INT8U StatusMessageMemory[4][sizeof(StatusMessage)];
+//
+//OS_MEM *IncomingMessageStorage;
+//
+//INT8U IncomingMessageMemory[2][128];
+//
+//OS_MEM *FuzzyLogicProcessorStorage;
+//INT8U FuzzyLogicProcessorMemory[4][sizeof(float) * 5];
+//
+//OS_MEM *UserInputStorage;
+//INT8U UserInputMemory[5][sizeof(incoming_msg)];
 
-OS_MEM *FuzzyMessageStorage;
-INT8U FuzzyMessageMemory[4][sizeof(MotorSpeedMessage)];
+OS_MEM *StandardMemoryStorage;
+INT8U StandardMemory[1024][32];
 
-OS_MEM *LogMessageStorage;
-INT8U LogMessageMemory[4][sizeof(LogMessage)];
-
-OS_MEM *DistanceMessageStorage;
-INT8U DistanceMessageMemory[4][sizeof(DistanceMessage)];
-
-OS_MEM *StatusMessageStorage;
-INT8U StatusMessageMemory[4][sizeof(StatusMessage)];
-
-OS_MEM *IncomingMessageStorage;
-
-INT8U IncomingMessageMemory[2][128];
-
-OS_MEM *FuzzyLogicProcessorStorage;
-INT8U FuzzyLogicProcessorMemory[4][sizeof(float) * 5];
-
-OS_MEM *UserInputStorage;
-INT8U UserInputMemory[5][sizeof(incoming_msg)];
+OS_MEM *LargeMemoryStorage;
+INT8U LargeMemory[4][256];
 
 /*
 *********************************************************************************************************
@@ -300,17 +306,26 @@ int main ()
 //        ; /* Handle error. */
 //    }
 
-    IncomingMessageStorage = OSMemCreate(IncomingMessageMemory, 2, 128, &err);
+//    IncomingMessageStorage = OSMemCreate(IncomingMessageMemory, 2, 128, &err);
+//    if (err != OS_ERR_NONE) {
+//        ; /* Handle error. */
+//    }
+//
+//    userMessage =  OSMemGet(IncomingMessageStorage, &err);
+//    if (err != OS_ERR_NONE) {
+//        ; /* Handle error. */
+//    }
+
+    StandardMemoryStorage = OSMemCreate(StandardMemory, 1024, 32, &err);
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
 
-    userMessage =  OSMemGet(IncomingMessageStorage, &err);
+    LargeMemoryStorage = OSMemCreate(LargeMemory, 4, 256, &err);
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
-
-
+    userMessage =  OSMemGet(LargeMemoryStorage, &err);
 
     os_err = OSTaskCreateExt((void (*)(void *)) AppTaskStart,   /* Create the start task.                               */
                              (void          * ) 0,
@@ -475,7 +490,7 @@ static void CollisionTask (void *p_arg)
 
     	incoming = (DistanceMessage*)OSQPend(CollisionQueue, 0, &err);
     	// TODO: set data to local variables before freeing message
-    	OSMemPut(DistanceMessageStorage, incoming);
+    	OSMemPut(StandardMemoryStorage, incoming);
 
 		if (err == OS_ERR_NONE)
 		{
@@ -539,7 +554,7 @@ static void MotorTask (void *p_arg)
     		staticFuzzy.steeringServo = incoming->steeringServo;
 
     		// Free Fuzzy Task struct memory
-    		OSMemPut(MotorMessageStorage, incoming);
+    		OSMemPut(StandardMemoryStorage, incoming);
     	}
 
 		if(err == OS_ERR_NONE) {
@@ -625,7 +640,7 @@ static void FuzzyTask (void *p_arg) {
             newRearRight = incoming->backRight;
 
             // And 'free' the memory.
-            OSMemPut(FuzzyMessageStorage, incoming);
+            OSMemPut(StandardMemoryStorage, incoming);
 
             // Get the steering angle.
     		OSSemPend(SteeringSemaphore, 0, &err);
@@ -666,7 +681,7 @@ static void FuzzyTask (void *p_arg) {
                 outgoing.steeringServo = fuzzyOutput[4];
 
                 // Put the temporary memory borrowed by calculateMotorModifiers back.
-                OSMemPut(FuzzyLogicProcessorStorage, fuzzyOutput);
+                OSMemPut(StandardMemoryStorage, fuzzyOutput);
 
             }
 
@@ -684,7 +699,7 @@ static void FuzzyTask (void *p_arg) {
 
     	// Send the message off.
     	MotorChangeMessage *_;
-    	if (err == OS_ERR_NONE) _ = OSMemGet(MotorMessageStorage, &err);
+    	if (err == OS_ERR_NONE) _ = OSMemGet(StandardMemoryStorage, &err);
     	if (err == OS_ERR_NONE)
     	{
     		_->frontLeft = outgoing.frontLeft;
@@ -767,6 +782,6 @@ static void LogTask (void *p_arg)
     	incoming = (LogMessage*)OSQPend(LogQueue, 0, &err);
         //TODO: Do something with the error.
 
-    	OSMemPut(LogMessageStorage, incoming);
+    	OSMemPut(StandardMemoryStorage, incoming);
     }
 }

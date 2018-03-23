@@ -91,7 +91,7 @@ void InitDistanceSensorInterrupt(void) {
 void HallSensor_ISR_Handler(CPU_INT32U cpu_id) {
 
 	INT8U err;
-	MotorSpeedMessage *outgoing = OSMemGet(FuzzyMessageStorage, &err);
+	MotorSpeedMessage *outgoing = OSMemGet(StandardMemoryStorage, &err);
 	if (err == OS_ERR_NONE) {
 		// Read Hall Sensor Raw Data
 		outgoing->frontLeft = alt_read_byte(F_LEFT_BASE);   // Front Left
@@ -130,7 +130,7 @@ void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id) {
 //	}
 
 	INT8U err;
-	DistanceMessage *outgoing = OSMemGet(DistanceMessageStorage, &err);
+	DistanceMessage *outgoing = OSMemGet(StandardMemoryStorage, &err);
 	if (err == OS_ERR_NONE) {
 		// Read Hall Sensor Raw Data
 		outgoing->distance = 0; //TODO set distance from above

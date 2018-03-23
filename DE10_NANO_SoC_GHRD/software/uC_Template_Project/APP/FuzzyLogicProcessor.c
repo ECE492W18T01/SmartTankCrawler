@@ -91,7 +91,7 @@ float* calculateMotorModifiers(uint8_t wheelSpeeds[4], int8_t steeringAngle) {
 		wheelSpeeds[2], wheelSpeeds[3], SLIPRATIOS[index][0]);
 
 
-	float* fsOutputs = OSMemGet(FuzzyLogicProcessorStorage, &err);
+	float* fsOutputs = OSMemGet(StandardMemoryStorage, &err);
 
 	for (int i = 0; i < 5; i++) {
 		fsOutputs[i] = FUZZYLOOKUP[overallDeviation][rearAxleDeviation][frontAxleDeviation][i];
