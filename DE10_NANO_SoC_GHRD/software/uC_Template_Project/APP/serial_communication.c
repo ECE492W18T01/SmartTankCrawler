@@ -13,7 +13,6 @@
 #include <os_cpu.h>
 
 bool serial_communication_init(){
-	char * temp = userMessage;
 	ALT_STATUS_CODE status = uart0_init();
 	bzero(userMessage, MSG_BUFFER_LEN);
 	if(status == ALT_E_SUCCESS){
@@ -93,9 +92,10 @@ bool look_for_start_byte(char * incoming_message, int incomming_message_size){
 	const char *ptr = strchr(incoming_message, START_CHARACTER);
 	if(ptr) {
 	   int index = ptr - incoming_message;
-	   int chars_to_copy = incomming_message_size - incomming_message_size;
+	   int chars_to_copy = incomming_message_size - index - 1;
 	   char subbuff[chars_to_copy + 1];
-	   memcpy( subbuff, &incoming_message[index],  chars_to_copy);
+	   bzero(subbuff, chars_to_copy + 1);
+	   memcpy( subbuff, &incoming_message[index + 1],  chars_to_copy);
 	   bzero(incoming_message,MSG_BUFFER_LEN);
 	   subbuff[chars_to_copy] = '\0';
 	   memcpy(incoming_message, subbuff, chars_to_copy);
@@ -115,6 +115,7 @@ bool complete_message_revived(char * incoming_message){
 
 void UART0_IRS_handeler(CPU_INT32U cpu_id){
 	char local_char_buffer[MSG_BUFFER_LEN];
+	bzero(local_char_buffer,MSG_BUFFER_LEN);
 	uint32_t chars_read = 0;
 	bool status = read_rx_buffer(local_char_buffer, &chars_read);
 	if(chars_read > 0 && status == true){

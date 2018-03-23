@@ -728,30 +728,36 @@ static void CommunicationTask (void *p_arg)
 
     for(;;) {
 
-    	OSSemPend(RxDataAvailableSemaphore, OS_TICKS_PER_SEC, &err);
+    	OSSemPend(RxDataAvailableSemaphore, 0, &err);
 
     	if (err == OS_ERR_TIMEOUT) {
     		err = OS_ERR_NONE;
     		// set motor values to 0
-    		incoming_msg new_msg = {.motor_level = MOTOR_ZERO, .steering_value = STEERING_ZERO};
-    		// TODO send to Keith
+			incoming_msg *outgoing = OSMemGet(StandardMemoryStorage, &err);
+			outgoing->motor_level = MOTOR_ZERO;
+			outgoing->steering_value = STEERING_ZERO;
+			OSQPost(InputQueue,outgoing);
     	}else{
     		// now determine what to do with the incoming message
     		if(communications_established == true){
-    			// parse message if entire message has been received
-    			if(complete_message_revived(userMessage) == true){
-    				if(look_for_end_byte(userMessage) == true){
-    					// termination character received
-    					bzero(userMessage, RX_FIFO_SIZE);
-    					communications_established = false;
-    				}else{
-    					//TODO marker for josh grab this and send to c
-    					incoming_msg new_msg = parse_incomming_msg(userMessage);
-    					// valid message received
-    					serial_send(ACKNOWLEDGE_STR);
-    					bzero(userMessage, RX_FIFO_SIZE);
-    					// TODO: send to Keith
-    				}
+    			// look for end byte
+    			if(look_for_end_byte(userMessage) == true){
+					// termination character received
+					bzero(userMessage, RX_FIFO_SIZE);
+					communications_established = false;
+    			}else if(complete_message_revived(userMessage) == true){
+					//TODO marker for josh grab this and send to c
+					incoming_msg new_msg = parse_incomming_msg(userMessage);
+					// valid message received
+					serial_send(ACKNOWLEDGE_STR);
+					bzero(userMessage, RX_FIFO_SIZE);
+					// send to queue
+					incoming_msg *outgoing = OSMemGet(StandardMemoryStorage, &err);
+					outgoing->motor_level = new_msg.motor_level;
+					outgoing->steering_value = new_msg.steering_value;
+					OSQPost(InputQueue,outgoing);
+					// TODO: Here you go Keith
+					// incoming_msg *incoming = OSQPend(InputQueue);
     			}
     		}else{
     			//look for start byte
@@ -767,7 +773,7 @@ static void CommunicationTask (void *p_arg)
     	}
     	if (err == OS_ERR_NONE)
     	{
-    	strncpy(localCopy, userMessage, 100);
+    	//strncpy(localCopy, userMessage, 100);
     		// First thing copy to a local version so you're not working off a global variable
 
     		// I just copy the whole 100 characters. I'm assuming you'll having a parsing scheme
