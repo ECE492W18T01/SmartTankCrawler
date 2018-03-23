@@ -617,6 +617,7 @@ static void FuzzyTask (void *p_arg) {
     	// Await incoming Hall Sensor information at 2Hz.
      	incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
 
+
      	// Assuming nothing bad happened, get new hall sensor information.
     	if (err == OS_ERR_NONE) {
             newFrontLeft = incoming->frontLeft;
@@ -711,38 +712,44 @@ static void CommunicationTask (void *p_arg)
 	bzero(userMessage, MSG_BUFFER_LEN);
 
     for(;;) {
-    	// TODO: set motor values to 0 on timeout
-    	OSSemPend(RxDataAvailableSemaphore, 0, &err);
-		// now determine what to do with the incoming message
-		if(communications_established == true){
-			// parse message if entire message has been received
-			if(complete_message_revived(userMessage) == true){
-				if(look_for_end_byte(userMessage) == true){
-					// termination character received
-					bzero(userMessage, RX_FIFO_SIZE);
-					communications_established = false;
-				}else{
-					//TODO marker for josh grab this and send to c
-					incoming_msg new_msg = parse_incomming_msg(userMessage);
-					// valid message received
-					serial_send(ACKNOWLEDGE_STR);
-					bzero(userMessage, RX_FIFO_SIZE);
-					// TODO: send to Keith
 
-				}
-			}
-		}else{
-			//look for start byte
-			communications_established = look_for_start_byte(userMessage, strlen(userMessage));
-			if(communications_established == true){
-				serial_send(ACKNOWLEDGE_STR);
-				OSSemPost(RxDataAvailableSemaphore);
-			}else{
-				// garbage, clear incoming buffer
-				bzero(userMessage, RX_FIFO_SIZE);
-			}
-		}
+    	OSSemPend(RxDataAvailableSemaphore, OS_TICKS_PER_SEC, &err);
 
+    	if (err == OS_ERR_TIMEOUT) {
+    		err = OS_ERR_NONE;
+    		// set motor values to 0
+    		incoming_msg new_msg = {.motor_level = MOTOR_ZERO, .steering_value = STEERING_ZERO};
+    		// TODO send to Keith
+    	}else{
+    		// now determine what to do with the incoming message
+    		if(communications_established == true){
+    			// parse message if entire message has been received
+    			if(complete_message_revived(userMessage) == true){
+    				if(look_for_end_byte(userMessage) == true){
+    					// termination character received
+    					bzero(userMessage, RX_FIFO_SIZE);
+    					communications_established = false;
+    				}else{
+    					//TODO marker for josh grab this and send to c
+    					incoming_msg new_msg = parse_incomming_msg(userMessage);
+    					// valid message received
+    					serial_send(ACKNOWLEDGE_STR);
+    					bzero(userMessage, RX_FIFO_SIZE);
+    					// TODO: send to Keith
+    				}
+    			}
+    		}else{
+    			//look for start byte
+    			communications_established = look_for_start_byte(userMessage, strlen(userMessage));
+    			if(communications_established == true){
+    				serial_send(ACKNOWLEDGE_STR);
+    				OSSemPost(RxDataAvailableSemaphore);
+    			}else{
+    				// garbage, clear incoming buffer
+    				bzero(userMessage, RX_FIFO_SIZE);
+    			}
+    		}
+    	}
     	if (err == OS_ERR_NONE)
     	{
     	strncpy(localCopy, userMessage, 100);
