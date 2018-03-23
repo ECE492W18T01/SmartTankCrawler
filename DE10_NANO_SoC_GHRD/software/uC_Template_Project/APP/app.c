@@ -580,6 +580,7 @@ static void FuzzyTask (void *p_arg) {
     	// Await incoming Hall Sensor information at 2Hz.
      	incoming = (HallSensorMessage*)OSQPend(FuzzyQueue, 0, &err);
 
+
      	// Assuming nothing bad happened, get new hall sensor information.
     	if (err == OS_ERR_NONE) {
             newFrontLeft = incoming->frontLeft;
@@ -666,9 +667,6 @@ static void FuzzyTask (void *p_arg) {
 static void CommunicationTask (void *p_arg)
 {
 	INT8U err;
-//	char *TaskName = "CommunicationTask";
-	char localCopy[100];
-
 	communications_established = false;
 	//Get memory IncomingMessageStorage-->incomingMessage
 	bzero(userMessage, MSG_BUFFER_LEN);
@@ -710,7 +708,7 @@ static void LogTask (void *p_arg)
 {
 	INT8U err;
 	LogMessage *incoming;
-	void *message;
+	void *message; // Ignore this warning its dumb.
     for(;;) {
 
     	incoming = (LogMessage*)OSQPend(LogQueue, 0, &err);
@@ -723,27 +721,27 @@ static void LogTask (void *p_arg)
 
     			message = (HallSensorMessage*)(incoming->message);
     			// Send the details:
-    			((HallSensorMessage*)message)->frontLeft;
-    			((HallSensorMessage*)message)->frontRight;
-    			((HallSensorMessage*)message)->backLeft;
-				((HallSensorMessage*)message)->backRight;
+//    			((HallSensorMessage*)message)->frontLeft;
+//    			((HallSensorMessage*)message)->frontRight;
+//    			((HallSensorMessage*)message)->backLeft;
+//				((HallSensorMessage*)message)->backRight;
     			break;
 
     		case MOTOR_CHANGE_MESSAGE:
 
     	    	message = (MotorChangeMessage*)(incoming->message);
     	    	// Send the details:
-    	    	((MotorChangeMessage*)message)->frontLeft;
-    	    	((MotorChangeMessage*)message)->frontRight;
-    	    	((MotorChangeMessage*)message)->backLeft;
-    	    	((MotorChangeMessage*)message)->backRight;
-    	    	((MotorChangeMessage*)message)->steeringServo;
+//    	    	((MotorChangeMessage*)message)->frontLeft;
+//    	    	((MotorChangeMessage*)message)->frontRight;
+//    	    	((MotorChangeMessage*)message)->backLeft;
+//    	    	((MotorChangeMessage*)message)->backRight;
+//    	    	((MotorChangeMessage*)message)->steeringServo;
     			break;
 
     		case DISTANCE_MESSAGE:
     			message = (DistanceMessage*)(incoming->message);
     			// Send the details:
-    			((DistanceMessage*)message)->distance;
+//    			((DistanceMessage*)message)->distance;
     			break;
 
     		default:
@@ -754,9 +752,9 @@ static void LogTask (void *p_arg)
     		// This is an error message
 
     		// Send the details:
-    		incoming->taskID;		// task name is where there was an error thrown
-    		incoming->sourceID;	// source name is the source of the function that threw the error
-    		incoming->error;		// error is the error code thrown
+//    		incoming->taskID;		// task name is where there was an error thrown
+//    		incoming->sourceID;	// source name is the source of the function that threw the error
+//    		incoming->error;		// error is the error code thrown
 
     	};
     	OSMemPut(StandardMemoryStorage, incoming);

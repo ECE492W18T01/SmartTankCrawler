@@ -140,8 +140,8 @@ typedef struct MotorChangeMessage MotorChangeMessage;
 typedef struct DistanceMessage DistanceMessage;
 
 struct LogMessage {
-	char *taskID;
-	char *sourceID;
+	INT8U taskID;
+	INT8U sourceID;
 	INT8U error;
 	INT8U messageType;
 	void *message;
