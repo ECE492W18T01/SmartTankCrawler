@@ -180,43 +180,20 @@ OSSemPost(MaskSemaphore);
 /* Memory:
  * --Name--Storage:
  * 		The object you use to get and put back memory blocks.
+ * 		Standard is for any inter-task data
+ * 		Large is for messages from and to the Pi.
  * --Name--Memory:
  * 		The actual memory block.
  * 		This should only ever be touched once, to create the memory block.
  * 		The first number is the amount of blocks to create.
- * 		The second number is the size of each block. These --should-- be the size of a word. I'll fix later.
+ * 		The second number is the size of each block.
 */
-
-//OS_MEM *MotorMessageStorage;
-//INT8U MotorMessageMemory[4][sizeof(MotorChangeMessage)];
-//
-//OS_MEM *FuzzyMessageStorage;
-//INT8U FuzzyMessageMemory[4][sizeof(HallSensorMessage)];
-//
-//OS_MEM *LogMessageStorage;
-//INT8U LogMessageMemory[4][sizeof(LogMessage)];
-//
-//OS_MEM *DistanceMessageStorage;
-//INT8U DistanceMessageMemory[4][sizeof(DistanceMessage)];
-//
-//OS_MEM *StatusMessageStorage;
-//INT8U StatusMessageMemory[4][sizeof(StatusMessage)];
-//
-//OS_MEM *IncomingMessageStorage;
-//
-//INT8U IncomingMessageMemory[2][128];
-//
-//OS_MEM *FuzzyLogicProcessorStorage;
-//INT8U FuzzyLogicProcessorMemory[4][sizeof(float) * 5];
-//
-//OS_MEM *UserInputStorage;
-//INT8U UserInputMemory[5][sizeof(incoming_msg)];
 
 OS_MEM *StandardMemoryStorage;
 INT8U StandardMemory[1024][32];
 
 OS_MEM *LargeMemoryStorage;
-INT8U LargeMemory[4][256];
+INT8U LargeMemory[16][256];
 
 /*
 *********************************************************************************************************
@@ -277,44 +254,8 @@ int main ()
     MaskSemaphore = OSSemCreate(1);				// One shared resource
     CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
     RxDataAvailableSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
-    // TODO get rid of all the magic numbers, I'll do this later as its low priority (Josh)
     // Initialize the Memory.
     INT8U err;
-//    MotorMessageStorage = OSMemCreate(MotorMessageMemory, 4, sizeof(MotorChangeMessage), &err);
-//    if (err != OS_ERR_NONE) {
-//    	; /* Handle error. TODO what's the best way to do this?...*/
-//    }
-//    FuzzyMessageStorage = OSMemCreate(FuzzyMessageMemory, 4, sizeof(HallSensorMessage), &err);
-//    if (err != OS_ERR_NONE) {
-//    	; /* Handle error. */
-//    }
-//    LogMessageStorage = OSMemCreate(LogMessageMemory, 4, sizeof(LogMessage), &err);
-//    if (err != OS_ERR_NONE) {
-//    	; /* Handle error. */
-//    }
-//    DistanceMessageStorage = OSMemCreate(DistanceMessageMemory, 4, sizeof(DistanceMessage), &err);
-//    if (err != OS_ERR_NONE) {
-//        ; /* Handle error. */
-//    }
-//    StatusMessageStorage = OSMemCreate(StatusMessageMemory, 4, sizeof(StatusMessage), &err);
-//    if (err != OS_ERR_NONE) {
-//        ; /* Handle error. */
-//    }
-//
-//    FuzzyLogicProcessorStorage = OSMemCreate(FuzzyLogicProcessorMemory, 4,sizeof(float) * 5,&err);
-//    if (err != OS_ERR_NONE) {
-//        ; /* Handle error. */
-//    }
-
-//    IncomingMessageStorage = OSMemCreate(IncomingMessageMemory, 2, 128, &err);
-//    if (err != OS_ERR_NONE) {
-//        ; /* Handle error. */
-//    }
-//
-//    userMessage =  OSMemGet(IncomingMessageStorage, &err);
-//    if (err != OS_ERR_NONE) {
-//        ; /* Handle error. */
-//    }
 
     StandardMemoryStorage = OSMemCreate(StandardMemory, 1024, 32, &err);
     if (err != OS_ERR_NONE) {
@@ -443,6 +384,26 @@ int main ()
 *********************************************************************************************************
 */
 
+// TODO externalize below functions
+LogMessage *_message_generator(INT8U taskID, INT8U sourceID, INT8U error, INT8U messageType, void *message) {
+	INT8U err;
+	LogMessage *outgoing = OSMemGet(StandardMemoryStorage, &err);
+	outgoing->taskID = taskID;
+	outgoing->sourceID = sourceID;
+	outgoing->error = error;
+	outgoing->messageType = messageType;
+	outgoing->message = message;
+	return outgoing;
+}
+
+LogMessage *CreateErrorMessage(INT8U taskID, INT8U sourceID, INT8U error) {
+	return _message_generator(taskID, sourceID, error, 0, 0);
+}
+
+LogMessage *CreateLogMessage(INT8U messageType, void *message) {
+	return _message_generator(0, 0, OS_ERR_NONE, messageType, message);
+}
+
 static  void  AppTaskStart (void *p_arg)
 {
 
@@ -458,17 +419,6 @@ static  void  AppTaskStart (void *p_arg)
     }
 }
 
-//This is going to be made into a function:
-//			OSSemPend(logMessageStorageAccess, 10, &send_err);
-//			errorMessage = OSMemGet(logMessageStorage, &send_err);
-//			errorMessage = malloc(sizeof(LogMessage));
-//			errorMessage->_taskName = TaskName;
-//			errorMessage->_sourceName = "OSQPend";
-//			errorMessage->_error = err;
-//		    OSQPost(LogQueue, errorMessage);
-//		}
-//
-
 static void EmergencyTask (void *p_arg)
 {
 //	INT8U err;
@@ -480,9 +430,7 @@ static void EmergencyTask (void *p_arg)
 
 static void CollisionTask (void *p_arg)
 {
-	INT8U err; //, send_err;
-//	char *TaskName = "CollisionTask";
-//	LogMessage *errorMessage;
+	INT8U err;
 
 	DistanceMessage *incoming;
 
@@ -498,7 +446,7 @@ static void CollisionTask (void *p_arg)
 			 * You have received a distance measurement. TODO: Implement
 			 */
 		} else {
-			;//Send to log through function
+			OSQPost(LogQueue, CreateErrorMessage(COLLISION_TASK, OS_Q_PEND, err));
         }
     }
 }
@@ -590,7 +538,7 @@ static void MotorTask (void *p_arg)
 			driveMotors(userDriveSpeed, &staticFuzzy, actualSteeringAngle, allStop);
 
 		} else {
-			;//Send to log through function
+			OSQPost(LogQueue, CreateErrorMessage(MOTOR_TASK, OS_Q_PEND, err));
 		}
     }
 }
@@ -694,7 +642,7 @@ static void FuzzyTask (void *p_arg) {
     	}
 
     	else {
-    		; // TODO Send to log function
+    		OSQPost(LogQueue, CreateErrorMessage(FUZZY_TASK, OS_Q_PEND, err));
         }
 
     	// Send the message off.
@@ -710,7 +658,7 @@ static void FuzzyTask (void *p_arg) {
 
     		OSQPost(MotorQueue, _);
     	} else {
-    		; //Send to log through function
+    		OSQPost(LogQueue, CreateErrorMessage(FUZZY_TASK, OS_MEM_GET, err));
         }
     }
 }
@@ -742,8 +690,6 @@ static void CommunicationTask (void *p_arg)
 					// valid message received
 					serial_send(ACKNOWLEDGE_STR);
 					bzero(userMessage, RX_FIFO_SIZE);
-					// TODO: send to Keith
-
 				}
 			}
 		}else{
@@ -757,18 +703,6 @@ static void CommunicationTask (void *p_arg)
 				bzero(userMessage, RX_FIFO_SIZE);
 			}
 		}
-
-    	if (err == OS_ERR_NONE)
-    	{
-    	strncpy(localCopy, userMessage, 100);
-    		// First thing copy to a local version so you're not working off a global variable
-
-    		// I just copy the whole 100 characters. I'm assuming you'll having a parsing scheme
-    		// TO-DO: Parse
-
-    	} else {
-    		; //Send to log through function
-    	}
     }
 }
 
@@ -780,37 +714,51 @@ static void LogTask (void *p_arg)
     for(;;) {
 
     	incoming = (LogMessage*)OSQPend(LogQueue, 0, &err);
-        //TODO: Do something with the error.
+
 
     	if (incoming->error == OS_ERR_NONE) {
     		// This is a standard message
-    		switch (incoming->messageType) { //Can't fix this error as I don't know what type the message will be until inside the switch statement.
+    		switch (incoming->messageType) {
     		case HALL_SENSOR_MESSAGE:
 
     			message = (HallSensorMessage*)(incoming->message);
     			// Send the details:
-    			//message->frontLeft;
-//    			message->frontRight
-//    			message->backLeft
-//    			message->backRight
+    			((HallSensorMessage*)message)->frontLeft;
+    			((HallSensorMessage*)message)->frontRight;
+    			((HallSensorMessage*)message)->backLeft;
+				((HallSensorMessage*)message)->backRight;
     			break;
+
     		case MOTOR_CHANGE_MESSAGE:
-    			//MotorChangeMessage *message = incoming->message;
+
+    	    	message = (MotorChangeMessage*)(incoming->message);
+    	    	// Send the details:
+    	    	((MotorChangeMessage*)message)->frontLeft;
+    	    	((MotorChangeMessage*)message)->frontRight;
+    	    	((MotorChangeMessage*)message)->backLeft;
+    	    	((MotorChangeMessage*)message)->backRight;
+    	    	((MotorChangeMessage*)message)->steeringServo;
     			break;
+
     		case DISTANCE_MESSAGE:
-    			//HallSensorMessage *message = incoming->message;
+    			message = (DistanceMessage*)(incoming->message);
+    			// Send the details:
+    			((DistanceMessage*)message)->distance;
     			break;
-    		case STATUS_MESSAGE:
-    			//HallSensorMessage *message = incoming->message;
-    			break;
+
     		default:
     			// Should never get here...
     			break;
     		}
     	} else {
     		// This is an error message
-    	}
 
+    		// Send the details:
+    		incoming->taskID;		// task name is where there was an error thrown
+    		incoming->sourceID;	// source name is the source of the function that threw the error
+    		incoming->error;		// error is the error code thrown
+
+    	};
     	OSMemPut(StandardMemoryStorage, incoming);
     }
 }
