@@ -17,8 +17,12 @@
 
 #define START_CHARACTER '*'
 #define STOP_CHARACTER '&'
+#define MESSAGE_END_CHAR '\r'
 #define ACKNOWLEDGE_STR "@"
 #define DELIMINATING_STR ","
+
+#define MOTOR_ZERO (float)0.0
+#define STEERING_ZERO (int8_t)0
 
 typedef struct incoming_msg{
 	float motor_level;

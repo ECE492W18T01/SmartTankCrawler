@@ -51,11 +51,18 @@ int serial_send(char * print_str){
 incoming_msg parse_incomming_msg(char * msg){
 	    char *motor_level_str;
 	    char *steering_value_str;
+	    char *end_of_message_char;
 
 	    incoming_msg new_msg;
 
+
 	    motor_level_str = strtok(msg,DELIMINATING_STR);
 	    steering_value_str = strtok(NULL,DELIMINATING_STR);
+	    // only use characters before the end of message character
+	    end_of_message_char = strchr(steering_value_str, MESSAGE_END_CHAR);
+	    if(end_of_message_char != NULL){
+	    	*end_of_message_char = 0;
+	    }
 
 	    if( motor_level_str==NULL || steering_value_str == NULL )
 	    {
@@ -105,7 +112,7 @@ bool look_for_start_byte(char * incoming_message, int incomming_message_size){
 }
 
 bool complete_message_revived(char * incoming_message){
-	const char *ptr = strchr(incoming_message, '\r');
+	const char *ptr = strchr(incoming_message, MESSAGE_END_CHAR);
 	if(ptr)
 		return true;
 	else
