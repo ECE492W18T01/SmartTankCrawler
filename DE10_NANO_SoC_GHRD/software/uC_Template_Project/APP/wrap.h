@@ -122,7 +122,6 @@ typedef struct MotorSpeedMessage MotorSpeedMessage;
 typedef struct MotorChangeMessage MotorChangeMessage;
 typedef struct DistanceMessage DistanceMessage;
 typedef struct StatusMessage StatusMessage;
-typedef struct incoming_msg incoming_msg;
 
 struct LogMessage {
 	char *_taskName;
