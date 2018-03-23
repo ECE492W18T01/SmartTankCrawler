@@ -123,14 +123,25 @@
 #define DISTANCE_MESSAGE 3
 #define STATUS_MESSAGE 4
 
+#define OS_SEM_PEND 0
+#define OS_Q_PEND 1
+#define OS_MEM_GET 2
+
+#define APP_TASK_START 0
+#define COLLISION_TASK 1
+#define COMMUNICATION_TASK 2
+#define EMERGENCY_TASK 3
+#define FUZZY_TASK 4
+#define MOTOR_TASK 5
+
 typedef struct LogMessage LogMessage;
 typedef struct HallSensorMessage HallSensorMessage;
 typedef struct MotorChangeMessage MotorChangeMessage;
 typedef struct DistanceMessage DistanceMessage;
 
 struct LogMessage {
-	char *_taskName;
-	char *_sourceName;
+	INT8U taskID;
+	INT8U sourceID;
 	INT8U error;
 	INT8U messageType;
 	void *message;
