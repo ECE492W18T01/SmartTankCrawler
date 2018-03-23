@@ -34,7 +34,7 @@ void InitHallSensorInterrupt(void) {
 
 	ARM_OSCL_TIMER_0_REG_CONTROL &= ARM_OSCL_TIMER_0_INT_UNMASKED;
 
-	//TODO: Externalize this veriable to a "settings" header. I think the comment below is wrong too
+	//TODO: Externalize this variable to a "settings" header. I think the comment below is wrong too
 	// 250000000 of the oscl_clk should be one second --> I think it's actually 10 seconds
 	//12500000 should be 2Hz
 	//125000000 should be every five seconds, or 0.2 Hz
@@ -77,7 +77,7 @@ void InitDistanceSensorInterrupt(void) {
 	ARM_OSCL_TIMER_1_REG_LOADCOUNT = 25000000;
 
 	BSP_IntVectSet   (202u,   // 201 is source for oscl_timer 0 TODO: Find out what this is for timer 1
-	                  1,	    // prio
+	                  14,	    // prio
 					  DEF_BIT_00,	    // cpu target list
 					  DistanceSensor_ISR_Handler  // ISR
 					 );
@@ -135,7 +135,11 @@ void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id) {
 		// Read Hall Sensor Raw Data
 		outgoing->distance = 0; //TODO set distance from above
 
-		OSQPost(CollisionQueue, outgoing);
+		if (OSQPost(CollisionQueue, outgoing) != OS_ERR_NONE) {
+			err = 0;
+		} else {
+			err = 1;
+		}
 	}
 
 

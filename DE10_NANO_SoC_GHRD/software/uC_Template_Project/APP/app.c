@@ -447,8 +447,8 @@ static  void  AppTaskStart (void *p_arg)
 {
 
     BSP_OS_TmrTickInit(OS_TICKS_PER_SEC);                       /* Configure and enable OS tick interrupt.              */
-    //InitHallSensorInterrupt();
-    //InitDistanceSensorInterrupt();
+    InitHallSensorInterrupt();
+    InitDistanceSensorInterrupt();
     serial_communication_init();
 
 
