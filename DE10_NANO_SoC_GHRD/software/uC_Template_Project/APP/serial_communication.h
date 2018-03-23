@@ -13,7 +13,7 @@
 #define UART_0_RX_FIFO_LEVEL (*(( CPU_REG32 *) (UART_0_BASE_ADDRESS + 0x84)))
 #define UART_0_RX_FIFO_LEVEL_MASK (0b11111)
 
-#define MSG_BUFFER_LEN 127
+#define MSG_BUFFER_LEN 255
 
 #define START_CHARACTER '*'
 #define STOP_CHARACTER '&'
@@ -29,7 +29,7 @@ bool serial_communication_init();
 int rx_fifo_level();
 char serial_getc();
 int serial_send(char * print_str);
-incoming_msg* parse_incomming_msg(char * msg);
+incoming_msg parse_incomming_msg(char * msg);
 bool read_rx_buffer(char* incoming_data_buffer, uint32_t *characters_read);
 bool look_for_end_byte(char * incoming_message);
 bool look_for_start_byte(char * incoming_message, int incomming_message_size);

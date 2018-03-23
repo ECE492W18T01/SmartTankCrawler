@@ -13,9 +13,9 @@
 #include <os_cpu.h>
 
 bool serial_communication_init(){
-
+	char * temp = userMessage;
 	ALT_STATUS_CODE status = uart0_init();
-
+	bzero(userMessage, MSG_BUFFER_LEN);
 	if(status == ALT_E_SUCCESS){
 		// set the interrupt to trigger when there is a character in the rx fifo
 		UART_0_FCR_REG &= UART_0_FCR_RT_ONE_CHAR;
@@ -49,11 +49,11 @@ int serial_send(char * print_str){
 	return uart0_printf("%s", print_str);
 }
 
-incoming_msg* parse_incomming_msg(char * msg){
+incoming_msg parse_incomming_msg(char * msg){
 	    char *motor_level_str;
 	    char *steering_value_str;
 
-	    incoming_msg *new_msg;
+	    incoming_msg new_msg;
 
 	    motor_level_str = strtok(msg,DELIMINATING_STR);
 	    steering_value_str = strtok(NULL,DELIMINATING_STR);
@@ -61,10 +61,11 @@ incoming_msg* parse_incomming_msg(char * msg){
 	    if( motor_level_str==NULL || steering_value_str == NULL )
 	    {
 	    	// invalid message
-	    	new_msg = NULL;
+	    	new_msg.motor_level = (float) 0.0;
+	    	new_msg.steering_value = (int8_t) 0;
 	    }else{
-	    	new_msg->motor_level = (float) atof(motor_level_str);
-	    	new_msg->steering_value = (int8_t) atoi(steering_value_str);
+	    	new_msg.motor_level = (float) atof(motor_level_str);
+	    	new_msg.steering_value = (int8_t) atoi(steering_value_str);
 	    }
 
 	    return new_msg;
@@ -113,7 +114,20 @@ bool complete_message_revived(char * incoming_message){
 
 
 void UART0_IRS_handeler(CPU_INT32U cpu_id){
-	INT8U err = OSSemPost(RxDataAvailableSemaphore);
+	char local_char_buffer[MSG_BUFFER_LEN];
+	uint32_t chars_read = 0;
+	bool status = read_rx_buffer(local_char_buffer, &chars_read);
+	if(chars_read > 0 && status == true){
+		int incoming_buffer_len = strlen(userMessage);
+		if(incoming_buffer_len + chars_read > MSG_BUFFER_LEN){
+			// overflow error
+			bzero(userMessage, MSG_BUFFER_LEN);
+		}else{
+			strncat(userMessage,local_char_buffer,chars_read);
+			INT8U err = OSSemPost(RxDataAvailableSemaphore);
+
+		}
+	}
 }
 
 

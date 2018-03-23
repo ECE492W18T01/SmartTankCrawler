@@ -3,7 +3,7 @@
 #include <stdio.h>
 
 void init_communication_watchdog(){
-	WD_DBG_PAUSE_REG &= WD_DBG_PAUSE_REG_CLEAR;
+	//WD_DBG_PAUSE_REG &= WD_DBG_PAUSE_REG_CLEAR;
 
 	// to set initial timeout period
 	WDT1_TORR &= WTD_TIMEOUR_INIT_CLEAR;

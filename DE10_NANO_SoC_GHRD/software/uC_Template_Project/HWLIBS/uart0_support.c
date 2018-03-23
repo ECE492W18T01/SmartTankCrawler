@@ -195,15 +195,15 @@ int uart0_getc(void) {
 // retreive a string from the rx fifo
 ALT_STATUS_CODE uart0_gets(char * buffer, uint32_t* fifo_level,  int max){
 	ALT_STATUS_CODE status = ALT_E_SUCCESS;
-	status = alt_16550_fifo_level_get_rx(&g_uart0_handle, &fifo_level);
-	if(status != ALT_E_SUCCESS)
+	status = alt_16550_fifo_level_get_rx(&g_uart0_handle, fifo_level);
+	if(status != ALT_E_SUCCESS){
 		return status;
-
-	if(*fifo_level > 0) {
-		if(*fifo_level < max)
-			status = alt_16550_fifo_read(&g_uart0_handle, &buffer, *fifo_level);
+	}
+	if((*fifo_level) > 0) {
+		if((*fifo_level) < max)
+			status = alt_16550_fifo_read(&g_uart0_handle, buffer, (*fifo_level));
 		else
-			status = alt_16550_fifo_read(&g_uart0_handle, &buffer, max);
+			status = alt_16550_fifo_read(&g_uart0_handle, buffer, max);
 	}
 	return status;
 }

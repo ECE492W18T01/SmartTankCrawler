@@ -87,14 +87,6 @@ void InitDistanceSensorInterrupt(void) {
 	BSP_IntSrcEn(202u); //TODO: change this for timer 1.
 }
 
-void InitCommunicationInterrupt(void) {
-
-	//TODO: Set this up for FPGA interrupt
-	serial_communication_init();
-	//enable_communication_watchdog();
-}
-
-
 
 void HallSensor_ISR_Handler(CPU_INT32U cpu_id) {
 
@@ -150,14 +142,3 @@ void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id) {
 	ARM_OSCL_TIMER_0_REG_EOI;
 }
 
-void Communication_ISR_Handler(CPU_INT32U cpu_id) {
-
-	//TODO: Get communication and save to global variable
-
-	// Protected by interrupt
-	// Below is a pointer to a 100 char array
-	userMessage = "Your Message Here";
-	OSSemPost(CommunicationSemaphore);
-
-	ARM_OSCL_TIMER_0_REG_EOI;
-}

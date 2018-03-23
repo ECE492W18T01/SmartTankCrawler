@@ -92,7 +92,8 @@
 *                                            Communication Size
 *********************************************************************************************************
 */
-#define RX_FIFO_SIZE 127
+// actually only 127
+#define RX_FIFO_SIZE 100
 
 /*
 *********************************************************************************************************
@@ -186,31 +187,25 @@ OSSemPost(MaskSemaphore);
 */
 
 OS_MEM *MotorMessageStorage;
-INT8U MotorMessageMemory[10][sizeof(MotorChangeMessage)];
+INT8U MotorMessageMemory[4][sizeof(MotorChangeMessage)];
 
 OS_MEM *FuzzyMessageStorage;
-INT8U FuzzyMessageMemory[10][sizeof(MotorSpeedMessage)];
+INT8U FuzzyMessageMemory[4][sizeof(MotorSpeedMessage)];
 
 OS_MEM *LogMessageStorage;
-INT8U LogMessageMemory[100][sizeof(LogMessage)];
+INT8U LogMessageMemory[4][sizeof(LogMessage)];
 
 OS_MEM *DistanceMessageStorage;
-INT8U DistanceMessageMemory[10][sizeof(DistanceMessage)];
+INT8U DistanceMessageMemory[4][sizeof(DistanceMessage)];
 
 OS_MEM *StatusMessageStorage;
-INT8U StatusMessageMemory[100][sizeof(StatusMessage)];
-
-OS_MEM *MessageStorage;
-INT8U MessageMemory[100][100]; //100 is a 100 character string
+INT8U StatusMessageMemory[4][sizeof(StatusMessage)];
 
 OS_MEM *IncomingMessageStorage;
-INT8U IncomingMessageMemory[1][RX_FIFO_SIZE];
-
-OS_MEM *_UserInputStorage;
-INT8U UserInputMemory[1][100];
+INT8U IncomingMessageMemory[2][128];
 
 OS_MEM *FuzzyLogicProcessorStorage;
-INT8U FuzzyLogicProcessorMemory[5][sizeof(float) * 5];
+INT8U FuzzyLogicProcessorMemory[4][sizeof(float) * 5];
 
 /*
 *********************************************************************************************************
@@ -273,47 +268,42 @@ int main ()
     // TODO get rid of all the magic numbers, I'll do this later as its low priority (Josh)
     // Initialize the Memory.
     INT8U err;
-    MotorMessageStorage = OSMemCreate(MotorMessageMemory, 10, sizeof(MotorChangeMessage), &err);
-    if (err != OS_ERR_NONE) {
-    	; /* Handle error. TODO what's the best way to do this?...*/
-    }
-    FuzzyMessageStorage = OSMemCreate(FuzzyMessageMemory, 10, sizeof(MotorSpeedMessage), &err);
-    if (err != OS_ERR_NONE) {
-    	; /* Handle error. */
-    }
-    LogMessageStorage = OSMemCreate(LogMessageMemory, 100, sizeof(LogMessage), &err);
-    if (err != OS_ERR_NONE) {
-    	; /* Handle error. */
-    }
-    DistanceMessageStorage = OSMemCreate(DistanceMessageMemory, 10, sizeof(DistanceMessage), &err);
-    if (err != OS_ERR_NONE) {
-        ; /* Handle error. */
-    }
-    StatusMessageStorage = OSMemCreate(StatusMessageMemory, 100, sizeof(StatusMessage), &err);
-    if (err != OS_ERR_NONE) {
-        ; /* Handle error. */
-    }
-    MessageStorage = OSMemCreate(MessageMemory, 100, 100, &err);
-    if (err != OS_ERR_NONE) {
-        ; /* Handle error. */
-    }
-    _UserInputStorage = OSMemCreate(UserInputMemory, 1, 100, &err);
-    if (err != OS_ERR_NONE) {
-        ; /* Handle error. */
-    }
-    IncomingMessageStorage = OSMemCreate(IncomingMessageMemory, 1,RX_FIFO_SIZE,&err);
+//    MotorMessageStorage = OSMemCreate(MotorMessageMemory, 4, sizeof(MotorChangeMessage), &err);
+//    if (err != OS_ERR_NONE) {
+//    	; /* Handle error. TODO what's the best way to do this?...*/
+//    }
+//    FuzzyMessageStorage = OSMemCreate(FuzzyMessageMemory, 4, sizeof(MotorSpeedMessage), &err);
+//    if (err != OS_ERR_NONE) {
+//    	; /* Handle error. */
+//    }
+//    LogMessageStorage = OSMemCreate(LogMessageMemory, 4, sizeof(LogMessage), &err);
+//    if (err != OS_ERR_NONE) {
+//    	; /* Handle error. */
+//    }
+//    DistanceMessageStorage = OSMemCreate(DistanceMessageMemory, 4, sizeof(DistanceMessage), &err);
+//    if (err != OS_ERR_NONE) {
+//        ; /* Handle error. */
+//    }
+//    StatusMessageStorage = OSMemCreate(StatusMessageMemory, 4, sizeof(StatusMessage), &err);
+//    if (err != OS_ERR_NONE) {
+//        ; /* Handle error. */
+//    }
+//
+//    FuzzyLogicProcessorStorage = OSMemCreate(FuzzyLogicProcessorMemory, 4,sizeof(float) * 5,&err);
+//    if (err != OS_ERR_NONE) {
+//        ; /* Handle error. */
+//    }
+
+    IncomingMessageStorage = OSMemCreate(IncomingMessageMemory, 2, 128, &err);
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
 
-    userMessage =  OSMemGet(_UserInputStorage, &err);
+    userMessage =  OSMemGet(IncomingMessageStorage, &err);
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
-    FuzzyLogicProcessorStorage = OSMemCreate(FuzzyLogicProcessorMemory, 5,sizeof(float) * 5,&err);
-    if (err != OS_ERR_NONE) {
-        ; /* Handle error. */
-    }
+
 
 
     os_err = OSTaskCreateExt((void (*)(void *)) AppTaskStart,   /* Create the start task.                               */
@@ -436,9 +426,9 @@ static  void  AppTaskStart (void *p_arg)
 {
 
     BSP_OS_TmrTickInit(OS_TICKS_PER_SEC);                       /* Configure and enable OS tick interrupt.              */
-    InitHallSensorInterrupt();
-    InitDistanceSensorInterrupt();
-    InitCommunicationInterrupt();
+    //InitHallSensorInterrupt();
+    //InitDistanceSensorInterrupt();
+    serial_communication_init();
 
 
     for(;;) {
@@ -536,7 +526,7 @@ static void MotorTask (void *p_arg)
 
     	// We got info from the Fuzzy Task, so assign it to the static task.
     	else {
-    		printf("Here");
+    		//printf("Here");
     		staticFuzzy.frontLeft = incoming->frontLeft;
     		staticFuzzy.frontRight = incoming->frontRight;
     		staticFuzzy.backLeft = incoming->backLeft;
@@ -713,52 +703,40 @@ static void CommunicationTask (void *p_arg)
 
 	communications_established = false;
 	//Get memory IncomingMessageStorage-->incomingMessage
-	bzero(IncomingMessageStorage, MSG_BUFFER_LEN);
+	bzero(userMessage, MSG_BUFFER_LEN);
 
     for(;;) {
     	OSSemPend(RxDataAvailableSemaphore, 0, &err);
-    	char local_char_buffer[RX_FIFO_SIZE];
-    	uint32_t chars_read = 0;
-    	bool status = read_rx_buffer(local_char_buffer, &chars_read);
-    	if(chars_read > 0 && status == true){
-    		int incoming_buffer_len = strlen(IncomingMessageStorage);
-    		if(incoming_buffer_len + chars_read > RX_FIFO_SIZE){
-    			// overflow error
-    		}else{
-    			strncat(IncomingMessageStorage,local_char_buffer,chars_read);
-    			// now determine what to do with the incoming message
-    			if(communications_established == true){
-    				// parse message if entire message has been received
-    				if(complete_message_revived(IncomingMessageStorage) == true){
-    					if(look_for_end_byte(IncomingMessageStorage) == true){
-    						// termination character received
-    						bzero(IncomingMessageStorage, RX_FIFO_SIZE);
-    						communications_established = false;
-    					}else{
-    						//TODO marker for josh grab this and send to c
-        					incoming_msg *new_msg = parse_incomming_msg(IncomingMessageStorage);
-        					if(new_msg != NULL){
-        						// valid message received
-        						serial_send(ACKNOWLEDGE_STR);
-        						bzero(IncomingMessageStorage, RX_FIFO_SIZE);
-        						// TO DO: send to Keith
-        					}
-    					}
-    				}
-    			}else{
-    				//look for start byte
-    				communications_established = look_for_start_byte(IncomingMessageStorage, incoming_buffer_len);
-    				if(communications_established == true){
-    					serial_send(ACKNOWLEDGE_STR);
-    					OSSemPost(RxDataAvailableSemaphore);
-    				}else{
-    					// garbage, clear incoming buffer
-    					bzero(IncomingMessageStorage, RX_FIFO_SIZE);
-    				}
-    			}
-    		}
+		// now determine what to do with the incoming message
+		if(communications_established == true){
+			// parse message if entire message has been received
+			if(complete_message_revived(userMessage) == true){
+				if(look_for_end_byte(userMessage) == true){
+					// termination character received
+					bzero(userMessage, RX_FIFO_SIZE);
+					communications_established = false;
+				}else{
+					//TODO marker for josh grab this and send to c
+					incoming_msg new_msg = parse_incomming_msg(userMessage);
+					// valid message received
+					serial_send(ACKNOWLEDGE_STR);
+					bzero(userMessage, RX_FIFO_SIZE);
+					// TODO: send to Keith
 
-    	}
+				}
+			}
+		}else{
+			//look for start byte
+			communications_established = look_for_start_byte(userMessage, strlen(userMessage));
+			if(communications_established == true){
+				serial_send(ACKNOWLEDGE_STR);
+				OSSemPost(RxDataAvailableSemaphore);
+			}else{
+				// garbage, clear incoming buffer
+				bzero(userMessage, RX_FIFO_SIZE);
+			}
+		}
+
     	if (err == OS_ERR_NONE)
     	{
     	strncpy(localCopy, userMessage, 100);
