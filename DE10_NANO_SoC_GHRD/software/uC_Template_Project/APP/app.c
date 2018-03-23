@@ -143,6 +143,7 @@ OS_EVENT *LogQueue;
 OS_EVENT *MotorQueue;
 OS_EVENT *FuzzyQueue;
 OS_EVENT *CollisionQueue;
+OS_EVENT *InputQueue;
 
 // Semaphores
 OS_EVENT *SteeringSemaphore;
@@ -157,7 +158,7 @@ char* userMessage;
 
 /* To access steering Angle:
 OSSemPend(SteeringSemaphore, 0, &err);
-/* Example:
+ * Example:
  *
  * globalSteeringAngle = newSteeringAngle;
  *
@@ -166,7 +167,7 @@ OSSemPost(SteeringSemaphore);
 
 /* To access mask (In non protected code):
 OSSemPend(MaskSemaphore, 0, &err);
-/*
+ *
  * Example:
  *
  * if (motorMask) NewMotorSpeed = OldMotorSpeed*Change;
@@ -202,10 +203,14 @@ OS_MEM *StatusMessageStorage;
 INT8U StatusMessageMemory[4][sizeof(StatusMessage)];
 
 OS_MEM *IncomingMessageStorage;
+
 INT8U IncomingMessageMemory[2][128];
 
 OS_MEM *FuzzyLogicProcessorStorage;
 INT8U FuzzyLogicProcessorMemory[4][sizeof(float) * 5];
+
+OS_MEM *UserInputStorage;
+INT8U UserInputMemory[5][sizeof(incoming_msg)];
 
 /*
 *********************************************************************************************************
@@ -250,13 +255,14 @@ int main ()
     void *MotorMessageArray[10];
     void *FuzzyMessageArray[10];
     void *CollisionMessageArray[10];
+    void *InputMessageArray[10];
 
     // Create the Queues using above arrays to save message pointers.
     CollisionQueue = OSQCreate(CollisionMessageArray, 10);
     LogQueue = OSQCreate(LogMessageArray, 10);
     MotorQueue = OSQCreate(MotorMessageArray, 10);
     FuzzyQueue = OSQCreate(FuzzyMessageArray, 10);
-
+    InputQueue = OSQCreate(InputMessageArray, 10);
     /* Create the semaphores
      * Zero means that the semaphore will be used as a flag
      * NonZero means the semaphore will be used to control access to shared resource(s).
@@ -468,7 +474,7 @@ static void CollisionTask (void *p_arg)
     for(;;) {
 
     	incoming = (DistanceMessage*)OSQPend(CollisionQueue, 0, &err);
-    	// TO-DO: set data to local variables before freeing message
+    	// TODO: set data to local variables before freeing message
     	OSMemPut(DistanceMessageStorage, incoming);
 
 		if (err == OS_ERR_NONE)
@@ -497,7 +503,7 @@ static void MotorTask (void *p_arg)
     MotorChangeMessage staticFuzzy = { 0 };
 //    LogMessage *errorMessage;
 
-    // TO-DO assign this as something from the communication task.
+    // TODO assign this as something from the communication task.
     float userDriveSpeed = 0.85;
 
     // This should not be changes; it should be initalized to zero and then changed later.
@@ -510,7 +516,7 @@ static void MotorTask (void *p_arg)
     // Loop forever.
     for(;;) {
 
-    	// TO-DO: Replace this with a queue pend, or SOMETHING, to get the new user steering
+    	// TODO: Replace this with a queue pend, or SOMETHING, to get the new user steering
     	// AS AN INT8_T.
     	newUserSteer = 0;
 
@@ -526,7 +532,6 @@ static void MotorTask (void *p_arg)
 
     	// We got info from the Fuzzy Task, so assign it to the static task.
     	else {
-    		//printf("Here");
     		staticFuzzy.frontLeft = incoming->frontLeft;
     		staticFuzzy.frontRight = incoming->frontRight;
     		staticFuzzy.backLeft = incoming->backLeft;
@@ -565,7 +570,7 @@ static void MotorTask (void *p_arg)
 			allStop = motorMask;
 			OSSemPost(MaskSemaphore);
 
-			// Move the servo, then the motors. Should probably protect this with OS_ENTER_CRITICAL...? TO-DO
+			// Move the servo, then the motors. Should probably protect this with OS_ENTER_CRITICAL...? TODO
 			MoveFrontServo(actualSteeringAngle);
 			driveMotors(userDriveSpeed, &staticFuzzy, actualSteeringAngle, allStop);
 
@@ -612,7 +617,7 @@ static void FuzzyTask (void *p_arg) {
     	// Await incoming Hall Sensor information at 2Hz.
      	incoming = (MotorSpeedMessage*)OSQPend(FuzzyQueue, 0, &err);
 
-     	// Assumming nothing bad happened, get new hall sensor information.
+     	// Assuming nothing bad happened, get new hall sensor information.
     	if (err == OS_ERR_NONE) {
             newFrontLeft = incoming->frontLeft;
             newFrontRight = incoming->frontRight;
@@ -674,7 +679,7 @@ static void FuzzyTask (void *p_arg) {
     	}
 
     	else {
-    		; // TO-DO Send to log function
+    		; // TODO Send to log function
         }
 
     	// Send the message off.
@@ -706,6 +711,7 @@ static void CommunicationTask (void *p_arg)
 	bzero(userMessage, MSG_BUFFER_LEN);
 
     for(;;) {
+    	// TODO: set motor values to 0 on timeout
     	OSSemPend(RxDataAvailableSemaphore, 0, &err);
 		// now determine what to do with the incoming message
 		if(communications_established == true){
@@ -759,7 +765,7 @@ static void LogTask (void *p_arg)
     for(;;) {
 
     	incoming = (LogMessage*)OSQPend(LogQueue, 0, &err);
-        //TO-DO: Do something with the error.
+        //TODO: Do something with the error.
 
     	OSMemPut(LogMessageStorage, incoming);
     }
