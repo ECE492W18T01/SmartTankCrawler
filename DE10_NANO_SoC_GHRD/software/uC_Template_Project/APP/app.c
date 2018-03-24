@@ -467,7 +467,8 @@ static void MotorTask (void *p_arg)
 //    LogMessage *errorMessage;
 
     // TODO assign this as something from the communication task.
-    float userDriveSpeed = 0.85;
+    float userDriveSpeed = 0.5;
+
 
     // This should not be changes; it should be initalized to zero and then changed later.
     // This is NOT the global emergency brake variable, but later in the code it is assigned that variable's value.
@@ -536,6 +537,7 @@ static void MotorTask (void *p_arg)
 			// Move the servo, then the motors. Should probably protect this with OS_ENTER_CRITICAL...? TODO
 			MoveFrontServo(actualSteeringAngle);
 			driveMotors(userDriveSpeed, &staticFuzzy, actualSteeringAngle, allStop);
+
 
 		} else {
 			OSQPost(LogQueue, CreateErrorMessage(MOTOR_TASK, OS_Q_PEND, err));
