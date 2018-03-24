@@ -45,4 +45,7 @@
  */
 void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, int8_t steering, bool stopMask);
 
+// Function added in once we realized that minimum value needed to drive the wheel.
+float rescaleInput(float input);
+
 #endif

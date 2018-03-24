@@ -68,8 +68,19 @@ void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, int8_t steerin
 	}
 
 	// Move the front axle, assign new speeds
-	update_motor_control(dir * fl, FRONT_LEFT_MOTOR);
-	update_motor_control(dir * fr, FRONT_RIGHT_MOTOR);
-	update_motor_control(dir * rl, REAR_LEFT_MOTOR  );
-	update_motor_control(dir * rr, REAR_RIGHT_MOTOR );
+	update_motor_control(dir * rescaleInput(fl), FRONT_LEFT_MOTOR);
+	update_motor_control(dir * rescaleInput(fr), FRONT_RIGHT_MOTOR);
+	update_motor_control(dir * rescaleInput(rl), REAR_LEFT_MOTOR  );
+	update_motor_control(dir * rescaleInput(rr), REAR_RIGHT_MOTOR );
+}
+
+float rescaleInput(float input) {
+
+	// Min value to get the wheels working is 0.6 while on the jackstand.
+	// Max value of output is 1.0.
+	// Use 0 -> 0.5, no move.
+	// y = m*x + b
+	// 1.0 = m*1 + b
+	// 0.5 = m*0 + b
+	return 0.5 * input + 0.5;
 }
