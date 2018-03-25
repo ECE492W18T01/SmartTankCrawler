@@ -67,6 +67,7 @@ module soc_system (
 	memory_mem_odt,
 	memory_mem_dm,
 	memory_oct_rzqin,
+	pio_0_external_connection_export,
 	pwmbrushed_0_direction1_export,
 	pwmbrushed_0_direction2_export,
 	pwmbrushed_0_pulsewidthmodulatedsignal_export,
@@ -87,7 +88,7 @@ module soc_system (
 	upcounter_1_hallsensorinput_export,
 	upcounter_2_hallsensorinput_export,
 	upcounter_3_hallsensorinput_export,
-	pio_0_external_connection_export);	
+	switch_conn_export);	
 
 	input		clk_clk;
 	output	[7:0]	green_leds_conn_export;
@@ -156,6 +157,7 @@ module soc_system (
 	output		memory_mem_odt;
 	output	[3:0]	memory_mem_dm;
 	input		memory_oct_rzqin;
+	input	[3:0]	pio_0_external_connection_export;
 	output		pwmbrushed_0_direction1_export;
 	output		pwmbrushed_0_direction2_export;
 	output		pwmbrushed_0_pulsewidthmodulatedsignal_export;
@@ -176,5 +178,5 @@ module soc_system (
 	input		upcounter_1_hallsensorinput_export;
 	input		upcounter_2_hallsensorinput_export;
 	input		upcounter_3_hallsensorinput_export;
-	output	[3:0]	pio_0_external_connection_export;
+	input		switch_conn_export;
 endmodule

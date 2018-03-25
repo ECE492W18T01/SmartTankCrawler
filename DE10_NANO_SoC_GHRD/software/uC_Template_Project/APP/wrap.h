@@ -71,6 +71,13 @@
 #define LEDR_ADD 0x00000100
 #define LEDR_BASE FPGA_TO_HPS_LW_ADDR(LEDR_ADD)
 
+// FPGA Switches
+// Type:  Input
+// Width: Byte
+// GPIO:  N/A
+#define SW_ADD 0x00000300
+#define SW_BASE FPGA_TO_HPS_LW_ADDR(SW_ADD)
+
 // Servo #1, Steering Control
 // Type:  Input
 // Width: Byte
@@ -133,6 +140,7 @@
 #define EMERGENCY_TASK 3
 #define FUZZY_TASK 4
 #define MOTOR_TASK 5
+#define TOGGLE_TASK 6
 
 typedef struct LogMessage LogMessage;
 typedef struct HallSensorMessage HallSensorMessage;

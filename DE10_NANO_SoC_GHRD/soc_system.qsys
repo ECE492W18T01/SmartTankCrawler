@@ -9,6 +9,27 @@
    categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
+   element ToggleSwitch
+   {
+      datum _sortIndex
+      {
+         value = "17";
+         type = "int";
+      }
+   }
+   element ToggleSwitch.s1
+   {
+      datum _lockedAddress
+      {
+         value = "1";
+         type = "boolean";
+      }
+      datum baseAddress
+      {
+         value = "768";
+         type = "String";
+      }
+   }
    element clk_0
    {
       datum _sortIndex
@@ -540,6 +561,11 @@
    dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
  <interface
+   name="switch_conn"
+   internal="ToggleSwitch.external_connection"
+   type="conduit"
+   dir="end" />
+ <interface
    name="ultrasonicrangefinder_0_sonarin"
    internal="ultraSonicRangeFinder_0.sonarIn"
    type="conduit"
@@ -564,6 +590,24 @@
    internal="upCounter_3.HallSensorInput"
    type="conduit"
    dir="end" />
+ <module
+   name="ToggleSwitch"
+   kind="altera_avalon_pio"
+   version="17.0"
+   enabled="1">
+  <parameter name="bitClearingEdgeCapReg" value="false" />
+  <parameter name="bitModifyingOutReg" value="false" />
+  <parameter name="captureEdge" value="false" />
+  <parameter name="clockRate" value="50000000" />
+  <parameter name="direction" value="Input" />
+  <parameter name="edgeType" value="RISING" />
+  <parameter name="generateIRQ" value="false" />
+  <parameter name="irqType" value="LEVEL" />
+  <parameter name="resetValue" value="0" />
+  <parameter name="simDoTestBenchWiring" value="false" />
+  <parameter name="simDrivenValue" value="0" />
+  <parameter name="width" value="1" />
+ </module>
  <module name="clk_0" kind="clock_source" version="17.0" enabled="1">
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="clockFrequencyKnown" value="true" />
@@ -1142,7 +1186,7 @@
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="false" />
   <parameter name="clockRate" value="50000000" />
-  <parameter name="direction" value="Output" />
+  <parameter name="direction" value="Input" />
   <parameter name="edgeType" value="RISING" />
   <parameter name="generateIRQ" value="false" />
   <parameter name="irqType" value="LEVEL" />
@@ -1298,6 +1342,15 @@
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
+   kind="avalon"
+   version="17.0"
+   start="hps_0.h2f_lw_axi_master"
+   end="ToggleSwitch.s1">
+  <parameter name="arbitrationPriority" value="1" />
+  <parameter name="baseAddress" value="0x0300" />
+  <parameter name="defaultConnection" value="false" />
+ </connection>
+ <connection
    kind="clock"
    version="17.0"
    start="clk_0.clk"
@@ -1320,6 +1373,7 @@
  <connection kind="clock" version="17.0" start="clk_0.clk" end="sysid_qsys.clk" />
  <connection kind="clock" version="17.0" start="clk_0.clk" end="green_leds.clk" />
  <connection kind="clock" version="17.0" start="clk_0.clk" end="switches.clk" />
+ <connection kind="clock" version="17.0" start="clk_0.clk" end="ToggleSwitch.clk" />
  <connection kind="clock" version="17.0" start="clk_0.clk" end="pwmClk_0.clock" />
  <connection
    kind="clock"
@@ -1416,6 +1470,11 @@
    version="17.0"
    start="clk_0.clk_reset"
    end="switches.reset" />
+ <connection
+   kind="reset"
+   version="17.0"
+   start="clk_0.clk_reset"
+   end="ToggleSwitch.reset" />
  <connection
    kind="reset"
    version="17.0"

@@ -12,6 +12,7 @@
 		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
 		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
 		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="C:\Users\fmendi\Desktop\Sunday\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project"/>
 			<item value="C:\Users\kgmills\Desktop\Project\SmartTankCrawler\DE10_NANO_SoC_GHRD\software"/>
 			<item value=""/>
 		</list>

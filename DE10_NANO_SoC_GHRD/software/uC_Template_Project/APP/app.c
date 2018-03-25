@@ -84,6 +84,7 @@
 #define FUZZY_TASK_PRIO 9
 #define COMMUNICATION_TASK_PRIO 10
 #define LOG_TASK_PRIO 11
+#define TOGGLE_TASK_PRIO 12           // maybe change later to higher prio, if necessary
 
 #define TASK_STACK_SIZE 4096
 
@@ -108,6 +109,7 @@ CPU_STK MotorTaskStk[TASK_STACK_SIZE];
 CPU_STK FuzzyTaskStk[TASK_STACK_SIZE];
 CPU_STK ComTaskStk[TASK_STACK_SIZE];
 CPU_STK LogTaskStk[TASK_STACK_SIZE];
+CPU_STK ToggleTaskStk[TASK_STACK_SIZE];
 
 /*
 *********************************************************************************************************
@@ -130,6 +132,7 @@ static  void  MotorTask                 (void        *p_arg);
 static  void  FuzzyTask                 (void        *p_arg);
 static  void  CommunicationTask         (void        *p_arg);
 static  void  LogTask               	(void        *p_arg);
+static  void  ToggleTask                (void        *p_arg);
 
 
 /*
@@ -150,9 +153,11 @@ OS_EVENT *SteeringSemaphore;
 OS_EVENT *MaskSemaphore;
 OS_EVENT *CommunicationSemaphore;
 OS_EVENT *RxDataAvailableSemaphore;
+OS_EVENT *FuzzyToggleSemaphore;
 
 // Resources
 int8_t globalSteeringAngle;
+bool FuzzyToggle = true;          //starting true, flip the switch to turn off
 bool motorMask = false;
 char* userMessage;
 
@@ -254,6 +259,7 @@ int main ()
     MaskSemaphore = OSSemCreate(1);				// One shared resource
     CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
     RxDataAvailableSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
+    FuzzyToggleSemaphore = OSSemCreate(1);      // One Shared resource
     // Initialize the Memory.
     INT8U err;
 
@@ -361,6 +367,20 @@ int main ()
         ; /* Handle error. */
     }
 
+    os_err = OSTaskCreateExt((void (*)(void *)) ToggleTask,   /* Create the start task.                               */
+                              (void          * ) 0,
+                              (OS_STK        * )&ToggleTaskStk[TASK_STACK_SIZE - 1],
+                              (INT8U           ) TOGGLE_TASK_PRIO,
+                              (INT16U          ) TOGGLE_TASK_PRIO,  // reuse prio for ID
+                              (OS_STK        * )&ToggleTaskStk[0],
+                              (INT32U          ) TASK_STACK_SIZE,
+                              (void          * )0,
+                              (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+
+     if (os_err != OS_ERR_NONE) {
+         ; /* Handle error. */
+     }
+
     CPU_IntEn();
 
     OSStart();
@@ -425,7 +445,11 @@ static void EmergencyTask (void *p_arg)
 //	char *TaskName = "EmergencyTask";
 //	LogMessage *errorMessage;
 
-    for(;;) {OSTimeDlyHMSM(1,0,0,0);} //Task does nothing currently
+
+
+    for(;;) {
+    	OSTimeDlyHMSM(1,0,0,0);
+    } //Task does nothing currently
 }
 
 static void CollisionTask (void *p_arg)
@@ -791,4 +815,37 @@ static void LogTask (void *p_arg)
     	};
     	OSMemPut(StandardMemoryStorage, incoming);
     }
+}
+
+static void ToggleTask(void *p_arg)
+{
+
+	INT8U err; //, send_err;
+	int EnableFuzzy = 0;
+	EnableFuzzy = alt_read_word(SW_BASE);
+
+
+	//TODO Check if global variable FuzzyToggle is false, then don't augment wheels with fuzzy logic
+    for(;;) {
+
+    	// lights will be on if the fuzzy logic is on, and off if fuzzy logic is off
+    	OSTimeDlyHMSM(0,0,0,50);
+    	if(EnableFuzzy == 0){
+    		alt_write_word(LEDR_BASE, 0x3ff);
+    		OSSemPend(FuzzyToggleSemaphore, 0, &err);
+    		FuzzyToggle = true;
+    		OSSemPost(FuzzyToggleSemaphore);
+    	}
+    	else{
+    		alt_write_word(LEDR_BASE, 0x000);
+    		OSSemPend(FuzzyToggleSemaphore, 0, &err);
+    	    FuzzyToggle = false;
+    	    OSSemPost(FuzzyToggleSemaphore);
+    	}
+    	EnableFuzzy = alt_read_word(SW_BASE);
+
+
+    }
+
+
 }

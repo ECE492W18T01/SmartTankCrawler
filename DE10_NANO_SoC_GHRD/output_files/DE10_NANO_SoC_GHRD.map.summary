@@ -1,10 +1,10 @@
-Analysis & Synthesis Status : Successful - Fri Mar 23 19:42:26 2018
+Analysis & Synthesis Status : Successful - Sun Mar 25 14:57:58 2018
 Quartus Prime Version : 17.0.2 Build 602 07/19/2017 SJ Standard Edition
 Revision Name : DE10_NANO_SoC_GHRD
 Top-level Entity Name : DE10_NANO_SoC_GHRD
 Family : Cyclone V
 Logic utilization (in ALMs) : N/A
-Total registers : 2986
+Total registers : 3040
 Total pins : 191
 Total virtual pins : 0
 Total block memory bits : 0

@@ -96,6 +96,10 @@
 					"strict" : false
 				},
 				{
+					"name" : "SW[0]",
+					"strict" : false
+				},
+				{
 					"name" : "GPIO_0_5",
 					"strict" : false
 				},

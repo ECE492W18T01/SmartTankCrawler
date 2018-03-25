@@ -8,8 +8,8 @@
   </columns>
  </systemtable>
  <library
-   expandedCategories="Library/Interface Protocols/PCI Express/QSYS Example Designs,Library/Interface Protocols,Library/Interface Protocols/PCI Express,Project,Library,Library/Processors and Peripherals,Library/Processors and Peripherals/Peripherals" />
+   expandedCategories="Library,Library/Processors and Peripherals,Library/Interface Protocols,Project,Library/Processors and Peripherals/Peripherals,Library/Interface Protocols/PCI Express/QSYS Example Designs,Library/Interface Protocols/PCI Express" />
  <window width="1440" height="860" x="0" y="0" />
- <generation synthesis="VHDL" greybox="0" />
+ <generation synthesis="VERILOG" greybox="0" />
  <hdlexample language="VERILOG" />
 </preferences>

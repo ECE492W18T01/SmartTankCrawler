@@ -100,7 +100,9 @@ void HallSensor_ISR_Handler(CPU_INT32U cpu_id) {
 		outgoing->backRight = alt_read_byte(R_RIGHT_BASE);  // Rear Right
 
 
-		alt_write_byte(LEDR_BASE, alt_read_byte(LEDR_BASE) +1);
+		// commented out will be using the lights to determine if the vehicle has
+		// FuzzyLogic Enabled (lights on), or disable (lights off)
+		//alt_write_byte(LEDR_BASE, alt_read_byte(LEDR_BASE) +1);
 
 		OSQPost(FuzzyQueue, outgoing);
 	}

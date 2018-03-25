@@ -66,6 +66,7 @@
 		.memory_mem_odt                                (<connected-to-memory_mem_odt>),                                //                                       .mem_odt
 		.memory_mem_dm                                 (<connected-to-memory_mem_dm>),                                 //                                       .mem_dm
 		.memory_oct_rzqin                              (<connected-to-memory_oct_rzqin>),                              //                                       .oct_rzqin
+		.pio_0_external_connection_export              (<connected-to-pio_0_external_connection_export>),              //              pio_0_external_connection.export
 		.pwmbrushed_0_direction1_export                (<connected-to-pwmbrushed_0_direction1_export>),                //                pwmbrushed_0_direction1.export
 		.pwmbrushed_0_direction2_export                (<connected-to-pwmbrushed_0_direction2_export>),                //                pwmbrushed_0_direction2.export
 		.pwmbrushed_0_pulsewidthmodulatedsignal_export (<connected-to-pwmbrushed_0_pulsewidthmodulatedsignal_export>), // pwmbrushed_0_pulsewidthmodulatedsignal.export
@@ -86,6 +87,6 @@
 		.upcounter_1_hallsensorinput_export            (<connected-to-upcounter_1_hallsensorinput_export>),            //            upcounter_1_hallsensorinput.export
 		.upcounter_2_hallsensorinput_export            (<connected-to-upcounter_2_hallsensorinput_export>),            //            upcounter_2_hallsensorinput.export
 		.upcounter_3_hallsensorinput_export            (<connected-to-upcounter_3_hallsensorinput_export>),            //            upcounter_3_hallsensorinput.export
-		.pio_0_external_connection_export              (<connected-to-pio_0_external_connection_export>)               //              pio_0_external_connection.export
+		.switch_conn_export                            (<connected-to-switch_conn_export>)                             //                            switch_conn.export
 	);
 

@@ -1,8 +1,8 @@
-20:25:33 **** Incremental Build of configuration Debug for project uC_Template_Project ****
+15:38:04 **** Incremental Build of configuration Debug for project uC_Template_Project ****
 make all 
 'Building file: ../APP/app.c'
 'Invoking: ARM C Compiler 5'
-armcc --cpu=Cortex-A9 --no_unaligned_access -Dsoc_cv_av -I"C:\Users\kgmills\Desktop\Project\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\APP" -I"C:\Users\kgmills\Desktop\Project\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\BSP" -I"C:\Users\kgmills\Desktop\Project\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\BSP\OS" -I"C:\intelFPGA\17.0\embedded\ip\altera\hps\altera_hps\hwlib\include" -I"C:\intelFPGA\17.0\embedded\ip\altera\hps\altera_hps\hwlib\include\soc_cv_av" -I"C:\intelFPGA\17.0\embedded\ip\altera\hps\altera_hps\hwlib\include\soc_cv_av\socal" -I"C:\Users\kgmills\Desktop\Project\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\HWLIBS" -I"C:\Users\kgmills\Desktop\Project\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\uC-CPU\ARM-Cortex-A" -I"C:\Users\kgmills\Desktop\Project\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\uC-CPU" -I"C:\Users\kgmills\Desktop\Project\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\uC-LIBS" -I"C:\Users\kgmills\Desktop\Project\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\uCOS-II\Ports" -I"C:\Users\kgmills\Desktop\Project\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\uCOS-II\Source" --c99 --gnu -O0 -g --md --depend_format=unix_escaped --no_depend_system_headers --depend_dir="APP" -c -o "APP/app.o" "../APP/app.c"
+armcc --cpu=Cortex-A9 --no_unaligned_access -Dsoc_cv_av -I"C:\Users\fmendi\Desktop\Sunday\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\APP" -I"C:\Users\fmendi\Desktop\Sunday\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\BSP" -I"C:\Users\fmendi\Desktop\Sunday\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\BSP\OS" -I"C:\intelFPGA\17.0\embedded\ip\altera\hps\altera_hps\hwlib\include" -I"C:\intelFPGA\17.0\embedded\ip\altera\hps\altera_hps\hwlib\include\soc_cv_av" -I"C:\intelFPGA\17.0\embedded\ip\altera\hps\altera_hps\hwlib\include\soc_cv_av\socal" -I"C:\Users\fmendi\Desktop\Sunday\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\HWLIBS" -I"C:\Users\fmendi\Desktop\Sunday\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\uC-CPU\ARM-Cortex-A" -I"C:\Users\fmendi\Desktop\Sunday\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\uC-CPU" -I"C:\Users\fmendi\Desktop\Sunday\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\uC-LIBS" -I"C:\Users\fmendi\Desktop\Sunday\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\uCOS-II\Ports" -I"C:\Users\fmendi\Desktop\Sunday\SmartTankCrawler\DE10_NANO_SoC_GHRD\software\uC_Template_Project\uCOS-II\Source" --c99 --gnu -O0 -g --md --depend_format=unix_escaped --no_depend_system_headers --depend_dir="APP" -c -o "APP/app.o" "../APP/app.c"
 "../APP/serial_communication.h", line 33: Warning:  #1295-D: Deprecated declaration serial_communication_init - give arg types
   
 ool serial_communication_init();
@@ -19,10 +19,10 @@ ool serial_communication_init();
 "../APP/fMatrices_servoFuzzyThree.h", line 4: Warning:  #1-D: last line of file ends without a newline
   #endif
         ^
-"../APP/app.c", line 677: Warning:  #177-D: variable "localCopy" was declared but never referenced
+"../APP/app.c", line 697: Warning:  #177-D: variable "localCopy" was declared but never referenced
   	char localCopy[100];
   	     ^
-"../APP/app.c", line 747: Warning:  #550-D: variable "message" was set but never used
+"../APP/app.c", line 767: Warning:  #550-D: variable "message" was set but never used
   	void *message; // Ignore this warning its dumb.
   	      ^
 ../APP/app.c: 7 warnings, 0 errors
@@ -30,7 +30,7 @@ ool serial_communication_init();
 ' '
 'Building target: uC_Template_Project.axf'
 'Invoking: ARM Linker 5'
-armlink --cpu=Cortex-A9 --entry=Start --scatter=""C:/Users/kgmills/Desktop/Project/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/BSP/ARM_COMPILER/scatter.scat"" --info=sizes -o "uC_Template_Project.axf"  ./uCOS-II/Source/os_core.o ./uCOS-II/Source/os_dbg_r.o ./uCOS-II/Source/os_flag.o ./uCOS-II/Source/os_mbox.o ./uCOS-II/Source/os_mem.o ./uCOS-II/Source/os_mutex.o ./uCOS-II/Source/os_q.o ./uCOS-II/Source/os_sem.o ./uCOS-II/Source/os_task.o ./uCOS-II/Source/os_time.o ./uCOS-II/Source/os_tmr.o  ./uCOS-II/Ports/os_cpu_a_vfp-d32.o ./uCOS-II/Ports/os_cpu_c.o  ./uC-LIBS/lib_ascii.o ./uC-LIBS/lib_math.o ./uC-LIBS/lib_mem.o ./uC-LIBS/lib_str.o  ./uC-CPU/Cache/cpu_cache_armv7_generic_l1_l2c310_l2.o ./uC-CPU/Cache/cpu_cache_armv7_generic_l1_l2c310_l2_a.o  ./uC-CPU/ARM-Cortex-A/cpu_a.o  ./uC-CPU/cpu_core.o  ./HWLIBS/alt_16550_uart.o ./HWLIBS/alt_bridge_manager.o ./HWLIBS/alt_clock_manager.o ./HWLIBS/alt_fpga_manager.o ./HWLIBS/uart0_support.o ./HWLIBS/watchdog.o  ./BSP/OS/bsp_os.o  ./BSP/ARM_Compiler/armv7a_tthelp.o ./BSP/ARM_Compiler/bsp_cache.o ./BSP/ARM_Compiler/startup.o  ./BSP/bsp.o ./BSP/bsp_int.o ./BSP/cpu_bsp.o  ./APP/FuzzyLogicProcessor.o ./APP/app.o ./APP/fMatrices_servoFuzzyThree.o ./APP/fuzzyMotorDrive.o ./APP/motorDriveR.o ./APP/motor_controls.o ./APP/red_leds.o ./APP/serial_communication.o ./APP/slipLessSteeringRatios.o ./APP/timer.o ./APP/wrap.o   
+armlink --cpu=Cortex-A9 --entry=Start --scatter=""C:/Users/fmendi/Desktop/Sunday/SmartTankCrawler/DE10_NANO_SoC_GHRD/software/uC_Template_Project/BSP/ARM_COMPILER/scatter.scat"" --info=sizes -o "uC_Template_Project.axf"  ./uCOS-II/Source/os_core.o ./uCOS-II/Source/os_dbg_r.o ./uCOS-II/Source/os_flag.o ./uCOS-II/Source/os_mbox.o ./uCOS-II/Source/os_mem.o ./uCOS-II/Source/os_mutex.o ./uCOS-II/Source/os_q.o ./uCOS-II/Source/os_sem.o ./uCOS-II/Source/os_task.o ./uCOS-II/Source/os_time.o ./uCOS-II/Source/os_tmr.o  ./uCOS-II/Ports/os_cpu_a_vfp-d32.o ./uCOS-II/Ports/os_cpu_c.o  ./uC-LIBS/lib_ascii.o ./uC-LIBS/lib_math.o ./uC-LIBS/lib_mem.o ./uC-LIBS/lib_str.o  ./uC-CPU/Cache/cpu_cache_armv7_generic_l1_l2c310_l2.o ./uC-CPU/Cache/cpu_cache_armv7_generic_l1_l2c310_l2_a.o  ./uC-CPU/ARM-Cortex-A/cpu_a.o  ./uC-CPU/cpu_core.o  ./HWLIBS/alt_16550_uart.o ./HWLIBS/alt_bridge_manager.o ./HWLIBS/alt_clock_manager.o ./HWLIBS/alt_fpga_manager.o ./HWLIBS/uart0_support.o ./HWLIBS/watchdog.o  ./BSP/OS/bsp_os.o  ./BSP/ARM_Compiler/armv7a_tthelp.o ./BSP/ARM_Compiler/bsp_cache.o ./BSP/ARM_Compiler/startup.o  ./BSP/bsp.o ./BSP/bsp_int.o ./BSP/cpu_bsp.o  ./APP/FuzzyLogicProcessor.o ./APP/app.o ./APP/fMatrices_servoFuzzyThree.o ./APP/fuzzyMotorDrive.o ./APP/motorDriveR.o ./APP/motor_controls.o ./APP/red_leds.o ./APP/serial_communication.o ./APP/slipLessSteeringRatios.o ./APP/timer.o ./APP/wrap.o   
 
 ==============================================================================
 
@@ -39,48 +39,48 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
-       712         12          0          0          0       6414   FuzzyLogicProcessor.o
-      5136         20          0          0          0      29398   alt_16550_uart.o
+       712         12          0          0          0       6470   FuzzyLogicProcessor.o
+      5136         20          0          0          0      29394   alt_16550_uart.o
          0          0          0          0          0      74004   alt_bridge_manager.o
-     31208        864          0        224          0      35006   alt_clock_manager.o
-      2792        160          0         56     151552      12229   app.o
+     31208        864          0        224          0      34998   alt_clock_manager.o
+      3020        184          0         60     167936      12412   app.o
         96          0          0          0          0        596   armv7a_tthelp.o
-       136         16          0          0          0       1777   bsp.o
-       436          0          0          0          0        932   bsp_cache.o
-       832         32          0          0       1024       6047   bsp_int.o
-       280         12          0          0          0       1070   bsp_os.o
+       136         16          0          0          0       1773   bsp.o
+       436          0          0          0          0        928   bsp_cache.o
+       832         32          0          0       1024       6031   bsp_int.o
+       280         12          0          0          0       1066   bsp_os.o
         96          0          0          0          0        816   cpu_a.o
-       220          4          0          0          0       1360   cpu_bsp.o
-        44         12          0          8          0        994   cpu_cache_armv7_generic_l1_l2c310_l2.o
+       220          4          0          0          0       1356   cpu_bsp.o
+        44         12          0          8          0        990   cpu_cache_armv7_generic_l1_l2c310_l2.o
        204          0          0          0          0        704   cpu_cache_armv7_generic_l1_l2c310_l2_a.o
-       888         20        260          4          0       7100   cpu_core.o
-         0          0     185220          0          0        818   fMatrices_servoFuzzyThree.o
+       888         20        260          4          0       7088   cpu_core.o
+         0          0     185220          0          0        814   fMatrices_servoFuzzyThree.o
        616          8          0          0          0       6774   fuzzyMotorDrive.o
-         0          0          0          0          0      13736   lib_ascii.o
-         0          0          0          0          0       1640   lib_math.o
-      5136         76          0          4   16777236      27865   lib_mem.o
-         0          0        132          0          0        746   motorDriveR.o
-        40          8          0         16          0       1389   motor_controls.o
-      5828        160        256         80      10920      24827   os_core.o
-       988          0          0          0          0        584   os_cpu_a_vfp-d32.o
-       608         36          0         12       4096      14993   os_cpu_c.o
-       376        184        118          0          0      12369   os_dbg_r.o
-      3768         36          0          0          0       7820   os_flag.o
-      1096         16          0          0          0       3856   os_mem.o
-      2916         28          0          0          0       6337   os_q.o
-      1832         20          0          0          0       4598   os_sem.o
-      3992         48          0          0          0       9128   os_task.o
+         0          0          0          0          0      13724   lib_ascii.o
+         0          0          0          0          0       1628   lib_math.o
+      5136         76          0          4   16777236      27845   lib_mem.o
+         0          0        132          0          0        738   motorDriveR.o
+        40          8          0         16          0       1385   motor_controls.o
+      5828        160        256         80      10920      24807   os_core.o
+       988          0          0          0          0        580   os_cpu_a_vfp-d32.o
+       608         36          0         12       4096      14973   os_cpu_c.o
+       376        184        118          0          0      12357   os_dbg_r.o
+      3768         36          0          0          0       7816   os_flag.o
+      1096         16          0          0          0       3848   os_mem.o
+      2916         28          0          0          0       6329   os_q.o
+      1832         20          0          0          0       4590   os_sem.o
+      3992         48          0          0          0       9116   os_task.o
        796         28          0          0          0       2006   os_time.o
-       836         24          0          0          0       4923   serial_communication.o
+       836         24          0          0          0       4911   serial_communication.o
          0          0        132          0          0        781   slipLessSteeringRatios.o
        496         76          0          0          0        812   startup.o
-       560         36          0          1          0       2280   timer.o
-       976         56          0          0         20       3593   uart0_support.o
-         0          0          0          0          0       2060   watchdog.o
-        76          4          0          0          0        811   wrap.o
+       540         36          0          1          0       2272   timer.o
+       976         56          0          0         20       3585   uart0_support.o
+         0          0          0          0          0       2056   watchdog.o
+        76          4          0          0          0        807   wrap.o
 
     ----------------------------------------------------------------------
-     74024       1996     186170        408   50544336     333193   Object Totals
+     74232       2020     186170        412   50560720     333180   Object Totals
          8          0         48          0   33599488          0   (incl. Generated)
          0          0          4          3          0          0   (incl. Padding)
 
@@ -245,20 +245,20 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     87994       2634     186730        416   50544432     331289   Grand Totals
-     87994       2634     186730        124   50544432     331289   ELF Image Totals (compressed)
-     87994       2634     186730        124          0          0   ROM Totals
+     88202       2658     186730        420   50560816     331276   Grand Totals
+     88202       2658     186730        124   50560816     331276   ELF Image Totals (compressed)
+     88202       2658     186730        124          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)               274724 ( 268.29kB)
-    Total RW  Size (RW Data + ZI Data)          50544848 (49360.20kB)
-    Total ROM Size (Code + RO Data + RW Data)     274848 ( 268.41kB)
+    Total RO  Size (Code + RO Data)               274932 ( 268.49kB)
+    Total RW  Size (RW Data + ZI Data)          50561236 (49376.21kB)
+    Total ROM Size (Code + RO Data + RW Data)     275056 ( 268.61kB)
 
 ==============================================================================
 
 'Finished building target: uC_Template_Project.axf'
 ' '
 
-20:25:34 Build Finished (took 843ms)
+15:38:05 Build Finished (took 817ms)
 
