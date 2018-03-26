@@ -7,7 +7,7 @@
 
 #ifndef TIMER_H_
 #define TIMER_H_
-
+#include <cpu.h>
 // ARM Timer OSCLTimer 0 BASE address == 0xFFD00000
 // Important registers at offset 0x0, 0x8, 0xc
 // Use this example
@@ -58,10 +58,6 @@
 
 void InitHallSensorInterrupt (void);
 void HallSensor_ISR_Handler(CPU_INT32U cpu_id);
-void InitDistanceSensorInterrupt (void);
-void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id);
-void InitCommunicationInterrupt (void);
-void Communication_ISR_Handler(CPU_INT32U cpu_id);
 
 extern void FPGA_LEDS_Off(void);
 extern void FPGA_LEDS_On(void);

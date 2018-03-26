@@ -71,6 +71,7 @@
 #include "FuzzyLogicProcessor.h"
 #include "fuzzyMotorDrive.h"
 #include "timer.h"
+#include "sonar.h"
 
 /*
 *********************************************************************************************************
@@ -93,7 +94,7 @@
 *********************************************************************************************************
 */
 // actually only 127
-#define RX_FIFO_SIZE 100
+#define RX_FIFO_SIZE 255
 
 /*
 *********************************************************************************************************
@@ -155,6 +156,7 @@ OS_EVENT *RxDataAvailableSemaphore;
 int8_t globalSteeringAngle;
 bool motorMask = false;
 char* userMessage;
+circular_distance_buf* distance_buffer;
 
 /* To access steering Angle:
 OSSemPend(SteeringSemaphore, 0, &err);
@@ -254,6 +256,7 @@ int main ()
     MaskSemaphore = OSSemCreate(1);				// One shared resource
     CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
     RxDataAvailableSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
+
     // Initialize the Memory.
     INT8U err;
 
@@ -266,8 +269,17 @@ int main ()
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
-    userMessage =  OSMemGet(LargeMemoryStorage, &err);
 
+
+    userMessage =  OSMemGet(LargeMemoryStorage, &err);
+    if (err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
+    distance_buffer = OSMemGet(LargeMemoryStorage, &err);
+
+    if (err != OS_ERR_NONE) {
+        ; /* Handle error. */
+    }
     os_err = OSTaskCreateExt((void (*)(void *)) AppTaskStart,   /* Create the start task.                               */
                              (void          * ) 0,
                              (OS_STK        * )&AppTaskStartStk[TASK_STACK_SIZE - 1],
@@ -432,22 +444,22 @@ static void CollisionTask (void *p_arg)
 {
 	INT8U err;
 
-	DistanceMessage *incoming;
+	//DistanceMessage *incoming;
 
     for(;;) {
-
-    	incoming = (DistanceMessage*)OSQPend(CollisionQueue, 0, &err);
-    	// TODO: set data to local variables before freeing message
-    	OSMemPut(StandardMemoryStorage, incoming);
-
-		if (err == OS_ERR_NONE)
-		{
-			/*
-			 * You have received a distance measurement. TODO: Implement
-			 */
-		} else {
-			OSQPost(LogQueue, CreateErrorMessage(COLLISION_TASK, OS_Q_PEND, err));
-        }
+    	 OSTimeDlyHMSM(0, 0, 1, 0);
+//    	incoming = (DistanceMessage*)OSQPend(CollisionQueue, 0, &err);
+//    	// TODO: set data to local variables before freeing message
+//    	OSMemPut(StandardMemoryStorage, incoming);
+//
+//		if (err == OS_ERR_NONE)
+//		{
+//			/*
+//			 * You have received a distance measurement. TODO: Implement
+//			 */
+//		} else {
+//			OSQPost(LogQueue, CreateErrorMessage(COLLISION_TASK, OS_Q_PEND, err));
+        //}
     }
 }
 
@@ -705,7 +717,9 @@ static void CommunicationTask (void *p_arg)
 					incoming_msg *outgoing = OSMemGet(StandardMemoryStorage, &err);
 					outgoing->motor_level = new_msg.motor_level;
 					outgoing->steering_value = new_msg.steering_value;
-					OSQPost(InputQueue,outgoing);
+
+					printf("Steering:%i ,Throttle:%.6f\n",outgoing->steering_value,outgoing->motor_level);
+					//OSQPost(InputQueue,outgoing);
 					// TODO: Here you go Keith
 					// incoming_msg *incoming = OSQPend(InputQueue);
     			}
@@ -713,6 +727,7 @@ static void CommunicationTask (void *p_arg)
     			//look for start byte
     			communications_established = look_for_start_byte(userMessage, strlen(userMessage));
     			if(communications_established == true){
+    				OSTimeDlyHMSM(0, 0, 0, 500); // delay
     				serial_send(ACKNOWLEDGE_STR);
     				OSSemPost(RxDataAvailableSemaphore);
     			}else{
@@ -771,7 +786,7 @@ static void LogTask (void *p_arg)
     			break;
 
     		case DISTANCE_MESSAGE:
-    			message = (DistanceMessage*)(incoming->message);
+    			//message = (DistanceMessage*)(incoming->message);
     			// Send the details:
 //    			((DistanceMessage*)message)->distance;
     			break;

@@ -1,3 +1,4 @@
+// Created by Brain Ofrim
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
@@ -11,6 +12,7 @@
 #include <watchdog.h>
 #include "globals.h"
 #include <os_cpu.h>
+
 
 bool serial_communication_init(){
 	ALT_STATUS_CODE status = uart0_init();

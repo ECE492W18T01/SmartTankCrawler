@@ -110,12 +110,6 @@
 #define R_RIGHT_ADD 0x00000119
 #define R_RIGHT_BASE FPGA_TO_HPS_LW_ADDR(R_RIGHT_ADD)
 
-// Ultrasonic Range Finder
-// Type:  Output
-// Width: Longword
-// GPIO:  0_5
-#define SONAR_ADD 0x00000120
-#define SONAR_BASE FPGA_TO_HPS_LW_ADDR(SONAR_ADD)
 
 #define LOG_MESSAGE 0
 #define HALL_SENSOR_MESSAGE 1
@@ -137,7 +131,6 @@
 typedef struct LogMessage LogMessage;
 typedef struct HallSensorMessage HallSensorMessage;
 typedef struct MotorChangeMessage MotorChangeMessage;
-typedef struct DistanceMessage DistanceMessage;
 
 struct LogMessage {
 	INT8U taskID;
@@ -162,9 +155,6 @@ struct MotorChangeMessage {
     int8_t steeringServo;
 };
 
-struct DistanceMessage {
-	double distance;
-};
 
 extern OS_EVENT *FuzzyQueue;
 extern OS_EVENT *CollisionQueue;
