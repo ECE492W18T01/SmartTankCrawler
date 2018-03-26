@@ -6,15 +6,24 @@ void MoveBackServo(uint8_t hex) {
 	  alt_write_byte(BRAKE_SERVO_BASE, BackServoMax);
   }
 
-  //else if (hex < BackServoMin) {
-//	  alt_write_byte(BRAKE_SERVO_BASE, BackServoMin);
-  //}
-
   else {
 	  alt_write_byte(BRAKE_SERVO_BASE, hex);
   }
 }
 
-void MoveFrontServo(uint8_t hex ) {
-	  alt_write_byte(BRAKE_SERVO_BASE, (int8_t)(-hex+60)/6);
+void MoveFrontServo(int8_t hex ) {
+
+	if (hex <= -60) {
+		alt_write_byte(STEER_SERVO_BASE, FrontServoMax);
+	}
+
+	else if (hex >= 60) {
+		alt_write_byte(STEER_SERVO_BASE, 0x00);
+	}
+
+	else {
+		int8_t adder = 60;
+		int8_t divider = 6;
+		alt_write_byte(STEER_SERVO_BASE, (-hex + adder) / divider);
+	}
 }

@@ -8,14 +8,14 @@
 		<item value="true" key="wrap"/>
 		<item value="false" key="wholeword"/>
 		<list key="findhistory">
-			<item value="fake"/>
-			<item value="OSTIME"/>
+			<item value="printf"/>
+			<item value="InputQueue"/>
+			<item value="MoveFront"/>
+			<item value="OSMemPut"/>
+			<item value="Move"/>
+			<item value="byte"/>
+			<item value="bytwe"/>
 			<item value="alt_write"/>
-			<item value="backservo"/>
-			<item value="rearservo"/>
-			<item value="rear"/>
-			<item value="steeringAngle"/>
-			<item value="TODO"/>
 		</list>
 		<list key="replacehistory">
 		</list>
