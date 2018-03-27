@@ -73,6 +73,10 @@
 #include "timer.h"
 #include "sonar.h"
 
+#if OS_CRITICAL_METHOD == 3u                          /* Allocate storage for CPU status register      */
+    OS_CPU_SR  cpu_sr = 0u;
+#endif
+
 /*
 *********************************************************************************************************
 *                              Priority Definitions and Task Stack Size
@@ -147,7 +151,6 @@ OS_EVENT *LogQueue;
 OS_EVENT *MotorQueue;
 OS_EVENT *FuzzyQueue;
 OS_EVENT *CollisionQueue;
-OS_EVENT *InputQueue;
 
 // Semaphores
 OS_EVENT *SteeringSemaphore;
@@ -259,7 +262,6 @@ int main ()
     LogQueue = OSQCreate(LogMessageArray, 10);
     MotorQueue = OSQCreate(MotorMessageArray, 10);
     FuzzyQueue = OSQCreate(FuzzyMessageArray, 10);
-    InputQueue = OSQCreate(InputMessageArray, 10);
     /* Create the semaphores
      * Zero means that the semaphore will be used as a flag
      * NonZero means the semaphore will be used to control access to shared resource(s).
@@ -511,7 +513,7 @@ static void MotorTask (void *p_arg)
 	// Incoming from Fuzzy Task, staticFuzzy is local and static allocated
     MotorChangeMessage *incoming;
     MotorChangeMessage staticFuzzy = { 0 };
-    //incoming_msg       *incMsg;
+    float *indMotorVals = malloc(sizeof(float) * 4);
 //    LogMessage *errorMessage;
 
     // TODO assign this as something from the communication task.
@@ -527,19 +529,6 @@ static void MotorTask (void *p_arg)
 
     // Loop forever.
     for(;;) {
-
-    	// TODO: Replace this with a queue pend, or SOMETHING, to get the new user steering
-    	// AS AN INT8_T.
-		// TODO: Here you go Keith
-//		incMsg = (incoming_msg*)OSQPend(InputQueue, 0, &err);
-//
-//		if (err == OS_ERR_NONE) {
-//
-//			userDriveSpeed = incMsg->motor_level;
-//			newUserSteer = incMsg->steering_value;
-//
-//			OSMemPut(StandardMemoryStorage, incMsg);
-//		}
 
 		OSSemPend(UserSemaphore, 0, &err);
 		newUserSteer = userSteer;
@@ -596,9 +585,16 @@ static void MotorTask (void *p_arg)
 			allStop = motorMask;
 			OSSemPost(MaskSemaphore);
 
-			// Move the servo, then the motors. Should probably protect this with OS_ENTER_CRITICAL...? TODO
+
+			driveMotors(userDriveSpeed, &staticFuzzy, indMotorVals, actualSteeringAngle, allStop);
+			// Move the servo, then the motors. Should probably protect this with OS_ENTER_CRITICAL...?
+			OS_ENTER_CRITICAL();//TODO
 			MoveFrontServo(actualSteeringAngle);
-			driveMotors(userDriveSpeed, &staticFuzzy, actualSteeringAngle, allStop);
+			update_motor_control(indMotorVals[0], FRONT_LEFT_MOTOR);
+			update_motor_control(indMotorVals[1], FRONT_RIGHT_MOTOR);
+			update_motor_control(indMotorVals[2], REAR_LEFT_MOTOR);
+			update_motor_control(indMotorVals[3], REAR_RIGHT_MOTOR);
+			OS_EXIT_CRITICAL();
 
 
 		} else {
@@ -669,7 +665,7 @@ static void FuzzyTask (void *p_arg) {
             };
 
             // Decide whether or not we even want to access the Fuzzy Logic Matrix.
-            if ((getMinWheelDiff(wheelSpeeds) < speedThres && abs(localSteeringAngle) < lowAngle) || FuzzyToggle == false) { // TODO Switch flipper
+            if ((getMinWheelDiff(wheelSpeeds) < speedThres && abs(localSteeringAngle) < lowAngle) || !FuzzyToggle) { // TODO Switch flipper
 
             	// Assign zero to all modifiers.
 				outgoing.frontLeft = 0;
@@ -692,6 +688,13 @@ static void FuzzyTask (void *p_arg) {
                 outgoing.backLeft = fuzzyOutput[2];
                 outgoing.backRight = fuzzyOutput[3];
                 outgoing.steeringServo = fuzzyOutput[4];
+
+                printf("%f, %f, %f, %f, %f\n", fuzzyOutput[0],
+                		fuzzyOutput[1],
+						fuzzyOutput[2],
+						fuzzyOutput[3],
+						fuzzyOutput[4]);
+
 
                 // Put the temporary memory borrowed by calculateMotorModifiers back.
                 OSMemPut(StandardMemoryStorage, fuzzyOutput);
@@ -746,9 +749,6 @@ static void CommunicationTask (void *p_arg)
     		err = OS_ERR_NONE;
     		// set motor values to 0
 			incoming_msg *outgoing = OSMemGet(StandardMemoryStorage, &err);
-			//outgoing->motor_level = MOTOR_ZERO;
-			//outgoing->steering_value = STEERING_ZERO;
-			//OSQPost(InputQueue,outgoing);
 			OSSemPend(UserSemaphore, 0, &err);
 			userSteer = MOTOR_ZERO;
 			userMag = STEERING_ZERO;
@@ -767,23 +767,12 @@ static void CommunicationTask (void *p_arg)
 					// valid message received
 					serial_send(ACKNOWLEDGE_STR);
 					bzero(userMessage, RX_FIFO_SIZE);
-					// send to queue
 
-					//incoming_msg *outgoing = OSMemGet(StandardMemoryStorage, &err);
-					//outgoing->motor_level = new_msg.motor_level;
-					//outgoing->steering_value = new_msg.steering_value;
-					//OSQPost(InputQueue,outgoing);
-
+					// Post to Semaphore
 					OSSemPend(UserSemaphore, 0, &err);
 					userSteer = new_msg.steering_value;
 					userMag = new_msg.motor_level;
-
-					//printf("Steering: %i, Speed: %.6f\n",userSteer, userMag);
 					OSSemPost(UserSemaphore);
-
-
-
-
     			}
     		}else{
     			//look for start byte
@@ -876,8 +865,7 @@ static void ToggleTask(void *p_arg)
 {
 
 	INT8U err; //, send_err;
-	int EnableFuzzy = 0;
-	EnableFuzzy = alt_read_word(SW_BASE);
+	bool EnableFuzzy = alt_read_byte(SW_BASE) % 2;
 
 
 	//TODO Check if global variable FuzzyToggle is false, then don't augment wheels with fuzzy logic
@@ -886,13 +874,13 @@ static void ToggleTask(void *p_arg)
     	// lights will be on if the fuzzy logic is on, and off if fuzzy logic is off
     	OSTimeDlyHMSM(0,0,0,50);
     	if(EnableFuzzy == 0){
-    		alt_write_word(LEDR_BASE, 0x3ff);
+    		alt_write_byte(LEDR_BASE, 0xff);
     		OSSemPend(FuzzyToggleSemaphore, 0, &err);
     		FuzzyToggle = true;
     		OSSemPost(FuzzyToggleSemaphore);
     	}
     	else{
-    		alt_write_word(LEDR_BASE, 0x000);
+    		alt_write_byte(LEDR_BASE, 0x00);
     		OSSemPend(FuzzyToggleSemaphore, 0, &err);
     	    FuzzyToggle = false;
     	    OSSemPost(FuzzyToggleSemaphore);

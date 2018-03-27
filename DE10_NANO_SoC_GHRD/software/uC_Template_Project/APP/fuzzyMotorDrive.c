@@ -1,7 +1,7 @@
 #include "fuzzyMotorDrive.h"
 
 
-void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, int8_t steering, bool stopMask) {
+void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, float* motorVals, int8_t steering, bool stopMask) {
 
 	// Kill switch
 	if (stopMask){
@@ -68,10 +68,15 @@ void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, int8_t steerin
 	}
 
 	// Move the front axle, assign new speeds
-	update_motor_control(dir * rescaleInput(fl), FRONT_LEFT_MOTOR);
-	update_motor_control(dir * rescaleInput(fr), FRONT_RIGHT_MOTOR);
-	update_motor_control(dir * rescaleInput(rl), REAR_LEFT_MOTOR  );
-	update_motor_control(dir * rescaleInput(rr), REAR_RIGHT_MOTOR );
+//	update_motor_control(dir * rescaleInput(fl), FRONT_LEFT_MOTOR);
+//	update_motor_control(dir * rescaleInput(fr), FRONT_RIGHT_MOTOR);
+//	update_motor_control(dir * rescaleInput(rl), REAR_LEFT_MOTOR);
+//	update_motor_control(dir * rescaleInput(rr), REAR_RIGHT_MOTOR);
+
+	motorVals[0] = dir * rescaleInput(fl);
+	motorVals[1] = dir * rescaleInput(fr);
+	motorVals[2] = dir * rescaleInput(rl);
+	motorVals[3] = dir * rescaleInput(rr);
 }
 
 float rescaleInput(float input) {
