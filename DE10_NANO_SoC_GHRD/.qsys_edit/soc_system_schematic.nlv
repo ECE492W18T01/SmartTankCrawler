@@ -1,0 +1,100 @@
+# # File gsaved with Nlview version 6.3.8  2013-12-19 bk=1.2992 VDI=34 GEI=35
+# 
+preplace inst soc_system.clk_0 -pg 1 -lvl 1 -y 550
+preplace inst soc_system.hps_0.clk_0 -pg 1
+preplace inst soc_system.ultraSonicRangeFinder_0 -pg 1 -lvl 4 -y 790
+preplace inst soc_system.hps_0.axi_sdram -pg 1
+preplace inst soc_system.upCounter_0 -pg 1 -lvl 4 -y 990
+preplace inst soc_system -pg 1 -lvl 1 -y 40 -regy -20
+preplace inst soc_system.pwmClk_0 -pg 1 -lvl 2 -y 510
+preplace inst soc_system.upCounter_1 -pg 1 -lvl 4 -y 30
+preplace inst soc_system.upCounter_2 -pg 1 -lvl 4 -y 130
+preplace inst soc_system.hps_0.timer0 -pg 1
+preplace inst soc_system.upCounter_3 -pg 1 -lvl 4 -y 230
+preplace inst soc_system.hps_0.timer1 -pg 1
+preplace inst soc_system.hps_0.i2c0 -pg 1
+preplace inst soc_system.hps_0.timer2 -pg 1
+preplace inst soc_system.hps_0.wd_timer0 -pg 1
+preplace inst soc_system.hps_0.i2c1 -pg 1
+preplace inst soc_system.hps_0.timer3 -pg 1
+preplace inst soc_system.hps_0.wd_timer1 -pg 1
+preplace inst soc_system.hps_0.i2c2 -pg 1
+preplace inst soc_system.hps_0.qspi -pg 1
+preplace inst soc_system.hps_0.gpio0 -pg 1
+preplace inst soc_system.hps_0.i2c3 -pg 1
+preplace inst soc_system.hps_0.clkmgr -pg 1
+preplace inst soc_system.hps_0.gpio1 -pg 1
+preplace inst soc_system.hps_0.arm_a9_0 -pg 1
+preplace inst soc_system.hps_0.L2 -pg 1
+preplace inst soc_system.hps_0.gpio2 -pg 1
+preplace inst soc_system.hps_0.arm_a9_1 -pg 1
+preplace inst soc_system.green_leds -pg 1 -lvl 4 -y 690
+preplace inst soc_system.hps_0.uart0 -pg 1
+preplace inst soc_system.hps_0.uart1 -pg 1
+preplace inst soc_system.hps_0.spim0 -pg 1
+preplace inst soc_system.hps_0.spim1 -pg 1
+preplace inst soc_system.hps_0.timer -pg 1
+preplace inst soc_system.hps_0.sysmgr -pg 1
+preplace inst soc_system.hps_0.f2s_periph_ref_clk -pg 1
+preplace inst soc_system.hps_0.l3regs -pg 1
+preplace inst soc_system.hps_0.sdmmc -pg 1
+preplace inst soc_system.hps_0.axi_ocram -pg 1
+preplace inst soc_system.sysid_qsys -pg 1 -lvl 3 -y 350
+preplace inst soc_system.pwmServo_0 -pg 1 -lvl 4 -y 890
+preplace inst soc_system.hps_0.arm_gic_0 -pg 1
+preplace inst soc_system.hps_0.rstmgr -pg 1
+preplace inst soc_system.pwmServo_1 -pg 1 -lvl 4 -y 1390
+preplace inst soc_system.hps_0.usb0 -pg 1
+preplace inst soc_system.hps_0.scu -pg 1
+preplace inst soc_system.hps_0.usb1 -pg 1
+preplace inst soc_system.hps_0.hps_io -pg 1
+preplace inst soc_system.hps_0.nand0 -pg 1
+preplace inst soc_system.pwmBrushed_0 -pg 1 -lvl 4 -y 1090
+preplace inst soc_system.pwmBrushed_1 -pg 1 -lvl 4 -y 410
+preplace inst soc_system.hps_0.gmac0 -pg 1
+preplace inst soc_system.pwmBrushed_2 -pg 1 -lvl 4 -y 550
+preplace inst soc_system.hps_0 -pg 1 -lvl 3 -y 730
+preplace inst soc_system.hps_0.hps_io.border -pg 1
+preplace inst soc_system.hps_0.gmac1 -pg 1
+preplace inst soc_system.pwmBrushed_3 -pg 1 -lvl 4 -y 1250
+preplace inst soc_system.hps_0.eosc1 -pg 1
+preplace inst soc_system.hps_0.fpgamgr -pg 1
+preplace inst soc_system.hps_0.dcan0 -pg 1
+preplace inst soc_system.hps_0.eosc2 -pg 1
+preplace inst soc_system.hps_0.fpga_interfaces -pg 1
+preplace inst soc_system.hps_0.dcan1 -pg 1
+preplace inst soc_system.hps_0.f2s_sdram_ref_clk -pg 1
+preplace inst soc_system.hps_0.dma -pg 1
+preplace inst soc_system.hps_0.sdrctl -pg 1
+preplace inst soc_system.hps_0.bridges -pg 1
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)pwmServo_0.conduit_end,(SLAVE)soc_system.pwmservo_0_conduit_end) 1 0 4 NJ 940 NJ 940 NJ 940 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.pwmbrushed_0_direction1,(SLAVE)pwmBrushed_0.Direction1) 1 0 4 NJ 1100 NJ 1100 NJ 1100 NJ
+preplace netloc FAN_OUT<net_container>soc_system</net_container>(SLAVE)sysid_qsys.reset,(SLAVE)upCounter_0.reset_sink,(MASTER)clk_0.clk_reset,(SLAVE)pwmBrushed_0.reset,(SLAVE)pwmClk_0.reset,(SLAVE)upCounter_3.reset_sink,(SLAVE)pwmBrushed_3.reset,(SLAVE)ultraSonicRangeFinder_0.reset,(SLAVE)upCounter_1.reset_sink,(SLAVE)pwmServo_1.reset,(SLAVE)pwmBrushed_2.reset,(SLAVE)upCounter_2.reset_sink,(SLAVE)green_leds.reset,(SLAVE)pwmBrushed_1.reset,(SLAVE)pwmServo_0.reset) 1 1 3 410 600 650 670 1280
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.pwmbrushed_3_direction1,(SLAVE)pwmBrushed_3.Direction1) 1 0 4 NJ 1260 NJ 1260 NJ 1260 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.pwmbrushed_2_pulsewidthmodulatedsignal,(SLAVE)pwmBrushed_2.PulseWidthModulatedSignal) 1 0 4 NJ 500 NJ 500 NJ 560 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)pwmBrushed_1.Direction1,(SLAVE)soc_system.pwmbrushed_1_direction1) 1 0 4 NJ 260 NJ 260 NJ 260 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.pwmbrushed_0_pulsewidthmodulatedsignal,(SLAVE)pwmBrushed_0.PulseWidthModulatedSignal) 1 0 4 NJ 1140 NJ 1140 NJ 1140 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)hps_0.memory,(SLAVE)soc_system.memory) 1 0 3 NJ 780 NJ 780 NJ
+preplace netloc FAN_OUT<net_container>soc_system</net_container>(SLAVE)upCounter_1.hallReading,(SLAVE)pwmServo_0.avalon_slave_0,(SLAVE)green_leds.s1,(SLAVE)pwmBrushed_0.avalon_slave,(SLAVE)upCounter_0.hallReading,(SLAVE)upCounter_3.hallReading,(SLAVE)pwmBrushed_3.avalon_slave,(SLAVE)sysid_qsys.control_slave,(SLAVE)ultraSonicRangeFinder_0.rangeValue,(SLAVE)pwmBrushed_1.avalon_slave,(SLAVE)pwmBrushed_2.avalon_slave,(SLAVE)pwmServo_1.avalon_slave_0,(MASTER)hps_0.h2f_lw_axi_master,(SLAVE)upCounter_2.hallReading) 1 2 2 710 300 1220
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.upcounter_3_hallsensorinput,(SLAVE)upCounter_3.HallSensorInput) 1 0 4 NJ 240 NJ 240 NJ 240 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)ultraSonicRangeFinder_0.sonarIn,(SLAVE)soc_system.ultrasonicrangefinder_0_sonarin) 1 0 4 NJ 850 NJ 850 NJ 850 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.green_leds_conn,(SLAVE)green_leds.external_connection) 1 0 4 NJ 650 NJ 650 NJ 650 NJ
+preplace netloc FAN_OUT<net_container>soc_system</net_container>(SLAVE)pwmBrushed_2.clock,(MASTER)clk_0.clk,(SLAVE)pwmClk_0.clock,(SLAVE)sysid_qsys.clk,(SLAVE)upCounter_2.SystemClock,(SLAVE)green_leds.clk,(SLAVE)pwmBrushed_0.clock,(SLAVE)pwmBrushed_3.clock,(SLAVE)upCounter_0.SystemClock,(SLAVE)hps_0.h2f_lw_axi_clock,(SLAVE)ultraSonicRangeFinder_0.clock,(SLAVE)upCounter_3.SystemClock,(SLAVE)upCounter_1.SystemClock,(SLAVE)pwmBrushed_1.clock) 1 1 3 430 580 690 690 1300
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.upcounter_2_hallsensorinput,(SLAVE)upCounter_2.HallSensorInput) 1 0 4 NJ 140 NJ 140 NJ 140 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.reset,(SLAVE)clk_0.clk_in_reset) 1 0 1 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)pwmBrushed_0.Direction2,(SLAVE)soc_system.pwmbrushed_0_direction2) 1 0 4 NJ 1120 NJ 1120 NJ 1120 NJ
+preplace netloc FAN_OUT<net_container>soc_system</net_container>(MASTER)pwmClk_0.clk_out,(SLAVE)pwmServo_0.clock,(SLAVE)pwmServo_1.clock) 1 2 2 NJ 610 1200
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.pwmbrushed_1_direction2,(SLAVE)pwmBrushed_1.Direction2) 1 0 4 NJ 320 NJ 320 NJ 320 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.pwmservo_1_conduit_end,(SLAVE)pwmServo_1.conduit_end) 1 0 4 NJ 1440 NJ 1440 NJ 1440 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(MASTER)soc_system.hps_0_h2f_reset,(MASTER)hps_0.h2f_reset) 1 3 2 NJ 1240 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)clk_0.clk_in,(SLAVE)soc_system.clk) 1 0 1 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)upCounter_1.HallSensorInput,(SLAVE)soc_system.upcounter_1_hallsensorinput) 1 0 4 NJ 40 NJ 40 NJ 40 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)upCounter_0.HallSensorInput,(SLAVE)soc_system.upcounter_0_hallsensorinput) 1 0 4 NJ 1000 NJ 1000 NJ 1000 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)pwmBrushed_3.PulseWidthModulatedSignal,(SLAVE)soc_system.pwmbrushed_3_pulsewidthmodulatedsignal) 1 0 4 NJ 1300 NJ 1300 NJ 1300 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)pwmBrushed_3.Direction2,(SLAVE)soc_system.pwmbrushed_3_direction2) 1 0 4 NJ 1280 NJ 1280 NJ 1280 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.hps_0_hps_io,(SLAVE)hps_0.hps_io) 1 0 3 NJ 740 NJ 740 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)pwmBrushed_2.Direction2,(SLAVE)soc_system.pwmbrushed_2_direction2) 1 0 4 NJ 280 NJ 280 NJ 280 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.pwmbrushed_1_pulsewidthmodulatedsignal,(SLAVE)pwmBrushed_1.PulseWidthModulatedSignal) 1 0 4 NJ 460 NJ 460 NJ 460 NJ
+preplace netloc EXPORT<net_container>soc_system</net_container>(SLAVE)soc_system.pwmbrushed_2_direction1,(SLAVE)pwmBrushed_2.Direction1) 1 0 4 NJ 340 NJ 340 NJ 340 NJ
+levelinfo -pg 1 0 200 1800
+levelinfo -hier soc_system 210 240 530 1010 1480 1670
