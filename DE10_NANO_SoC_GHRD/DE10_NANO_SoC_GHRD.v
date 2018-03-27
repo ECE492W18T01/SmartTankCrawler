@@ -239,8 +239,8 @@ soc_system u0(
 					.green_leds_conn_export(LED[7: 0]), 
 
 					// Servo's 0 (Steering) and 1 (E-Brake)
-					.pwmservo_0_conduit_end_export(GPIO_1_31),           
-					.pwmservo_1_conduit_end_export(GPIO_1_30),
+					.pwmservo_0_conduit_end_export(GPIO_1_30),           
+					.pwmservo_1_conduit_end_export(GPIO_1_31),
 
 					// Hall Sensor Counters
 					.upcounter_0_hallsensorinput_export(GPIO_0_0), // FL

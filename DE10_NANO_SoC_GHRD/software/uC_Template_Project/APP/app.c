@@ -757,8 +757,10 @@ static void CommunicationTask (void *p_arg)
 					OSSemPend(UserSemaphore, 0, &err);
 					userSteer = new_msg.steering_value;
 					userMag = new_msg.motor_level;
+
 					//printf("Steering: %i, Speed: %.6f\n",userSteer, userMag);
 					OSSemPost(UserSemaphore);
+
 
 
 
