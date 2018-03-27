@@ -1,4 +1,0 @@
-#ifndef sliplessSteeringRatios_H
-#define sliplessSteeringRatios_H
-const int SLIPRATIOS[46][3];
-#endif

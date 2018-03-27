@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename resource &apos;uC_Template_Project/APP/sliplessSteeringRatios_45R_17W_30L.h&apos; to &apos;slipLessSteeringRatios.h&apos;" description="Rename resource &apos;sliplessSteeringRatios_45R_17W_30L.h&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="APP/sliplessSteeringRatios_45R_17W_30L.h" name="slipLessSteeringRatios.h" stamp="1520972986596" updateReferences="true"/>
-</session>
