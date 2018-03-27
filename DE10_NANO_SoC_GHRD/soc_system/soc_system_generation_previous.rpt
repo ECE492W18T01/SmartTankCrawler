@@ -8,8 +8,6 @@ Progress: Adding green_leds [altera_avalon_pio 17.0]
 Progress: Parameterizing module green_leds
 Progress: Adding hps_0 [altera_hps 17.0]
 Progress: Parameterizing module hps_0
-Progress: Adding pio_0 [altera_avalon_pio 17.0]
-Progress: Parameterizing module pio_0
 Progress: Adding pwmBrushed_0 [pwmBrushed 1.1]
 Progress: Parameterizing module pwmBrushed_0
 Progress: Adding pwmBrushed_1 [pwmBrushed 1.1]
@@ -24,6 +22,8 @@ Progress: Adding pwmServo_0 [pwmServo 1.0]
 Progress: Parameterizing module pwmServo_0
 Progress: Adding pwmServo_1 [pwmServo 1.0]
 Progress: Parameterizing module pwmServo_1
+Progress: Adding switches [altera_avalon_pio 17.0]
+Progress: Parameterizing module switches
 Progress: Adding sysid_qsys [altera_avalon_sysid_qsys 17.0]
 Progress: Parameterizing module sysid_qsys
 Progress: Adding ultraSonicRangeFinder_0 [ultraSonicRangeFinder 1.0]
@@ -57,8 +57,6 @@ Progress: Adding green_leds [altera_avalon_pio 17.0]
 Progress: Parameterizing module green_leds
 Progress: Adding hps_0 [altera_hps 17.0]
 Progress: Parameterizing module hps_0
-Progress: Adding pio_0 [altera_avalon_pio 17.0]
-Progress: Parameterizing module pio_0
 Progress: Adding pwmBrushed_0 [pwmBrushed 1.1]
 Progress: Parameterizing module pwmBrushed_0
 Progress: Adding pwmBrushed_1 [pwmBrushed 1.1]
@@ -73,6 +71,8 @@ Progress: Adding pwmServo_0 [pwmServo 1.0]
 Progress: Parameterizing module pwmServo_0
 Progress: Adding pwmServo_1 [pwmServo 1.0]
 Progress: Parameterizing module pwmServo_1
+Progress: Adding switches [altera_avalon_pio 17.0]
+Progress: Parameterizing module switches
 Progress: Adding sysid_qsys [altera_avalon_sysid_qsys 17.0]
 Progress: Parameterizing module sysid_qsys
 Progress: Adding ultraSonicRangeFinder_0 [ultraSonicRangeFinder 1.0]
@@ -107,20 +107,20 @@ Warning: hps_0.f2h_irq0: Cannot connect reset for irq_mapper.sender
 Warning: hps_0.f2h_irq1: Cannot connect clock for irq_mapper_001.sender
 Warning: hps_0.f2h_irq1: Cannot connect reset for irq_mapper_001.sender
 Info: green_leds: Starting RTL generation for module 'soc_system_green_leds'
-Info: green_leds:   Generation command is [exec C:/intelfpga/17.0/quartus/bin64/perl/bin/perl.exe -I C:/intelfpga/17.0/quartus/bin64/perl/lib -I C:/intelfpga/17.0/quartus/sopc_builder/bin/europa -I C:/intelfpga/17.0/quartus/sopc_builder/bin/perl_lib -I C:/intelfpga/17.0/quartus/sopc_builder/bin -I C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_system_green_leds --dir=C:/Users/kgmills/AppData/Local/Temp/alt7609_4040307616406758017.dir/0002_green_leds_gen/ --quartus_dir=C:/intelfpga/17.0/quartus --verilog --config=C:/Users/kgmills/AppData/Local/Temp/alt7609_4040307616406758017.dir/0002_green_leds_gen//soc_system_green_leds_component_configuration.pl  --do_build_sim=0  ]
+Info: green_leds:   Generation command is [exec C:/intelfpga/17.0/quartus/bin64/perl/bin/perl.exe -I C:/intelfpga/17.0/quartus/bin64/perl/lib -I C:/intelfpga/17.0/quartus/sopc_builder/bin/europa -I C:/intelfpga/17.0/quartus/sopc_builder/bin/perl_lib -I C:/intelfpga/17.0/quartus/sopc_builder/bin -I C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_system_green_leds --dir=C:/Users/kgmills/AppData/Local/Temp/alt7609_4040307616406758017.dir/0032_green_leds_gen/ --quartus_dir=C:/intelfpga/17.0/quartus --verilog --config=C:/Users/kgmills/AppData/Local/Temp/alt7609_4040307616406758017.dir/0032_green_leds_gen//soc_system_green_leds_component_configuration.pl  --do_build_sim=0  ]
 Info: green_leds: Done RTL generation for module 'soc_system_green_leds'
 Info: green_leds: "soc_system" instantiated altera_avalon_pio "green_leds"
 Info: hps_0: "Running  for module: hps_0"
 Info: hps_0: HPS Main PLL counter settings: n = 0  m = 63
 Info: hps_0: HPS peripherial PLL counter settings: n = 0  m = 39
 Info: hps_0: "soc_system" instantiated altera_hps "hps_0"
-Info: pio_0: Starting RTL generation for module 'soc_system_pio_0'
-Info: pio_0:   Generation command is [exec C:/intelfpga/17.0/quartus/bin64/perl/bin/perl.exe -I C:/intelfpga/17.0/quartus/bin64/perl/lib -I C:/intelfpga/17.0/quartus/sopc_builder/bin/europa -I C:/intelfpga/17.0/quartus/sopc_builder/bin/perl_lib -I C:/intelfpga/17.0/quartus/sopc_builder/bin -I C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_system_pio_0 --dir=C:/Users/kgmills/AppData/Local/Temp/alt7609_4040307616406758017.dir/0003_pio_0_gen/ --quartus_dir=C:/intelfpga/17.0/quartus --verilog --config=C:/Users/kgmills/AppData/Local/Temp/alt7609_4040307616406758017.dir/0003_pio_0_gen//soc_system_pio_0_component_configuration.pl  --do_build_sim=0  ]
-Info: pio_0: Done RTL generation for module 'soc_system_pio_0'
-Info: pio_0: "soc_system" instantiated altera_avalon_pio "pio_0"
 Info: pwmBrushed_0: "soc_system" instantiated pwmBrushed "pwmBrushed_0"
 Info: pwmClk_0: "soc_system" instantiated pwmClk "pwmClk_0"
 Info: pwmServo_0: "soc_system" instantiated pwmServo "pwmServo_0"
+Info: switches: Starting RTL generation for module 'soc_system_switches'
+Info: switches:   Generation command is [exec C:/intelfpga/17.0/quartus/bin64/perl/bin/perl.exe -I C:/intelfpga/17.0/quartus/bin64/perl/lib -I C:/intelfpga/17.0/quartus/sopc_builder/bin/europa -I C:/intelfpga/17.0/quartus/sopc_builder/bin/perl_lib -I C:/intelfpga/17.0/quartus/sopc_builder/bin -I C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/common -I C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio -- C:/intelfpga/17.0/quartus/../ip/altera/sopc_builder_ip/altera_avalon_pio/generate_rtl.pl --name=soc_system_switches --dir=C:/Users/kgmills/AppData/Local/Temp/alt7609_4040307616406758017.dir/0036_switches_gen/ --quartus_dir=C:/intelfpga/17.0/quartus --verilog --config=C:/Users/kgmills/AppData/Local/Temp/alt7609_4040307616406758017.dir/0036_switches_gen//soc_system_switches_component_configuration.pl  --do_build_sim=0  ]
+Info: switches: Done RTL generation for module 'soc_system_switches'
+Info: switches: "soc_system" instantiated altera_avalon_pio "switches"
 Info: sysid_qsys: "soc_system" instantiated altera_avalon_sysid_qsys "sysid_qsys"
 Info: ultraSonicRangeFinder_0: "soc_system" instantiated ultraSonicRangeFinder "ultraSonicRangeFinder_0"
 Info: upCounter_0: "soc_system" instantiated upCounter "upCounter_0"

@@ -87,7 +87,7 @@ module soc_system (
 	upcounter_1_hallsensorinput_export,
 	upcounter_2_hallsensorinput_export,
 	upcounter_3_hallsensorinput_export,
-	pio_0_external_connection_export);	
+	switch_conn_export);	
 
 	input		clk_clk;
 	output	[7:0]	green_leds_conn_export;
@@ -176,5 +176,5 @@ module soc_system (
 	input		upcounter_1_hallsensorinput_export;
 	input		upcounter_2_hallsensorinput_export;
 	input		upcounter_3_hallsensorinput_export;
-	output	[3:0]	pio_0_external_connection_export;
+	input	[3:0]	switch_conn_export;
 endmodule

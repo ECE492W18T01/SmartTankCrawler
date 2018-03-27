@@ -87,7 +87,7 @@
 			upcounter_1_hallsensorinput_export            : in    std_logic                     := 'X';             -- export
 			upcounter_2_hallsensorinput_export            : in    std_logic                     := 'X';             -- export
 			upcounter_3_hallsensorinput_export            : in    std_logic                     := 'X';             -- export
-			pio_0_external_connection_export              : out   std_logic_vector(3 downto 0)                      -- export
+			switch_conn_export                            : in    std_logic_vector(3 downto 0)  := (others => 'X')  -- export
 		);
 	end component soc_system;
 
@@ -180,6 +180,6 @@
 			upcounter_1_hallsensorinput_export            => CONNECTED_TO_upcounter_1_hallsensorinput_export,            --            upcounter_1_hallsensorinput.export
 			upcounter_2_hallsensorinput_export            => CONNECTED_TO_upcounter_2_hallsensorinput_export,            --            upcounter_2_hallsensorinput.export
 			upcounter_3_hallsensorinput_export            => CONNECTED_TO_upcounter_3_hallsensorinput_export,            --            upcounter_3_hallsensorinput.export
-			pio_0_external_connection_export              => CONNECTED_TO_pio_0_external_connection_export               --              pio_0_external_connection.export
+			switch_conn_export                            => CONNECTED_TO_switch_conn_export                             --                            switch_conn.export
 		);
 

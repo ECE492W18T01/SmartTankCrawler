@@ -86,6 +86,6 @@
 		.upcounter_1_hallsensorinput_export            (<connected-to-upcounter_1_hallsensorinput_export>),            //            upcounter_1_hallsensorinput.export
 		.upcounter_2_hallsensorinput_export            (<connected-to-upcounter_2_hallsensorinput_export>),            //            upcounter_2_hallsensorinput.export
 		.upcounter_3_hallsensorinput_export            (<connected-to-upcounter_3_hallsensorinput_export>),            //            upcounter_3_hallsensorinput.export
-		.pio_0_external_connection_export              (<connected-to-pio_0_external_connection_export>)               //              pio_0_external_connection.export
+		.switch_conn_export                            (<connected-to-switch_conn_export>)                             //                            switch_conn.export
 	);
 

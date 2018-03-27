@@ -65,11 +65,8 @@ module soc_system_mm_interconnect_0 (
 		output wire [7:0]  pwmServo_0_avalon_slave_0_writedata,                                 //                                                              .writedata
 		output wire        pwmServo_1_avalon_slave_0_write,                                     //                                     pwmServo_1_avalon_slave_0.write
 		output wire [7:0]  pwmServo_1_avalon_slave_0_writedata,                                 //                                                              .writedata
-		output wire [1:0]  switches_s1_address,                                                 //                                                   switches_s1.address
-		output wire        switches_s1_write,                                                   //                                                              .write
-		input  wire [31:0] switches_s1_readdata,                                                //                                                              .readdata
-		output wire [31:0] switches_s1_writedata,                                               //                                                              .writedata
-		output wire        switches_s1_chipselect,                                              //                                                              .chipselect
+		output wire [1:0]  Switches_s1_address,                                                 //                                                   Switches_s1.address
+		input  wire [31:0] Switches_s1_readdata,                                                //                                                              .readdata
 		output wire [0:0]  sysid_qsys_control_slave_address,                                    //                                      sysid_qsys_control_slave.address
 		input  wire [31:0] sysid_qsys_control_slave_readdata,                                   //                                                              .readdata
 		output wire        ultraSonicRangeFinder_0_rangeValue_read,                             //                            ultraSonicRangeFinder_0_rangeValue.read
@@ -396,30 +393,30 @@ module soc_system_mm_interconnect_0 (
 	wire          green_leds_s1_agent_rdata_fifo_src_valid;                               // green_leds_s1_agent:rdata_fifo_src_valid -> green_leds_s1_agent_rdata_fifo:in_valid
 	wire   [33:0] green_leds_s1_agent_rdata_fifo_src_data;                                // green_leds_s1_agent:rdata_fifo_src_data -> green_leds_s1_agent_rdata_fifo:in_data
 	wire          green_leds_s1_agent_rdata_fifo_src_ready;                               // green_leds_s1_agent_rdata_fifo:in_ready -> green_leds_s1_agent:rdata_fifo_src_ready
-	wire   [31:0] switches_s1_agent_m0_readdata;                                          // switches_s1_translator:uav_readdata -> switches_s1_agent:m0_readdata
-	wire          switches_s1_agent_m0_waitrequest;                                       // switches_s1_translator:uav_waitrequest -> switches_s1_agent:m0_waitrequest
-	wire          switches_s1_agent_m0_debugaccess;                                       // switches_s1_agent:m0_debugaccess -> switches_s1_translator:uav_debugaccess
-	wire   [20:0] switches_s1_agent_m0_address;                                           // switches_s1_agent:m0_address -> switches_s1_translator:uav_address
-	wire    [3:0] switches_s1_agent_m0_byteenable;                                        // switches_s1_agent:m0_byteenable -> switches_s1_translator:uav_byteenable
-	wire          switches_s1_agent_m0_read;                                              // switches_s1_agent:m0_read -> switches_s1_translator:uav_read
-	wire          switches_s1_agent_m0_readdatavalid;                                     // switches_s1_translator:uav_readdatavalid -> switches_s1_agent:m0_readdatavalid
-	wire          switches_s1_agent_m0_lock;                                              // switches_s1_agent:m0_lock -> switches_s1_translator:uav_lock
-	wire   [31:0] switches_s1_agent_m0_writedata;                                         // switches_s1_agent:m0_writedata -> switches_s1_translator:uav_writedata
-	wire          switches_s1_agent_m0_write;                                             // switches_s1_agent:m0_write -> switches_s1_translator:uav_write
-	wire    [2:0] switches_s1_agent_m0_burstcount;                                        // switches_s1_agent:m0_burstcount -> switches_s1_translator:uav_burstcount
-	wire          switches_s1_agent_rf_source_valid;                                      // switches_s1_agent:rf_source_valid -> switches_s1_agent_rsp_fifo:in_valid
-	wire  [118:0] switches_s1_agent_rf_source_data;                                       // switches_s1_agent:rf_source_data -> switches_s1_agent_rsp_fifo:in_data
-	wire          switches_s1_agent_rf_source_ready;                                      // switches_s1_agent_rsp_fifo:in_ready -> switches_s1_agent:rf_source_ready
-	wire          switches_s1_agent_rf_source_startofpacket;                              // switches_s1_agent:rf_source_startofpacket -> switches_s1_agent_rsp_fifo:in_startofpacket
-	wire          switches_s1_agent_rf_source_endofpacket;                                // switches_s1_agent:rf_source_endofpacket -> switches_s1_agent_rsp_fifo:in_endofpacket
-	wire          switches_s1_agent_rsp_fifo_out_valid;                                   // switches_s1_agent_rsp_fifo:out_valid -> switches_s1_agent:rf_sink_valid
-	wire  [118:0] switches_s1_agent_rsp_fifo_out_data;                                    // switches_s1_agent_rsp_fifo:out_data -> switches_s1_agent:rf_sink_data
-	wire          switches_s1_agent_rsp_fifo_out_ready;                                   // switches_s1_agent:rf_sink_ready -> switches_s1_agent_rsp_fifo:out_ready
-	wire          switches_s1_agent_rsp_fifo_out_startofpacket;                           // switches_s1_agent_rsp_fifo:out_startofpacket -> switches_s1_agent:rf_sink_startofpacket
-	wire          switches_s1_agent_rsp_fifo_out_endofpacket;                             // switches_s1_agent_rsp_fifo:out_endofpacket -> switches_s1_agent:rf_sink_endofpacket
-	wire          switches_s1_agent_rdata_fifo_src_valid;                                 // switches_s1_agent:rdata_fifo_src_valid -> switches_s1_agent_rdata_fifo:in_valid
-	wire   [33:0] switches_s1_agent_rdata_fifo_src_data;                                  // switches_s1_agent:rdata_fifo_src_data -> switches_s1_agent_rdata_fifo:in_data
-	wire          switches_s1_agent_rdata_fifo_src_ready;                                 // switches_s1_agent_rdata_fifo:in_ready -> switches_s1_agent:rdata_fifo_src_ready
+	wire   [31:0] switches_s1_agent_m0_readdata;                                          // Switches_s1_translator:uav_readdata -> Switches_s1_agent:m0_readdata
+	wire          switches_s1_agent_m0_waitrequest;                                       // Switches_s1_translator:uav_waitrequest -> Switches_s1_agent:m0_waitrequest
+	wire          switches_s1_agent_m0_debugaccess;                                       // Switches_s1_agent:m0_debugaccess -> Switches_s1_translator:uav_debugaccess
+	wire   [20:0] switches_s1_agent_m0_address;                                           // Switches_s1_agent:m0_address -> Switches_s1_translator:uav_address
+	wire    [3:0] switches_s1_agent_m0_byteenable;                                        // Switches_s1_agent:m0_byteenable -> Switches_s1_translator:uav_byteenable
+	wire          switches_s1_agent_m0_read;                                              // Switches_s1_agent:m0_read -> Switches_s1_translator:uav_read
+	wire          switches_s1_agent_m0_readdatavalid;                                     // Switches_s1_translator:uav_readdatavalid -> Switches_s1_agent:m0_readdatavalid
+	wire          switches_s1_agent_m0_lock;                                              // Switches_s1_agent:m0_lock -> Switches_s1_translator:uav_lock
+	wire   [31:0] switches_s1_agent_m0_writedata;                                         // Switches_s1_agent:m0_writedata -> Switches_s1_translator:uav_writedata
+	wire          switches_s1_agent_m0_write;                                             // Switches_s1_agent:m0_write -> Switches_s1_translator:uav_write
+	wire    [2:0] switches_s1_agent_m0_burstcount;                                        // Switches_s1_agent:m0_burstcount -> Switches_s1_translator:uav_burstcount
+	wire          switches_s1_agent_rf_source_valid;                                      // Switches_s1_agent:rf_source_valid -> Switches_s1_agent_rsp_fifo:in_valid
+	wire  [118:0] switches_s1_agent_rf_source_data;                                       // Switches_s1_agent:rf_source_data -> Switches_s1_agent_rsp_fifo:in_data
+	wire          switches_s1_agent_rf_source_ready;                                      // Switches_s1_agent_rsp_fifo:in_ready -> Switches_s1_agent:rf_source_ready
+	wire          switches_s1_agent_rf_source_startofpacket;                              // Switches_s1_agent:rf_source_startofpacket -> Switches_s1_agent_rsp_fifo:in_startofpacket
+	wire          switches_s1_agent_rf_source_endofpacket;                                // Switches_s1_agent:rf_source_endofpacket -> Switches_s1_agent_rsp_fifo:in_endofpacket
+	wire          switches_s1_agent_rsp_fifo_out_valid;                                   // Switches_s1_agent_rsp_fifo:out_valid -> Switches_s1_agent:rf_sink_valid
+	wire  [118:0] switches_s1_agent_rsp_fifo_out_data;                                    // Switches_s1_agent_rsp_fifo:out_data -> Switches_s1_agent:rf_sink_data
+	wire          switches_s1_agent_rsp_fifo_out_ready;                                   // Switches_s1_agent:rf_sink_ready -> Switches_s1_agent_rsp_fifo:out_ready
+	wire          switches_s1_agent_rsp_fifo_out_startofpacket;                           // Switches_s1_agent_rsp_fifo:out_startofpacket -> Switches_s1_agent:rf_sink_startofpacket
+	wire          switches_s1_agent_rsp_fifo_out_endofpacket;                             // Switches_s1_agent_rsp_fifo:out_endofpacket -> Switches_s1_agent:rf_sink_endofpacket
+	wire          switches_s1_agent_rdata_fifo_src_valid;                                 // Switches_s1_agent:rdata_fifo_src_valid -> Switches_s1_agent_rdata_fifo:in_valid
+	wire   [33:0] switches_s1_agent_rdata_fifo_src_data;                                  // Switches_s1_agent:rdata_fifo_src_data -> Switches_s1_agent_rdata_fifo:in_data
+	wire          switches_s1_agent_rdata_fifo_src_ready;                                 // Switches_s1_agent_rdata_fifo:in_ready -> Switches_s1_agent:rdata_fifo_src_ready
 	wire          hps_0_h2f_lw_axi_master_agent_write_cp_valid;                           // hps_0_h2f_lw_axi_master_agent:write_cp_valid -> router:sink_valid
 	wire  [117:0] hps_0_h2f_lw_axi_master_agent_write_cp_data;                            // hps_0_h2f_lw_axi_master_agent:write_cp_data -> router:sink_data
 	wire          hps_0_h2f_lw_axi_master_agent_write_cp_ready;                           // router:sink_ready -> hps_0_h2f_lw_axi_master_agent:write_cp_ready
@@ -513,11 +510,11 @@ module soc_system_mm_interconnect_0 (
 	wire   [13:0] router_014_src_channel;                                                 // router_014:src_channel -> rsp_demux_012:sink_channel
 	wire          router_014_src_startofpacket;                                           // router_014:src_startofpacket -> rsp_demux_012:sink_startofpacket
 	wire          router_014_src_endofpacket;                                             // router_014:src_endofpacket -> rsp_demux_012:sink_endofpacket
-	wire          switches_s1_agent_rp_valid;                                             // switches_s1_agent:rp_valid -> router_015:sink_valid
-	wire  [117:0] switches_s1_agent_rp_data;                                              // switches_s1_agent:rp_data -> router_015:sink_data
-	wire          switches_s1_agent_rp_ready;                                             // router_015:sink_ready -> switches_s1_agent:rp_ready
-	wire          switches_s1_agent_rp_startofpacket;                                     // switches_s1_agent:rp_startofpacket -> router_015:sink_startofpacket
-	wire          switches_s1_agent_rp_endofpacket;                                       // switches_s1_agent:rp_endofpacket -> router_015:sink_endofpacket
+	wire          switches_s1_agent_rp_valid;                                             // Switches_s1_agent:rp_valid -> router_015:sink_valid
+	wire  [117:0] switches_s1_agent_rp_data;                                              // Switches_s1_agent:rp_data -> router_015:sink_data
+	wire          switches_s1_agent_rp_ready;                                             // router_015:sink_ready -> Switches_s1_agent:rp_ready
+	wire          switches_s1_agent_rp_startofpacket;                                     // Switches_s1_agent:rp_startofpacket -> router_015:sink_startofpacket
+	wire          switches_s1_agent_rp_endofpacket;                                       // Switches_s1_agent:rp_endofpacket -> router_015:sink_endofpacket
 	wire          router_015_src_valid;                                                   // router_015:src_valid -> rsp_demux_013:sink_valid
 	wire  [117:0] router_015_src_data;                                                    // router_015:src_data -> rsp_demux_013:sink_data
 	wire          router_015_src_ready;                                                   // rsp_demux_013:sink_ready -> router_015:src_ready
@@ -666,18 +663,18 @@ module soc_system_mm_interconnect_0 (
 	wire   [13:0] green_leds_s1_burst_adapter_source0_channel;                            // green_leds_s1_burst_adapter:source0_channel -> green_leds_s1_agent:cp_channel
 	wire          green_leds_s1_burst_adapter_source0_startofpacket;                      // green_leds_s1_burst_adapter:source0_startofpacket -> green_leds_s1_agent:cp_startofpacket
 	wire          green_leds_s1_burst_adapter_source0_endofpacket;                        // green_leds_s1_burst_adapter:source0_endofpacket -> green_leds_s1_agent:cp_endofpacket
-	wire          cmd_mux_013_src_valid;                                                  // cmd_mux_013:src_valid -> switches_s1_burst_adapter:sink0_valid
-	wire  [117:0] cmd_mux_013_src_data;                                                   // cmd_mux_013:src_data -> switches_s1_burst_adapter:sink0_data
-	wire          cmd_mux_013_src_ready;                                                  // switches_s1_burst_adapter:sink0_ready -> cmd_mux_013:src_ready
-	wire   [13:0] cmd_mux_013_src_channel;                                                // cmd_mux_013:src_channel -> switches_s1_burst_adapter:sink0_channel
-	wire          cmd_mux_013_src_startofpacket;                                          // cmd_mux_013:src_startofpacket -> switches_s1_burst_adapter:sink0_startofpacket
-	wire          cmd_mux_013_src_endofpacket;                                            // cmd_mux_013:src_endofpacket -> switches_s1_burst_adapter:sink0_endofpacket
-	wire          switches_s1_burst_adapter_source0_valid;                                // switches_s1_burst_adapter:source0_valid -> switches_s1_agent:cp_valid
-	wire  [117:0] switches_s1_burst_adapter_source0_data;                                 // switches_s1_burst_adapter:source0_data -> switches_s1_agent:cp_data
-	wire          switches_s1_burst_adapter_source0_ready;                                // switches_s1_agent:cp_ready -> switches_s1_burst_adapter:source0_ready
-	wire   [13:0] switches_s1_burst_adapter_source0_channel;                              // switches_s1_burst_adapter:source0_channel -> switches_s1_agent:cp_channel
-	wire          switches_s1_burst_adapter_source0_startofpacket;                        // switches_s1_burst_adapter:source0_startofpacket -> switches_s1_agent:cp_startofpacket
-	wire          switches_s1_burst_adapter_source0_endofpacket;                          // switches_s1_burst_adapter:source0_endofpacket -> switches_s1_agent:cp_endofpacket
+	wire          cmd_mux_013_src_valid;                                                  // cmd_mux_013:src_valid -> Switches_s1_burst_adapter:sink0_valid
+	wire  [117:0] cmd_mux_013_src_data;                                                   // cmd_mux_013:src_data -> Switches_s1_burst_adapter:sink0_data
+	wire          cmd_mux_013_src_ready;                                                  // Switches_s1_burst_adapter:sink0_ready -> cmd_mux_013:src_ready
+	wire   [13:0] cmd_mux_013_src_channel;                                                // cmd_mux_013:src_channel -> Switches_s1_burst_adapter:sink0_channel
+	wire          cmd_mux_013_src_startofpacket;                                          // cmd_mux_013:src_startofpacket -> Switches_s1_burst_adapter:sink0_startofpacket
+	wire          cmd_mux_013_src_endofpacket;                                            // cmd_mux_013:src_endofpacket -> Switches_s1_burst_adapter:sink0_endofpacket
+	wire          switches_s1_burst_adapter_source0_valid;                                // Switches_s1_burst_adapter:source0_valid -> Switches_s1_agent:cp_valid
+	wire  [117:0] switches_s1_burst_adapter_source0_data;                                 // Switches_s1_burst_adapter:source0_data -> Switches_s1_agent:cp_data
+	wire          switches_s1_burst_adapter_source0_ready;                                // Switches_s1_agent:cp_ready -> Switches_s1_burst_adapter:source0_ready
+	wire   [13:0] switches_s1_burst_adapter_source0_channel;                              // Switches_s1_burst_adapter:source0_channel -> Switches_s1_agent:cp_channel
+	wire          switches_s1_burst_adapter_source0_startofpacket;                        // Switches_s1_burst_adapter:source0_startofpacket -> Switches_s1_agent:cp_startofpacket
+	wire          switches_s1_burst_adapter_source0_endofpacket;                          // Switches_s1_burst_adapter:source0_endofpacket -> Switches_s1_agent:cp_endofpacket
 	wire          cmd_demux_src0_valid;                                                   // cmd_demux:src0_valid -> cmd_mux:sink0_valid
 	wire  [117:0] cmd_demux_src0_data;                                                    // cmd_demux:src0_data -> cmd_mux:sink0_data
 	wire          cmd_demux_src0_ready;                                                   // cmd_mux:sink0_ready -> cmd_demux:src0_ready
@@ -1395,13 +1392,13 @@ module soc_system_mm_interconnect_0 (
 	wire   [33:0] avalon_st_adapter_012_out_0_data;                                       // avalon_st_adapter_012:out_0_data -> green_leds_s1_agent:rdata_fifo_sink_data
 	wire          avalon_st_adapter_012_out_0_ready;                                      // green_leds_s1_agent:rdata_fifo_sink_ready -> avalon_st_adapter_012:out_0_ready
 	wire    [0:0] avalon_st_adapter_012_out_0_error;                                      // avalon_st_adapter_012:out_0_error -> green_leds_s1_agent:rdata_fifo_sink_error
-	wire          switches_s1_agent_rdata_fifo_out_valid;                                 // switches_s1_agent_rdata_fifo:out_valid -> avalon_st_adapter_013:in_0_valid
-	wire   [33:0] switches_s1_agent_rdata_fifo_out_data;                                  // switches_s1_agent_rdata_fifo:out_data -> avalon_st_adapter_013:in_0_data
-	wire          switches_s1_agent_rdata_fifo_out_ready;                                 // avalon_st_adapter_013:in_0_ready -> switches_s1_agent_rdata_fifo:out_ready
-	wire          avalon_st_adapter_013_out_0_valid;                                      // avalon_st_adapter_013:out_0_valid -> switches_s1_agent:rdata_fifo_sink_valid
-	wire   [33:0] avalon_st_adapter_013_out_0_data;                                       // avalon_st_adapter_013:out_0_data -> switches_s1_agent:rdata_fifo_sink_data
-	wire          avalon_st_adapter_013_out_0_ready;                                      // switches_s1_agent:rdata_fifo_sink_ready -> avalon_st_adapter_013:out_0_ready
-	wire    [0:0] avalon_st_adapter_013_out_0_error;                                      // avalon_st_adapter_013:out_0_error -> switches_s1_agent:rdata_fifo_sink_error
+	wire          switches_s1_agent_rdata_fifo_out_valid;                                 // Switches_s1_agent_rdata_fifo:out_valid -> avalon_st_adapter_013:in_0_valid
+	wire   [33:0] switches_s1_agent_rdata_fifo_out_data;                                  // Switches_s1_agent_rdata_fifo:out_data -> avalon_st_adapter_013:in_0_data
+	wire          switches_s1_agent_rdata_fifo_out_ready;                                 // avalon_st_adapter_013:in_0_ready -> Switches_s1_agent_rdata_fifo:out_ready
+	wire          avalon_st_adapter_013_out_0_valid;                                      // avalon_st_adapter_013:out_0_valid -> Switches_s1_agent:rdata_fifo_sink_valid
+	wire   [33:0] avalon_st_adapter_013_out_0_data;                                       // avalon_st_adapter_013:out_0_data -> Switches_s1_agent:rdata_fifo_sink_data
+	wire          avalon_st_adapter_013_out_0_ready;                                      // Switches_s1_agent:rdata_fifo_sink_ready -> avalon_st_adapter_013:out_0_ready
+	wire    [0:0] avalon_st_adapter_013_out_0_error;                                      // avalon_st_adapter_013:out_0_error -> Switches_s1_agent:rdata_fifo_sink_error
 
 	altera_merlin_slave_translator #(
 		.AV_ADDRESS_W                   (1),
@@ -2275,12 +2272,11 @@ module soc_system_mm_interconnect_0 (
 		.uav_writedata          (switches_s1_agent_m0_writedata),                 //                         .writedata
 		.uav_lock               (switches_s1_agent_m0_lock),                      //                         .lock
 		.uav_debugaccess        (switches_s1_agent_m0_debugaccess),               //                         .debugaccess
-		.av_address             (switches_s1_address),                            //      avalon_anti_slave_0.address
-		.av_write               (switches_s1_write),                              //                         .write
-		.av_readdata            (switches_s1_readdata),                           //                         .readdata
-		.av_writedata           (switches_s1_writedata),                          //                         .writedata
-		.av_chipselect          (switches_s1_chipselect),                         //                         .chipselect
+		.av_address             (Switches_s1_address),                            //      avalon_anti_slave_0.address
+		.av_readdata            (Switches_s1_readdata),                           //                         .readdata
+		.av_write               (),                                               //              (terminated)
 		.av_read                (),                                               //              (terminated)
+		.av_writedata           (),                                               //              (terminated)
 		.av_begintransfer       (),                                               //              (terminated)
 		.av_beginbursttransfer  (),                                               //              (terminated)
 		.av_burstcount          (),                                               //              (terminated)
@@ -2289,6 +2285,7 @@ module soc_system_mm_interconnect_0 (
 		.av_waitrequest         (1'b0),                                           //              (terminated)
 		.av_writebyteenable     (),                                               //              (terminated)
 		.av_lock                (),                                               //              (terminated)
+		.av_chipselect          (),                                               //              (terminated)
 		.av_clken               (),                                               //              (terminated)
 		.uav_clken              (1'b0),                                           //              (terminated)
 		.av_debugaccess         (),                                               //              (terminated)
