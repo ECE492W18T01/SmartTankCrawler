@@ -631,7 +631,7 @@ static void FuzzyTask (void *p_arg) {
             };
 
             // Decide whether or not we even want to access the Fuzzy Logic Matrix.
-            if (getMinWheelDiff(wheelSpeeds) < speedThres && abs(localSteeringAngle) < lowAngle) { // TODO Switch flipper
+            if ((getMinWheelDiff(wheelSpeeds) < speedThres && abs(localSteeringAngle) < lowAngle) || FuzzyToggle == false) { // TODO Switch flipper
 
             	// Assign zero to all modifiers.
 				outgoing.frontLeft = 0;
