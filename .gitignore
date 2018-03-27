@@ -3,3 +3,5 @@ DE10_NANO_SoC_GHRD\software\debugger\*
 DE10_NANO_SoC_GHRD\software\spl_bsp\*
 DE10_NANO_SoC_GHRD\software\.settings\*
 DE10_NANO_SoC_GHRD\software\uC_Template_Project\Debug\*
+DE10_NANO_SoC_GHRD\incremental_db\*
+DE10_NANO_SoC_GHRD\db\*
