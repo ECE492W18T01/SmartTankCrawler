@@ -151,8 +151,11 @@ OS_EVENT *SteeringSemaphore;
 OS_EVENT *MaskSemaphore;
 OS_EVENT *CommunicationSemaphore;
 OS_EVENT *RxDataAvailableSemaphore;
+OS_EVENT *UserSemaphore;
 
 // Resources
+int8_t userSteer;
+float userMag;
 int8_t globalSteeringAngle;
 bool motorMask = false;
 char* userMessage;
@@ -234,6 +237,10 @@ int main ()
 
     // Set the global steering angle to 0 on start.
     globalSteeringAngle = 0;
+    userSteer = 0;
+    userMag = 0;
+    //MoveFrontServo(globalSteeringAngle);
+    //MoveBackServo(BackServoMax);
 
     //Array of pointers that the Queues will use. Should never be touched again.
     void *LogMessageArray[100];
@@ -252,6 +259,7 @@ int main ()
      * Zero means that the semaphore will be used as a flag
      * NonZero means the semaphore will be used to control access to shared resource(s).
      */
+    UserSemaphore = OSSemCreate(1);
     SteeringSemaphore = OSSemCreate(1);			// One shared resource
     MaskSemaphore = OSSemCreate(1);				// One shared resource
     CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
@@ -436,8 +444,15 @@ static void EmergencyTask (void *p_arg)
 //	INT8U err;
 //	char *TaskName = "EmergencyTask";
 //	LogMessage *errorMessage;
-
-    for(;;) {OSTimeDlyHMSM(1,0,0,0);} //Task does nothing currently
+	//int8_t x = 64;
+    for(;;) {
+    	OSTimeDlyHMSM(0,0,1,0);
+//    	MoveFrontServo(x);
+//    	x--;
+//    	if (x < -64) {
+//    		x = 64;
+//    	}
+    } //Task does nothing currently
 }
 
 static void CollisionTask (void *p_arg)
@@ -476,11 +491,11 @@ static void MotorTask (void *p_arg)
 	// Incoming from Fuzzy Task, staticFuzzy is local and static allocated
     MotorChangeMessage *incoming;
     MotorChangeMessage staticFuzzy = { 0 };
+    //incoming_msg       *incMsg;
 //    LogMessage *errorMessage;
 
     // TODO assign this as something from the communication task.
-    float userDriveSpeed = 0.5;
-
+    float userDriveSpeed = 0;
 
     // This should not be changes; it should be initalized to zero and then changed later.
     // This is NOT the global emergency brake variable, but later in the code it is assigned that variable's value.
@@ -488,13 +503,28 @@ static void MotorTask (void *p_arg)
 
     // Old steering, new steering, and the actual value to be plugged.
     int8_t oldUserSteer, newUserSteer, actualSteeringAngle = 0;
+    MoveFrontServo(actualSteeringAngle);
 
     // Loop forever.
     for(;;) {
 
     	// TODO: Replace this with a queue pend, or SOMETHING, to get the new user steering
     	// AS AN INT8_T.
-    	newUserSteer = 0;
+		// TODO: Here you go Keith
+//		incMsg = (incoming_msg*)OSQPend(InputQueue, 0, &err);
+//
+//		if (err == OS_ERR_NONE) {
+//
+//			userDriveSpeed = incMsg->motor_level;
+//			newUserSteer = incMsg->steering_value;
+//
+//			OSMemPut(StandardMemoryStorage, incMsg);
+//		}
+
+		OSSemPend(UserSemaphore, 0, &err);
+		newUserSteer = userSteer;
+		userDriveSpeed = userMag;
+		OSSemPost(UserSemaphore);
 
     	// Only pend for so long - Change timeout value to be define, but the number now is 1/4 of a second.
     	// Subject to change alongside timeouts for other queues.
@@ -696,9 +726,13 @@ static void CommunicationTask (void *p_arg)
     		err = OS_ERR_NONE;
     		// set motor values to 0
 			incoming_msg *outgoing = OSMemGet(StandardMemoryStorage, &err);
-			outgoing->motor_level = MOTOR_ZERO;
-			outgoing->steering_value = STEERING_ZERO;
-			OSQPost(InputQueue,outgoing);
+			//outgoing->motor_level = MOTOR_ZERO;
+			//outgoing->steering_value = STEERING_ZERO;
+			//OSQPost(InputQueue,outgoing);
+			OSSemPend(UserSemaphore, 0, &err);
+			userSteer = MOTOR_ZERO;
+			userMag = STEERING_ZERO;
+			OSSemPost(UserSemaphore);
     	}else{
     		// now determine what to do with the incoming message
     		if(communications_established == true){
@@ -714,14 +748,20 @@ static void CommunicationTask (void *p_arg)
 					serial_send(ACKNOWLEDGE_STR);
 					bzero(userMessage, RX_FIFO_SIZE);
 					// send to queue
-					incoming_msg *outgoing = OSMemGet(StandardMemoryStorage, &err);
-					outgoing->motor_level = new_msg.motor_level;
-					outgoing->steering_value = new_msg.steering_value;
 
-					printf("Steering:%i ,Throttle:%.6f\n",outgoing->steering_value,outgoing->motor_level);
+					//incoming_msg *outgoing = OSMemGet(StandardMemoryStorage, &err);
+					//outgoing->motor_level = new_msg.motor_level;
+					//outgoing->steering_value = new_msg.steering_value;
 					//OSQPost(InputQueue,outgoing);
-					// TODO: Here you go Keith
-					// incoming_msg *incoming = OSQPend(InputQueue);
+
+					OSSemPend(UserSemaphore, 0, &err);
+					userSteer = new_msg.steering_value;
+					userMag = new_msg.motor_level;
+					//printf("Steering: %i, Speed: %.6f\n",userSteer, userMag);
+					OSSemPost(UserSemaphore);
+
+
+
     			}
     		}else{
     			//look for start byte

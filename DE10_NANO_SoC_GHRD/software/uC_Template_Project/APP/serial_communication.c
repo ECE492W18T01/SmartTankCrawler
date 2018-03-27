@@ -10,9 +10,8 @@
 #include "serial_communication.h"
 #include "uart0_support.h"
 #include <watchdog.h>
-#include "globals.h"
 #include <os_cpu.h>
-
+#include "globals.h"
 
 bool serial_communication_init(){
 	ALT_STATUS_CODE status = uart0_init();
