@@ -246,10 +246,10 @@ soc_system u0(
 					.pwmservo_1_conduit_end_export(GPIO_1_31),
 
 					// Hall Sensor Counters
-					.upcounter_0_hallsensorinput_export(GPIO_0_0), // FL
-					.upcounter_1_hallsensorinput_export(GPIO_0_2), // FR
-					.upcounter_2_hallsensorinput_export(GPIO_0_4), // RL
-					.upcounter_3_hallsensorinput_export(GPIO_0_6), // RR
+					.upcounter_0_hallsensorinput_export(GPIO_0_6), // FL
+					.upcounter_1_hallsensorinput_export(GPIO_0_4), // FR
+					.upcounter_2_hallsensorinput_export(GPIO_0_2), // RL
+					.upcounter_3_hallsensorinput_export(GPIO_0_0), // RR
 					
 					// Sonar
 					.ultrasonicrangefinder_0_sonarin_import(GPIO_0_5),  

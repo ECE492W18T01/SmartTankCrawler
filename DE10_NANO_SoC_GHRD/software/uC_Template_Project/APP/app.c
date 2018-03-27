@@ -266,7 +266,7 @@ int main ()
      * Zero means that the semaphore will be used as a flag
      * NonZero means the semaphore will be used to control access to shared resource(s).
      */
-    UserSemaphore = OSSemCreate(1);
+    UserSemaphore = OSSemCreate(0);
     SteeringSemaphore = OSSemCreate(1);			// One shared resource
     MaskSemaphore = OSSemCreate(1);				// One shared resource
     CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
@@ -533,7 +533,7 @@ static void MotorTask (void *p_arg)
 		OSSemPend(UserSemaphore, 0, &err);
 		newUserSteer = userSteer;
 		userDriveSpeed = userMag;
-		OSSemPost(UserSemaphore);
+		//OSSemPost(UserSemaphore);
 
     	// Only pend for so long - Change timeout value to be define, but the number now is 1/4 of a second.
     	// Subject to change alongside timeouts for other queues.
@@ -749,7 +749,7 @@ static void CommunicationTask (void *p_arg)
     		err = OS_ERR_NONE;
     		// set motor values to 0
 			incoming_msg *outgoing = OSMemGet(StandardMemoryStorage, &err);
-			OSSemPend(UserSemaphore, 0, &err);
+			//OSSemPend(UserSemaphore, 0, &err);
 			userSteer = MOTOR_ZERO;
 			userMag = STEERING_ZERO;
 			OSSemPost(UserSemaphore);
@@ -769,7 +769,7 @@ static void CommunicationTask (void *p_arg)
 					bzero(userMessage, RX_FIFO_SIZE);
 
 					// Post to Semaphore
-					OSSemPend(UserSemaphore, 0, &err);
+					//OSSemPend(UserSemaphore, 0, &err);
 					userSteer = new_msg.steering_value;
 					userMag = new_msg.motor_level;
 					OSSemPost(UserSemaphore);
