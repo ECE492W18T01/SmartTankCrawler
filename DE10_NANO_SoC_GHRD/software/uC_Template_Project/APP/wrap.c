@@ -1,7 +1,7 @@
 #include "fpga_to_hps.h"
 #include "wrap.h"
 
-void MoveBackServo(uint8_t hex) {
+void MoveBackServo(int8_t hex) {
   if (hex > BackServoMax) {
 	  alt_write_byte(BRAKE_SERVO_BASE, BackServoMax);
   }

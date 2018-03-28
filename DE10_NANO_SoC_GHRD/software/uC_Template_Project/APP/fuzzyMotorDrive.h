@@ -31,7 +31,7 @@
 // If we're travelling forward the input to driveMotors, driveSpeed is more than 1
 #define forward        	0
 // Maximum wheel speed ratio - 1 will translate to the PWM duty cycle of 100%
-#define wheelSpeed     	1
+#define wheelSpeed     	0.95
 
 // Index for the steering motor.
 #define STEERING_MOTOR  4

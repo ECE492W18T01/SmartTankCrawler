@@ -51,7 +51,7 @@
 #define FrontServoMin 0x00
 
 // Steering rod 60 degrees left turn.
-#define FrontServoMax 0x13
+#define FrontServoMax 0x14
 
 // Numerical labels for motors
 #define FRONTLEFT 0
@@ -177,7 +177,7 @@ extern OS_MEM *StandardMemoryStorage;
 extern OS_MEM *LargeMemoryStorage;
 
 // Function for controlling rear, emergency brake servo.
-void MoveBackServo(uint8_t hex);
+void MoveBackServo(int8_t hex);
 
 // Function for controlling front, steering servo.
 void MoveFrontServo(int8_t hex);

@@ -68,11 +68,6 @@ void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, float* motorVa
 	}
 
 	// Move the front axle, assign new speeds
-//	update_motor_control(dir * rescaleInput(fl), FRONT_LEFT_MOTOR);
-//	update_motor_control(dir * rescaleInput(fr), FRONT_RIGHT_MOTOR);
-//	update_motor_control(dir * rescaleInput(rl), REAR_LEFT_MOTOR);
-//	update_motor_control(dir * rescaleInput(rr), REAR_RIGHT_MOTOR);
-
 	motorVals[0] = dir * rescaleInput(fl);
 	motorVals[1] = dir * rescaleInput(fr);
 	motorVals[2] = dir * rescaleInput(rl);
