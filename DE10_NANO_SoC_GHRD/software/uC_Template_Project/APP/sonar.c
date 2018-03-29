@@ -1,12 +1,15 @@
 // Created by Brain Ofrim
-#include "sonar.h"
-#include "timer.h"
 #include <lib_def.h>
 #include <stdbool.h>
 #include <math.h>
-#include "ucos_ii.h"
+
+#include <ucos_ii.h>
 #include "globals.h"
 #include "socal.h"
+#include <bsp_int.h>
+
+#include "sonar.h"
+#include "timer.h"
 
 // From Nancy's EClass code
 void InitDistanceSensorInterrupt(void) {
@@ -28,17 +31,17 @@ void InitDistanceSensorInterrupt(void) {
 	ARM_OSCL_TIMER_1_REG_CONTROL |= ARM_OSCL_TIMER_1_ENABLE;
 
 	BSP_IntSrcEn(202u);
-	// initialize the circular buffer
-	circular_buf_init(distance_buffer, MAXIMUM_DETECTABLE_DISTANCE + 1);
 }
 
 void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id) {
 
+	INT8U err;
 	uint8_t dist = alt_read_word(SONAR_BASE);
 	circular_buf_put(distance_buffer,dist);
-	ARM_OSCL_TIMER_1_REG_EOI;
+
 
 	OSSemPost(SonarDataAvailableSemaphore);
+	ARM_OSCL_TIMER_1_REG_EOI;
 }
 
 
@@ -47,7 +50,7 @@ Circular buffer code from:
 https://embeddedartistry.com/blog/2017/4/6/circular-buffers-in-cc
 */
 
-int circular_buf_reset(circular_distance_buf * cbuf)
+int circular_buf_reset(circular_buf * cbuf)
 {
     int r = -1;
 
@@ -61,18 +64,35 @@ int circular_buf_reset(circular_distance_buf * cbuf)
     return r;
 }
 
-void circular_buf_init(circular_distance_buf * cbuf, uint8_t init_val){
-	for(int i = 0; i < cbuf->size; i++){
-		cbuf->distances[i] = init_val;
+void circular_buf_init(circular_buf * cbuf){
+	cbuf->head = 0;
+	cbuf->tail = 0;
+	cbuf->size = DISTANCE_HISTORY_LENGTH;
+    for (int i = 0; i < DISTANCE_HISTORY_LENGTH; i++) {
+    	cbuf->values[i] = 0;
+    }
+}
+
+bool sample_window_validator(uint8_t next, uint8_t current, uint8_t previous){
+	if(abs(current - next) <= DISTANCE_FILTER_MAX && abs(current - previous) <= DISTANCE_FILTER_MAX ){
+		return true;
+	}
+	else{
+		return false;
 	}
 }
-int circular_buf_put(circular_distance_buf * cbuf, uint8_t data)
+
+int sample_window_avg(uint8_t next, uint8_t current, uint8_t previous){
+	return ((next + current + previous) / 3);
+}
+
+int circular_buf_put(circular_buf * cbuf, uint8_t data)
 {
     int r = -1;
 
     if(cbuf)
     {
-        cbuf->distances[cbuf->head] = data;
+        cbuf->values[cbuf->head] = data;
         cbuf->head = (cbuf->head + 1) % cbuf->size;
 
         if(cbuf->head == cbuf->tail)
@@ -87,13 +107,13 @@ int circular_buf_put(circular_distance_buf * cbuf, uint8_t data)
 }
 
 
-int circular_buf_get(circular_distance_buf * cbuf, uint8_t * data)
+int circular_buf_get(circular_buf * cbuf, uint8_t * data)
 {
     int r = -1;
 
     if(cbuf && data && !circular_buf_empty(*cbuf))
     {
-        *data = cbuf->distances[cbuf->tail];
+        *data = cbuf->values[cbuf->tail];
         cbuf->tail = (cbuf->tail + 1) % cbuf->size;
 
         r = 0;
@@ -103,9 +123,9 @@ int circular_buf_get(circular_distance_buf * cbuf, uint8_t * data)
 }
 
 // made by Brian Ofrim
-int circular_buffer_get_nth(circular_distance_buf * cbuf, uint8_t * data, int nth){
+int circular_buffer_get_nth(circular_buf * cbuf, uint8_t * data, int nth){
     int r = -1;
-    nth = nth % DISTANCE_HISTORY_LENGTH;
+    nth = nth % (DISTANCE_HISTORY_LENGTH-1);
     if(cbuf && data && !circular_buf_empty(*cbuf))
     {
 
@@ -115,7 +135,7 @@ int circular_buffer_get_nth(circular_distance_buf * cbuf, uint8_t * data, int nt
     		headNthDelta += DISTANCE_HISTORY_LENGTH; // wrap around
     	}
 
-    	*data = cbuf->distances[headNthDelta];
+    	*data = cbuf->values[headNthDelta];
         r = 0;
     }
 
@@ -123,13 +143,13 @@ int circular_buffer_get_nth(circular_distance_buf * cbuf, uint8_t * data, int nt
 }
 
 
-bool circular_buf_empty(circular_distance_buf cbuf)
+bool circular_buf_empty(circular_buf cbuf)
 {
     // We define empty as head == tail
     return (cbuf.head == cbuf.tail);
 }
 
-bool circular_buf_full(circular_distance_buf cbuf)
+bool circular_buf_full(circular_buf cbuf)
 {
     // We determine "full" case by head being one position behind the tail
     // Note that this means we are wasting one space in the buffer!

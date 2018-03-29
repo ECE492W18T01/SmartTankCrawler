@@ -7,6 +7,7 @@
 extern OS_EVENT *RxDataAvailableSemaphore;
 extern OS_EVENT *SonarDataAvailableSemaphore;
 extern char* userMessage;
-extern circular_distance_buf* distance_buffer;
+extern circular_buf* distance_buffer;
+extern circular_buf* velocity_buffer;
 
 #endif

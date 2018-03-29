@@ -171,7 +171,8 @@ int8_t globalSteeringAngle;
 bool FuzzyToggle = true;          //starting true, flip the switch to turn off
 bool motorMask = false;
 char* userMessage;
-circular_distance_buf* distance_buffer;
+circular_buf* distance_buffer;
+circular_buf* velocity_buffer;
 
 /* To access steering Angle:
 OSSemPend(SteeringSemaphore, 0, &err);
@@ -297,7 +298,12 @@ int main ()
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
-    distance_buffer = OSMemGet(LargeMemoryStorage, &err);
+
+    distance_buffer = (circular_buf*)OSMemGet(LargeMemoryStorage, &err);
+    circular_buf_init(distance_buffer);
+
+    velocity_buffer = (circular_buf*)OSMemGet(LargeMemoryStorage, &err);
+    circular_buf_init(velocity_buffer);
 
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
@@ -483,82 +489,57 @@ static void EmergencyTask (void *p_arg)
     } //Task does nothing currently
 }
 
-#define DISTANCE_FILTER_MAX 15
-#define DISANCE_SAMPLE_HIST 10
+
 #define DISTANCE_SAMPLES 20
-#define N_DISTANCE_AVG_SAMPLES 4 // Average the most recent N samples to get an accurate distance
+#define SAMPLE_OFFSET 6
+
 static void CollisionTask (void *p_arg)
 {
 	INT8U err;
 
-
-
     for(;;) {
-    	OSTimeDlyHMSM(0, 0, 1, 0);
 
 		OSSemPend(SonarDataAvailableSemaphore, 0, &err);
-
+		CPU_CRITICAL_ENTER();
 		uint8_t last_n_distances[DISTANCE_SAMPLES] = {0};
-		uint8_t distance_arr[DISANCE_SAMPLE_HIST] = {0};
-
 		for(int i = 0; i < DISTANCE_SAMPLES; i++ ){
 			 circular_buffer_get_nth(distance_buffer, &last_n_distances[i], i);
 		}
-		uint8_t latestVal = 0;
-		circular_buffer_get_nth(distance_buffer, &latestVal, 0);
+		CPU_CRITICAL_EXIT();
+		uint8_t latest_distance_sample = 0;
+		uint8_t offset_distance_sample = 0;
 
-		MoveBackServo(latestVal);
-		int sample_count = 0;
-		int iteration_count = 1;
-		int avg_distance = 0;
+		// find the most recent valid distance
+		// (actually current - 1)
+		int latest_index = 1;
+		int offset_index = latest_index + SAMPLE_OFFSET;
 
-		// filter out anomalies in the position samples
-		while((sample_count < 10) && (iteration_count < (DISTANCE_SAMPLES -1))){
-			// filter out bad values
-			if(abs(last_n_distances[iteration_count-1] - last_n_distances[iteration_count]) <= DISTANCE_FILTER_MAX ||
-					abs(last_n_distances[iteration_count+1] - last_n_distances[iteration_count]) <= DISTANCE_FILTER_MAX ){
-				distance_arr[sample_count] = last_n_distances[iteration_count];
-				sample_count++;
+		while(offset_index < (DISTANCE_SAMPLES - SAMPLE_OFFSET -1)){
+			if(sample_window_validator(last_n_distances[latest_index -1],last_n_distances[latest_index],last_n_distances[latest_index + 1]) &&
+					sample_window_validator(last_n_distances[offset_index -1],last_n_distances[offset_index],last_n_distances[offset_index + 1])){
+					// valid sample pair found
+				latest_distance_sample = sample_window_avg(last_n_distances[latest_index -1], last_n_distances[latest_index], last_n_distances[latest_index + 1]);
+				offset_distance_sample = sample_window_avg(last_n_distances[offset_index -1], last_n_distances[offset_index], last_n_distances[offset_index + 1]);
+				break;
+			}else{
+				latest_index++;
+				offset_index++;
+
 			}
-			iteration_count ++;
 		}
 
-		// average last N readings to get a valid position
-		for(int i = 0; i < N_DISTANCE_AVG_SAMPLES; i++)
-			avg_distance += distance_arr[i];
+		// calculate the delta between current and offset
+		int position_delta =  offset_distance_sample - latest_distance_sample;
 
-		avg_distance = avg_distance / N_DISTANCE_AVG_SAMPLES;
-
-		// calculate velocity
-		int velocity_count = (sample_count-1)/2;
-		uint8_t velocity_arr[velocity_count];
-		int velocity_avg = 0;
-		for(int i = 0; i < velocity_count; i++){
-			velocity_arr[i] = distance_arr[i*2] - distance_arr[(i+1)*2];
-			velocity_avg += velocity_arr[i];
+		// if change is too small disregard
+		if(abs(position_delta) < MIN_DETECTABLE_CHANGE){
+			position_delta = 0;
 		}
 
-		velocity_avg = velocity_avg / velocity_count;
+		// velocity in inches per second
+		float velocity = (float) position_delta * (1/(SONAR_INTERUPT_PERIOD * SAMPLE_OFFSET));
 
-		// calculate acceleration
-		int acceleration_count = velocity_count -1;
-		uint8_t acceleration_arr[acceleration_count];
-		int acceleration_avg = 0;
-		for(int i = 0; i < acceleration_count - 1; i++){
-			acceleration_arr[i] = velocity_arr[i] - velocity_arr[i+1];
-			acceleration_avg += acceleration_arr[i];
-		}
-
-		acceleration_avg = acceleration_avg/acceleration_count;
-
-		// in inches/second
-		float velocity_val = (float) velocity_avg * SONAR_INTERUPT_PERIOD;
-
-		// in inched/second^2
-		float acceleration_val = (float) acceleration_avg * pow(SONAR_INTERUPT_PERIOD,2.0);
-
-		printf("position: %i, velocity: %.3f , acceleration: %.3f\n",avg_distance, velocity_val, acceleration_val);
-
+		printf("Distance: %i, Delta: %i ,Velocity: %.6f\n", latest_distance_sample, position_delta, velocity);
 		if (err == OS_ERR_NONE)
 		{
 			/*
