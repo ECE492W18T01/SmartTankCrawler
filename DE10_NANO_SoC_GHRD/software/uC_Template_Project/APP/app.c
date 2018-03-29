@@ -47,6 +47,7 @@
 *                                            INCLUDE FILES
 *********************************************************************************************************
 */
+#include <math.h>
 
 #include  <app_cfg.h>
 #include  <lib_mem.h>
@@ -161,6 +162,7 @@ OS_EVENT *CommunicationSemaphore;
 OS_EVENT *RxDataAvailableSemaphore;
 OS_EVENT *UserSemaphore;
 OS_EVENT *FuzzyToggleSemaphore;
+OS_EVENT *SonarDataAvailableSemaphore;
 
 // Resources
 int8_t userSteer;
@@ -274,6 +276,7 @@ int main ()
     MaskSemaphore = OSSemCreate(1);				// One shared resource
     CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
     RxDataAvailableSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
+    SonarDataAvailableSemaphore = OSSemCreate(0);// Turn flag on when interrupt writes
     FuzzyToggleSemaphore = OSSemCreate(1);      // One Shared resource
 
     // Initialize the Memory.
@@ -480,26 +483,87 @@ static void EmergencyTask (void *p_arg)
     } //Task does nothing currently
 }
 
+#define DISTANCE_FILTER_MAX 15
+#define DISANCE_SAMPLE_HIST 10
+#define DISTANCE_SAMPLES 20
+#define N_DISTANCE_AVG_SAMPLES 4 // Average the most recent N samples to get an accurate distance
 static void CollisionTask (void *p_arg)
 {
 	INT8U err;
 
-	//DistanceMessage *incoming;
+
 
     for(;;) {
-    	 OSTimeDlyHMSM(0, 0, 1, 0);
-//    	incoming = (DistanceMessage*)OSQPend(CollisionQueue, 0, &err);
-//    	// TODO: set data to local variables before freeing message
-//    	OSMemPut(StandardMemoryStorage, incoming);
-//
-//		if (err == OS_ERR_NONE)
-//		{
-//			/*
-//			 * You have received a distance measurement. TODO: Implement
-//			 */
-//		} else {
-//			OSQPost(LogQueue, CreateErrorMessage(COLLISION_TASK, OS_Q_PEND, err));
-        //}
+    	OSTimeDlyHMSM(0, 0, 1, 0);
+
+		OSSemPend(SonarDataAvailableSemaphore, 0, &err);
+
+		uint8_t last_n_distances[DISTANCE_SAMPLES] = {0};
+		uint8_t distance_arr[DISANCE_SAMPLE_HIST] = {0};
+
+		for(int i = 0; i < DISTANCE_SAMPLES; i++ ){
+			 circular_buffer_get_nth(distance_buffer, &last_n_distances[i], i);
+		}
+
+		int sample_count = 0;
+		int iteration_count = 1;
+		int avg_distance = 0;
+
+		// filter out anomalies in the position samples
+		while((sample_count < 10) && (iteration_count < (DISTANCE_SAMPLES -1))){
+			// filter out bad values
+			if(abs(last_n_distances[iteration_count-1] - last_n_distances[iteration_count]) <= DISTANCE_FILTER_MAX ||
+					abs(last_n_distances[iteration_count+1] - last_n_distances[iteration_count]) <= DISTANCE_FILTER_MAX ){
+				distance_arr[sample_count] = last_n_distances[iteration_count];
+				sample_count++;
+			}
+			iteration_count ++;
+		}
+
+		// average last N readings to get a valid position
+		for(int i = 0; i < N_DISTANCE_AVG_SAMPLES; i++)
+			avg_distance += distance_arr[i];
+
+		avg_distance = avg_distance / N_DISTANCE_AVG_SAMPLES;
+
+		// calculate velocity
+		int velocity_count = (sample_count-1)/2;
+		uint8_t velocity_arr[velocity_count];
+		int velocity_avg = 0;
+		for(int i = 0; i < velocity_count; i++){
+			velocity_arr[i] = distance_arr[i*2] - distance_arr[(i+1)*2];
+			velocity_avg += velocity_arr[i];
+		}
+
+		velocity_avg = velocity_avg / velocity_count;
+
+		// calculate acceleration
+		int acceleration_count = velocity_count -1;
+		uint8_t acceleration_arr[acceleration_count];
+		int acceleration_avg = 0;
+		for(int i = 0; i < acceleration_count - 1; i++){
+			acceleration_arr[i] = velocity_arr[i] - velocity_arr[i+1];
+			acceleration_avg += acceleration_arr[i];
+		}
+
+		acceleration_avg = acceleration_avg/acceleration_count;
+
+		// in inches/second
+		float velocity_val = (float) velocity_avg * SONAR_INTERUPT_PERIOD;
+
+		// in inched/second^2
+		float acceleration_val = (float) acceleration_avg * pow(SONAR_INTERUPT_PERIOD,2.0);
+
+		printf("position: %i, velocity: %.3f , acceleration: %.3f\n",avg_distance, velocity_val, acceleration_val);
+
+		if (err == OS_ERR_NONE)
+		{
+			/*
+			 * You have received a distance measurement. TODO: Implement
+			 */
+		} else {
+			OSQPost(LogQueue, CreateErrorMessage(COLLISION_TASK, OS_Q_PEND, err));
+        }
     }
 }
 

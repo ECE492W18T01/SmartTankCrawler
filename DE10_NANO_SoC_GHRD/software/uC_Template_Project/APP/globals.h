@@ -5,7 +5,7 @@
 #include "sonar.h"
 
 extern OS_EVENT *RxDataAvailableSemaphore;
-extern OS_EVENT *DistanceAvailableSemaphore;
+extern OS_EVENT *SonarDataAvailableSemaphore;
 extern char* userMessage;
 extern circular_distance_buf* distance_buffer;
 

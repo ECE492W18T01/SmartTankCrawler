@@ -29,11 +29,12 @@ int circular_buf_put(circular_distance_buf * cbuf, uint8_t data);
 int circular_buf_get(circular_distance_buf * cbuf, uint8_t * data);
 bool circular_buf_empty(circular_distance_buf cbuf);
 bool circular_buf_full(circular_distance_buf cbuf);
-
-#define OSCL1_TICKS_PER_49MS 1225000
+int circular_buffer_get_nth(circular_distance_buf * cbuf, uint8_t * data, int nth);
+#define OSCL1_TICKS_PER_50MS 1250000
+#define SONAR_INTERUPT_PERIOD 0.05
 
 #define MINIMUM_DETECTABLE_DISTANCE 6
-
+#define MAXIMUM_DETECTABLE_DISTANCE 254
 
 
 #endif

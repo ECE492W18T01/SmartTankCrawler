@@ -8,20 +8,8 @@
 #include "globals.h"
 #include "socal.h"
 
-
+// From Nancy's EClass code
 void InitDistanceSensorInterrupt(void) {
-	// This version will use the oscl_clk based timers on the HPS core
-	// Process
-	// Choose one of the four timers (oscl timer 0, oscl timer 1, sptimer 0, sptimer 1)
-	// Set to use user-defined count mode
-	// Choose timer value should be equal to osc1_clk (50000000 HZ) == 2FAF080 actuall is 100000000
-	// PSEUDOCODE:
-	//  - Disable the timer
-	//  - Program the Timer Mode: User Defined
-	//  - Initialize the vector table: source 201 for oscl_0_timer
-	//  - Set the interrupt mask to unmasked
-	//  - Load the counter value
-	//  - Enable the timer
 
 	ARM_OSCL_TIMER_1_REG_CONTROL &= ARM_OSCL_TIMER_1_DISABLE;
 
@@ -29,9 +17,9 @@ void InitDistanceSensorInterrupt(void) {
 
 	ARM_OSCL_TIMER_1_REG_CONTROL &= ARM_OSCL_TIMER_1_INT_UNMASKED;
 
-	ARM_OSCL_TIMER_1_REG_LOADCOUNT = OSCL1_TICKS_PER_49MS;
+	ARM_OSCL_TIMER_1_REG_LOADCOUNT = OSCL1_TICKS_PER_50MS;
 
-	BSP_IntVectSet   (202u,   // 201 is source for oscl_timer 0 TODO: Find out what this is for timer 1
+	BSP_IntVectSet   (202u,
 	                  14,	    // prio
 					  DEF_BIT_00,	    // cpu target list
 					  DistanceSensor_ISR_Handler  // ISR
@@ -39,16 +27,18 @@ void InitDistanceSensorInterrupt(void) {
 
 	ARM_OSCL_TIMER_1_REG_CONTROL |= ARM_OSCL_TIMER_1_ENABLE;
 
-	BSP_IntSrcEn(202u); //TODO: change this for timer 1.
+	BSP_IntSrcEn(202u);
+	// initialize the circular buffer
+	circular_buf_init(distance_buffer, MAXIMUM_DETECTABLE_DISTANCE + 1);
 }
 
 void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id) {
 
-	int dist = alt_read_word(SONAR_BASE);
-
-	circular_buf_put(distance_buffer, alt_read_word(SONAR_BASE));
-
+	uint8_t dist = alt_read_word(SONAR_BASE);
+	circular_buf_put(distance_buffer,dist);
 	ARM_OSCL_TIMER_1_REG_EOI;
+
+	OSSemPost(SonarDataAvailableSemaphore);
 }
 
 
@@ -70,6 +60,12 @@ int circular_buf_reset(circular_distance_buf * cbuf)
 
     return r;
 }
+
+void circular_buf_init(circular_distance_buf * cbuf, uint8_t init_val){
+	for(int i = 0; i < cbuf->size; i++){
+		cbuf->distances[i] = init_val;
+	}
+}
 int circular_buf_put(circular_distance_buf * cbuf, uint8_t data)
 {
     int r = -1;
@@ -90,6 +86,7 @@ int circular_buf_put(circular_distance_buf * cbuf, uint8_t data)
     return r;
 }
 
+
 int circular_buf_get(circular_distance_buf * cbuf, uint8_t * data)
 {
     int r = -1;
@@ -105,37 +102,25 @@ int circular_buf_get(circular_distance_buf * cbuf, uint8_t * data)
     return r;
 }
 
-//int circular_buffer_get_nth(circular_distance_buf * cbuf, uint8_t * data, int nth){
-//    int r = -1;
-//    nth = nth % DISTANCE_HISTORY_LENGTH;
-//
-//    if(cbuf && data && !circular_buf_empty(*cbuf))
-//    {
-//
-//    	int currHead = cbuf->head;
-//    	int currTail = cbuf->tail;
-//
-//
-//
-//    	if(abs((cbuf->head - cbuf->tail)) > nth){
-//    		*data = -1;
-//    	}else{
-//    		if(cbuf->head >= cbuf->tail){
-//    	    	*data = cbuf->distances[cbuf->tail];
-//
-//    	        *data = cbuf->distances[cbuf->tail];
-//    	        cbuf->tail = (cbuf->tail + 1) % cbuf->size;
-//    		}else{
-//
-//    		}
-//    	}
-//
-//
-//        r = 0;
-//    }
-//
-//    return r;
-//}
+// made by Brian Ofrim
+int circular_buffer_get_nth(circular_distance_buf * cbuf, uint8_t * data, int nth){
+    int r = -1;
+    nth = nth % DISTANCE_HISTORY_LENGTH;
+    if(cbuf && data && !circular_buf_empty(*cbuf))
+    {
+
+    	int headNthDelta = cbuf->head - nth;
+
+    	if(headNthDelta<0){
+    		headNthDelta += DISTANCE_HISTORY_LENGTH; // wrap around
+    	}
+
+    	*data = cbuf->distances[headNthDelta];
+        r = 0;
+    }
+
+    return r;
+}
 
 
 bool circular_buf_empty(circular_distance_buf cbuf)
