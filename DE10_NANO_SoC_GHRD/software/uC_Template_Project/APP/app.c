@@ -85,13 +85,13 @@
 *                              Priority Definitions and Task Stack Size
 *********************************************************************************************************
 */
-#define APP_TASK_PRIO 5
+#define APP_TASK_PRIO 3
 #define EMERGENCY_TASK_PRIORITY 6
 #define COLLISION_TASK_PRIO 7
 #define MOTOR_TASK_PRIO 8
 #define FUZZY_TASK_PRIO 9
 #define COMMUNICATION_TASK_PRIO 10
-#define LOG_TASK_PRIO 11
+#define LOG_TASK_PRIO 4
 #define TOGGLE_TASK_PRIO 12           // maybe change later to higher prio, if necessary
 
 #define TASK_STACK_SIZE 4096
@@ -537,7 +537,7 @@ static void CollisionTask (void *p_arg)
 		// velocity in inches per second
 		float velocity = (float) position_delta * (1/(SONAR_INTERUPT_PERIOD * SAMPLE_OFFSET));
 
-		printf("Distance: %i, Delta: %i ,Velocity: %.6f\n", latest_distance_sample, position_delta, velocity);
+		//printf("Distance: %i, Delta: %i ,Velocity: %.6f\n", latest_distance_sample, position_delta, velocity);
 		if (err == OS_ERR_NONE)
 		{
 			/*
@@ -775,7 +775,7 @@ static void FuzzyTask (void *p_arg) {
             hsm->backLeft = wheelSpeeds[2];
             hsm->backRight = wheelSpeeds[3];
 
-            OSQPost(LogQueue, CreateLogMessage(HALL_SENSOR_MESSAGE, hsm));
+            err = OSQPost(LogQueue, CreateLogMessage(HALL_SENSOR_MESSAGE, hsm));
 
     	}
 
@@ -886,7 +886,7 @@ static void LogTask (void *p_arg)
     	if (incoming->error == OS_ERR_NONE) {
     		// This is a standard message
     		outgoing = OSMemGet(LargeMemoryStorage, &err);
-    		sprintf(outgoing, "*");
+    		sprintf(outgoing, "*,");
 
     		switch (incoming->messageType) {
 
@@ -895,17 +895,19 @@ static void LogTask (void *p_arg)
 
     			message = (HallSensorMessage*)(incoming->message);
     			// Send the details:
-    			sprintf(outgoing + strlen(outgoing), "%d", HALL_SENSOR_MESSAGE);
-    			sprintf(outgoing + strlen(outgoing), "fl,");
-    			sprintf(outgoing + strlen(outgoing), "%d", ((HallSensorMessage*)message)->frontLeft);
-    			sprintf(outgoing + strlen(outgoing), "fr,");
-    			sprintf(outgoing + strlen(outgoing), "%d", ((HallSensorMessage*)message)->frontRight);
-    			sprintf(outgoing + strlen(outgoing), "bl,");
-    			sprintf(outgoing + strlen(outgoing), "%d", ((HallSensorMessage*)message)->backLeft);
-    			sprintf(outgoing + strlen(outgoing), "br,");
-    			sprintf(outgoing + strlen(outgoing), "%d", ((HallSensorMessage*)message)->backRight);
+    			sprintf(outgoing + strlen(outgoing), "srv;");
+    			sprintf(outgoing + strlen(outgoing), "%d,", HALL_SENSOR_MESSAGE);
+    			sprintf(outgoing + strlen(outgoing), "fl;");
+    			sprintf(outgoing + strlen(outgoing), "%d,", ((HallSensorMessage*)message)->frontLeft);
+    			sprintf(outgoing + strlen(outgoing), "fr;");
+    			sprintf(outgoing + strlen(outgoing), "%d,", ((HallSensorMessage*)message)->frontRight);
+    			sprintf(outgoing + strlen(outgoing), "bl;");
+    			sprintf(outgoing + strlen(outgoing), "%d,", ((HallSensorMessage*)message)->backLeft);
+    			sprintf(outgoing + strlen(outgoing), "br;");
+    			sprintf(outgoing + strlen(outgoing), "%d,", ((HallSensorMessage*)message)->backRight);
     			sprintf(outgoing + strlen(outgoing), "\0");
     			serial_send(outgoing);
+    			// example: *,srv;1,fl;0,fr;0,bl;0,br;0,
     			break;
 
     		// This is the Fuzzy Set output.
