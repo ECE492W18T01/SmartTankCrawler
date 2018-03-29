@@ -31,11 +31,11 @@
 								<option id="com.arm.tool.c.compiler.option.defmac.2056919417" name="Define macro (-D)" superClass="com.arm.tool.c.compiler.option.defmac" useByScannerDiscovery="false" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="soc_cv_av"/>
 								</option>
-								<option id="com.arm.tool.c.compiler.option.incpath.1337732478" name="Include path (-I)" superClass="com.arm.tool.c.compiler.option.incpath" useByScannerDiscovery="false" valueType="includePath"/>
+								<option id="com.arm.tool.c.compiler.option.incpath.1337732478" name="Include path (-I)" superClass="com.arm.tool.c.compiler.option.incpath" useByScannerDiscovery="false"/>
 								<option id="com.arm.tool.c.compiler.option.gnu.310324961" name="Enable GNU extensions (--gnu)" superClass="com.arm.tool.c.compiler.option.gnu" useByScannerDiscovery="true" value="true" valueType="boolean"/>
 								<option id="com.arm.tool.c.compile.option.lang.553819982" name="Source language mode" superClass="com.arm.tool.c.compile.option.lang" useByScannerDiscovery="true" value="com.arm.tool.c.compile.option.lang.c99" valueType="enumerated"/>
 								<option id="com.arm.tool.c.compiler.option.target.enableToolSpecificSettings.1571679317" name="Enable tool specific settings" superClass="com.arm.tool.c.compiler.option.target.enableToolSpecificSettings" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.arm.tool.c.compiler.option.implicit.incpath.1576259017" superClass="com.arm.tool.c.compiler.option.implicit.incpath" valueType="includePath">
+								<option id="com.arm.tool.c.compiler.option.implicit.incpath.1576259017" name="Implicit Include paths" superClass="com.arm.tool.c.compiler.option.implicit.incpath" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/APP}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/BSP}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/BSP/OS}&quot;"/>
@@ -48,6 +48,7 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/uC-LIBS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/uCOS-II/Ports}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/uCOS-II/Source}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/uC_Template_Project/UTIL}&quot;"/>
 								</option>
 								<inputType id="com.arm.tool.c.compiler.input.1648632279" superClass="com.arm.tool.c.compiler.input"/>
 								<inputType id="com.arm.tool.cpp.compiler.input.767606361" superClass="com.arm.tool.cpp.compiler.input"/>
