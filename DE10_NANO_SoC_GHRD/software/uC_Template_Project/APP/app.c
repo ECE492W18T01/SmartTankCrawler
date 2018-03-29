@@ -171,8 +171,8 @@ int8_t globalSteeringAngle;
 bool FuzzyToggle = true;          //starting true, flip the switch to turn off
 bool motorMask = false;
 char* userMessage;
-circular_buf* distance_buffer;
-circular_buf* velocity_buffer;
+circular_buf_uint8_t* distance_buffer;
+circular_buf_uint8_t* velocity_buffer;
 
 /* To access steering Angle:
 OSSemPend(SteeringSemaphore, 0, &err);
@@ -298,10 +298,10 @@ int main ()
         ; /* Handle error. */
     }
 
-    distance_buffer = (circular_buf*)OSMemGet(LargeMemoryStorage, &err);
+    distance_buffer = (circular_buf_uint8_t*)OSMemGet(LargeMemoryStorage, &err);
     circular_buf_init(distance_buffer);
 
-    velocity_buffer = (circular_buf*)OSMemGet(LargeMemoryStorage, &err);
+    velocity_buffer = (circular_buf_uint8_t*)OSMemGet(LargeMemoryStorage, &err);
     circular_buf_init(velocity_buffer);
 
     if (err != OS_ERR_NONE) {
