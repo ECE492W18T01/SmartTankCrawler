@@ -877,7 +877,7 @@ static void LogTask (void *p_arg)
 	INT8U err;
 	LogMessage *incoming;
 	void *message;
-	void *outgoing;
+	char *outgoing;
 
     for(;;) {
     	incoming = (LogMessage*)OSQPend(LogQueue, 0, &err);
@@ -886,7 +886,7 @@ static void LogTask (void *p_arg)
     	if (incoming->error == OS_ERR_NONE) {
     		// This is a standard message
     		outgoing = OSMemGet(LargeMemoryStorage, &err);
-    		strcat(outgoing, "*");
+    		sprintf(outgoing, "*");
 
     		switch (incoming->messageType) {
 
@@ -895,16 +895,17 @@ static void LogTask (void *p_arg)
 
     			message = (HallSensorMessage*)(incoming->message);
     			// Send the details:
-    			strcat(outgoing, HALL_SENSOR_MESSAGE);
-    			strcat(outgoing, "fl,");
-    			strcat(outgoing, ((HallSensorMessage*)message)->frontLeft);
-    			strcat(outgoing, "fr,");
-    			strcat(outgoing, ((HallSensorMessage*)message)->frontRight);
-    			strcat(outgoing, "bl,");
-    			strcat(outgoing, ((HallSensorMessage*)message)->backLeft);
-    			strcat(outgoing, "br,");
-    			strcat(outgoing, ((HallSensorMessage*)message)->backRight);
-				strcat(outgoing, "\0");
+    			sprintf(outgoing + strlen(outgoing), "%d", HALL_SENSOR_MESSAGE);
+    			sprintf(outgoing + strlen(outgoing), "fl,");
+    			sprintf(outgoing + strlen(outgoing), "%d", ((HallSensorMessage*)message)->frontLeft);
+    			sprintf(outgoing + strlen(outgoing), "fr,");
+    			sprintf(outgoing + strlen(outgoing), "%d", ((HallSensorMessage*)message)->frontRight);
+    			sprintf(outgoing + strlen(outgoing), "bl,");
+    			sprintf(outgoing + strlen(outgoing), "%d", ((HallSensorMessage*)message)->backLeft);
+    			sprintf(outgoing + strlen(outgoing), "br,");
+    			sprintf(outgoing + strlen(outgoing), "%d", ((HallSensorMessage*)message)->backRight);
+    			sprintf(outgoing + strlen(outgoing), "\0");
+    			serial_send(outgoing);
     			break;
 
     		// This is the Fuzzy Set output.
