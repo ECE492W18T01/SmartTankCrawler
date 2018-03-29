@@ -504,7 +504,10 @@ static void CollisionTask (void *p_arg)
 		for(int i = 0; i < DISTANCE_SAMPLES; i++ ){
 			 circular_buffer_get_nth(distance_buffer, &last_n_distances[i], i);
 		}
+		uint8_t latestVal = 0;
+		circular_buffer_get_nth(distance_buffer, &latestVal, 0);
 
+		MoveBackServo(latestVal);
 		int sample_count = 0;
 		int iteration_count = 1;
 		int avg_distance = 0;

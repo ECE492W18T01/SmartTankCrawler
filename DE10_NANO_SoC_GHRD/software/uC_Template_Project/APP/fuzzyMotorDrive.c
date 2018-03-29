@@ -7,10 +7,10 @@ void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, float* motorVa
 	if (stopMask){
 		// using Brian's wrapper function for the motors
 		// kill power to motors (give no PWM signal to wheels)
-		update_motor_control(kill, FRONT_LEFT_MOTOR );
-		update_motor_control(kill, FRONT_RIGHT_MOTOR);
-		update_motor_control(kill, REAR_LEFT_MOTOR  );
-		update_motor_control(kill, REAR_RIGHT_MOTOR );
+		motorVals[0] = 0;
+		motorVals[1] = 0;
+		motorVals[2] = 0;
+		motorVals[3] = 0;
 		return;
 	}
 
