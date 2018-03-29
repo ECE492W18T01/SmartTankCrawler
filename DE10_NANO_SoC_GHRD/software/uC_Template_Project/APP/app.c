@@ -886,26 +886,21 @@ static void LogTask (void *p_arg)
     	if (incoming->error == OS_ERR_NONE) {
     		// This is a standard message
     		outgoing = OSMemGet(LargeMemoryStorage, &err);
-    		sprintf(outgoing, "*,");
 
     		switch (incoming->messageType) {
 
     		// This is the Hall Sensor Differences. E.g. number of edges per wheel in the interval.
     		case HALL_SENSOR_MESSAGE:
-
+    		{ "fl":0, "fr":0, "bl":0, "br":0, "srv":0 }
     			message = (HallSensorMessage*)(incoming->message);
     			// Send the details:
-    			sprintf(outgoing + strlen(outgoing), "srv;");
-    			sprintf(outgoing + strlen(outgoing), "%d,", HALL_SENSOR_MESSAGE);
-    			sprintf(outgoing + strlen(outgoing), "fl;");
-    			sprintf(outgoing + strlen(outgoing), "%d,", ((HallSensorMessage*)message)->frontLeft);
-    			sprintf(outgoing + strlen(outgoing), "fr;");
-    			sprintf(outgoing + strlen(outgoing), "%d,", ((HallSensorMessage*)message)->frontRight);
-    			sprintf(outgoing + strlen(outgoing), "bl;");
-    			sprintf(outgoing + strlen(outgoing), "%d,", ((HallSensorMessage*)message)->backLeft);
-    			sprintf(outgoing + strlen(outgoing), "br;");
-    			sprintf(outgoing + strlen(outgoing), "%d,", ((HallSensorMessage*)message)->backRight);
-    			sprintf(outgoing + strlen(outgoing), "\0");
+    			sprintf(outgoing + strlen(outgoing), "*,{ ");
+    			sprintf(outgoing + strlen(outgoing), "srv:%d, ", HALL_SENSOR_MESSAGE);
+    			sprintf(outgoing + strlen(outgoing), "fl:%d, ", ((HallSensorMessage*)message)->frontLeft);
+    			sprintf(outgoing + strlen(outgoing), "fr:%d, ", ((HallSensorMessage*)message)->frontRight);
+    			sprintf(outgoing + strlen(outgoing), "bl:%d, ", ((HallSensorMessage*)message)->backLeft);
+    			sprintf(outgoing + strlen(outgoing), "br:%d, ", ((HallSensorMessage*)message)->backRight);
+    			sprintf(outgoing + strlen(outgoing), "},\0");
     			serial_send(outgoing);
     			// example: *,srv;1,fl;0,fr;0,bl;0,br;0,
     			break;
