@@ -70,6 +70,11 @@ ALT_STATUS_CODE uart0_fifo_clear_rx(void){
 	return status;
 }
 
+ALT_STATUS_CODE uart0_fifo_clear_tx(void){
+	ALT_STATUS_CODE status  = alt_16550_fifo_clear_tx(&g_uart0_handle);
+	return status;
+}
+
 ALT_STATUS_CODE uart0_uninit(void) {
 
 	ALT_STATUS_CODE status = 0;

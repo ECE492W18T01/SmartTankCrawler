@@ -3,7 +3,7 @@ Circular buffer code from:
 https://embeddedartistry.com/blog/2017/4/6/circular-buffers-in-cc
 */
 
-#include "circular_buf_uint8_t.h"
+#include "circular_buf_position.h"
 #include <stdbool.h>
 
 int circular_buf_reset(circular_buf_uint8_t * cbuf)

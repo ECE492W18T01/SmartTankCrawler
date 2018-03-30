@@ -43,6 +43,7 @@ ALT_STATUS_CODE uart0_print(const char *in_str);
 int uart0_printf(const char *fmt, ...);
 int uart0_getc(void);
 ALT_STATUS_CODE uart0_fifo_clear_rx(void);
+ALT_STATUS_CODE uart0_fifo_clear_tx(void);
 ALT_STATUS_CODE uart0_gets(char * buffer, uint32_t* fifo_level,  int max);
 
 #endif /* UART0_SUPPORT_H_ */

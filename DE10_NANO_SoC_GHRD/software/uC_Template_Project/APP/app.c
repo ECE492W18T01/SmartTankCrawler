@@ -85,13 +85,13 @@
 *                              Priority Definitions and Task Stack Size
 *********************************************************************************************************
 */
-#define APP_TASK_PRIO 3
-#define EMERGENCY_TASK_PRIORITY 6
+#define APP_TASK_PRIO 4
+#define EMERGENCY_TASK_PRIORITY 5
 #define COLLISION_TASK_PRIO 7
 #define MOTOR_TASK_PRIO 8
 #define FUZZY_TASK_PRIO 9
 #define COMMUNICATION_TASK_PRIO 10
-#define LOG_TASK_PRIO 4
+#define LOG_TASK_PRIO 11
 #define TOGGLE_TASK_PRIO 12           // maybe change later to higher prio, if necessary
 
 #define TASK_STACK_SIZE 4096
@@ -881,28 +881,26 @@ static void LogTask (void *p_arg)
 
     for(;;) {
     	incoming = (LogMessage*)OSQPend(LogQueue, 0, &err);
-
+    	outgoing = OSMemGet(LargeMemoryStorage, &err);
 
     	if (incoming->error == OS_ERR_NONE) {
     		// This is a standard message
-    		outgoing = OSMemGet(LargeMemoryStorage, &err);
+
 
     		switch (incoming->messageType) {
 
     		// This is the Hall Sensor Differences. E.g. number of edges per wheel in the interval.
     		case HALL_SENSOR_MESSAGE:
-    		{ "fl":0, "fr":0, "bl":0, "br":0, "srv":0 }
     			message = (HallSensorMessage*)(incoming->message);
     			// Send the details:
-    			sprintf(outgoing + strlen(outgoing), "*,{ ");
+    			sprintf(outgoing + strlen(outgoing), "%s{ ", MESSAGE_START_STR );
     			sprintf(outgoing + strlen(outgoing), "srv:%d, ", HALL_SENSOR_MESSAGE);
     			sprintf(outgoing + strlen(outgoing), "fl:%d, ", ((HallSensorMessage*)message)->frontLeft);
     			sprintf(outgoing + strlen(outgoing), "fr:%d, ", ((HallSensorMessage*)message)->frontRight);
     			sprintf(outgoing + strlen(outgoing), "bl:%d, ", ((HallSensorMessage*)message)->backLeft);
-    			sprintf(outgoing + strlen(outgoing), "br:%d, ", ((HallSensorMessage*)message)->backRight);
-    			sprintf(outgoing + strlen(outgoing), "},\0");
+    			sprintf(outgoing + strlen(outgoing), "br:%d ", ((HallSensorMessage*)message)->backRight);
+    			sprintf(outgoing + strlen(outgoing), "}%s", MESSAGE_END_STR);
     			serial_send(outgoing);
-    			// example: *,srv;1,fl;0,fr;0,bl;0,br;0,
     			break;
 
     		// This is the Fuzzy Set output.
@@ -942,7 +940,9 @@ static void LogTask (void *p_arg)
 //    		incoming->error;		// error is the error code thrown
 
     	};
+    	OSMemPut(StandardMemoryStorage, incoming->message);
     	OSMemPut(StandardMemoryStorage, incoming);
+    	OSMemPut(StandardMemoryStorage, outgoing);
     }
 
 

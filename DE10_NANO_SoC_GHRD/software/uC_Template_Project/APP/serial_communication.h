@@ -18,7 +18,9 @@
 
 #define START_CHARACTER '*'
 #define STOP_CHARACTER '&'
+#define MESSAGE_START_STR "!"
 #define MESSAGE_END_CHAR '\r'
+#define MESSAGE_END_STR "\r"
 #define ACKNOWLEDGE_STR "@"
 #define DELIMINATING_STR ","
 
