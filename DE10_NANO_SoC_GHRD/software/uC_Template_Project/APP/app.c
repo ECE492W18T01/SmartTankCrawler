@@ -804,8 +804,6 @@ static void FuzzyTask (void *p_arg) {
 static void CommunicationTask (void *p_arg)
 {
 	INT8U err;
-//	char *TaskName = "CommunicationTask";
-	char localCopy[100];
 
 	communications_established = false;
 	//Get memory IncomingMessageStorage-->incomingMessage
@@ -814,7 +812,6 @@ static void CommunicationTask (void *p_arg)
     for(;;) {
 
     	OSSemPend(RxDataAvailableSemaphore, 0, &err);
-
     	if (err == OS_ERR_TIMEOUT) {
     		err = OS_ERR_NONE;
     		// set motor values to 0
@@ -866,7 +863,7 @@ static void CommunicationTask (void *p_arg)
     		// TO-DO: Parse
 
     	} else {
-    		; //Send to log through function
+    		OSQPost(LogQueue, CreateErrorMessage(COMMUNICATION_TASK, OS_SEM_PEND, err));
     	}
     }
 }
@@ -877,29 +874,29 @@ static void LogTask (void *p_arg)
 	INT8U err;
 	LogMessage *incoming;
 	void *message;
-	char *outgoing;
+	char *outgoing = OSMemGet(LargeMemoryStorage, &err);
 
     for(;;) {
     	incoming = (LogMessage*)OSQPend(LogQueue, 0, &err);
-    	outgoing = OSMemGet(LargeMemoryStorage, &err);
+    	bzero(outgoing, 256);
 
     	if (incoming->error == OS_ERR_NONE) {
     		// This is a standard message
-
 
     		switch (incoming->messageType) {
 
     		// This is the Hall Sensor Differences. E.g. number of edges per wheel in the interval.
     		case HALL_SENSOR_MESSAGE:
     			message = (HallSensorMessage*)(incoming->message);
-    			// Send the details:
+    			// Format the message as a JSON item.
     			sprintf(outgoing + strlen(outgoing), "%s{ ", MESSAGE_START_STR );
-    			sprintf(outgoing + strlen(outgoing), "srv:%d, ", HALL_SENSOR_MESSAGE);
-    			sprintf(outgoing + strlen(outgoing), "fl:%d, ", ((HallSensorMessage*)message)->frontLeft);
-    			sprintf(outgoing + strlen(outgoing), "fr:%d, ", ((HallSensorMessage*)message)->frontRight);
-    			sprintf(outgoing + strlen(outgoing), "bl:%d, ", ((HallSensorMessage*)message)->backLeft);
-    			sprintf(outgoing + strlen(outgoing), "br:%d ", ((HallSensorMessage*)message)->backRight);
-    			sprintf(outgoing + strlen(outgoing), "}%s", MESSAGE_END_STR);
+    			sprintf(outgoing + strlen(outgoing), "MessageType: %d , MessageData : { ", HALL_SENSOR_MESSAGE );
+    			sprintf(outgoing + strlen(outgoing), "fl : %d, ", ((HallSensorMessage*)message)->frontLeft);
+    			sprintf(outgoing + strlen(outgoing), "fr : %d, ", ((HallSensorMessage*)message)->frontRight);
+    			sprintf(outgoing + strlen(outgoing), "bl : %d, ", ((HallSensorMessage*)message)->backLeft);
+    			sprintf(outgoing + strlen(outgoing), "br : %d ", ((HallSensorMessage*)message)->backRight);
+    			sprintf(outgoing + strlen(outgoing), "} }%s", MESSAGE_END_STR);
+    			// Send the message to the Pi.
     			serial_send(outgoing);
     			break;
 
@@ -907,17 +904,21 @@ static void LogTask (void *p_arg)
     		case MOTOR_CHANGE_MESSAGE:
 
     	    	message = (MotorChangeMessage*)(incoming->message);
-    	    	// Send the details:
-//    	    	((MotorChangeMessage*)message)->frontLeft;
-//    	    	((MotorChangeMessage*)message)->frontRight;
-//    	    	((MotorChangeMessage*)message)->backLeft;
-//    	    	((MotorChangeMessage*)message)->backRight;
-//    	    	((MotorChangeMessage*)message)->steeringServo;
+    	    	// Format the message as a JSON item.
+    	    	sprintf(outgoing + strlen(outgoing), "%s{ ", MESSAGE_START_STR );
+    	    	sprintf(outgoing + strlen(outgoing), "MessageType: %d , MessageData : { ", MOTOR_CHANGE_MESSAGE );
+    	    	sprintf(outgoing + strlen(outgoing), "fl : %f, ", ((MotorChangeMessage*)message)->frontLeft);
+    	    	sprintf(outgoing + strlen(outgoing), "fr : %f, ", ((MotorChangeMessage*)message)->frontRight);
+    	    	sprintf(outgoing + strlen(outgoing), "bl : %f, ", ((MotorChangeMessage*)message)->backLeft);
+    	    	sprintf(outgoing + strlen(outgoing), "br : %f, ", ((MotorChangeMessage*)message)->backRight);
+    	    	sprintf(outgoing + strlen(outgoing), "sS : %d ", ((MotorChangeMessage*)message)->steeringServo);
+    	    	sprintf(outgoing + strlen(outgoing), "} }%s", MESSAGE_END_STR);
+    	    	// Send the message to the Pi.
+    	    	serial_send(outgoing);
     			break;
 
     		// These are the values being sent to the FPGA.
     		case MOTOR_OUTPUT_MESSAGE:
-    			message = (MotorChangeMessage*)(incoming->message);
 
     			break;
 
@@ -931,18 +932,24 @@ static void LogTask (void *p_arg)
     			// Should never get here...
     			break;
     		}
+
+    	// Put back the embedded message memory after using it above.
+    	OSMemPut(StandardMemoryStorage, incoming->message);
+
     	} else {
     		// This is an error message
-
-    		// Send the details:
-//    		incoming->taskID;		// task name is where there was an error thrown
-//    		incoming->sourceID;	// source name is the source of the function that threw the error
-//    		incoming->error;		// error is the error code thrown
-
+    		// Format the message as a JSON item.
+    		sprintf(outgoing + strlen(outgoing), "%s{ ", MESSAGE_START_STR );
+    		sprintf(outgoing + strlen(outgoing), "MessageType: %d , MessageData : { ", ERROR_MESSAGE );
+    		sprintf(outgoing + strlen(outgoing), "taskID : %d, ", incoming->taskID);
+    		sprintf(outgoing + strlen(outgoing), "sourceID : %d, ", incoming->sourceID);
+    		sprintf(outgoing + strlen(outgoing), "error : %d ", incoming->error);
+    		sprintf(outgoing + strlen(outgoing), "} }%s", MESSAGE_END_STR);
+    		// Send the message to the Pi.
+    		serial_send(outgoing);
     	};
-    	OSMemPut(StandardMemoryStorage, incoming->message);
+    	// Put back the incoming message memory. The embedded message was put back above.
     	OSMemPut(StandardMemoryStorage, incoming);
-    	OSMemPut(StandardMemoryStorage, outgoing);
     }
 
 
@@ -971,7 +978,5 @@ static void ToggleTask(void *p_arg)
     	    OSSemPost(FuzzyToggleSemaphore);
     	}
     	EnableFuzzy = alt_read_word(SW_BASE);
-
-
     }
 }
