@@ -161,15 +161,17 @@ OS_EVENT *MaskSemaphore;
 OS_EVENT *CommunicationSemaphore;
 OS_EVENT *RxDataAvailableSemaphore;
 OS_EVENT *UserSemaphore;
-OS_EVENT *FuzzyToggleSemaphore;
+OS_EVENT *ToggleSemaphore;
 OS_EVENT *SonarDataAvailableSemaphore;
 
 // Resources
 int8_t userSteer;
 float userMag;
 int8_t globalSteeringAngle;
-bool FuzzyToggle = true;          //starting true, flip the switch to turn off
+bool FuzzyToggle = true;          //starting true, flip the switch to turn off fuzzy logic
+bool SonarToggle = true;          //starting true, flip the switch to turn off sonar
 bool motorMask = false;
+int testingGlobal = 0;            // testing
 char* userMessage;
 circular_buf_uint8_t* distance_buffer;
 circular_buf_uint8_t* velocity_buffer;
@@ -277,7 +279,7 @@ int main ()
     CommunicationSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
     RxDataAvailableSemaphore = OSSemCreate(0);	// Turn flag on when interrupt writes
     SonarDataAvailableSemaphore = OSSemCreate(0);// Turn flag on when interrupt writes
-    FuzzyToggleSemaphore = OSSemCreate(1);      // One Shared resource
+    ToggleSemaphore = OSSemCreate(1);      // One shared resource
 
     // Initialize the Memory.
     INT8U err;
@@ -497,58 +499,64 @@ static void CollisionTask (void *p_arg)
 
     for(;;) {
 
-		OSSemPend(SonarDataAvailableSemaphore, 0, &err);
-		CPU_CRITICAL_ENTER();
-		uint8_t last_n_distances[DISTANCE_SAMPLES] = {0};
-		for(int i = 0; i < DISTANCE_SAMPLES; i++ ){
-			 circular_buffer_get_nth(distance_buffer, &last_n_distances[i], i);
-		}
-		CPU_CRITICAL_EXIT();
-		uint8_t latest_distance_sample = 0;
-		uint8_t offset_distance_sample = 0;
+    	OSSemPend(SonarDataAvailableSemaphore, 0, &err);
+    	CPU_CRITICAL_ENTER();
+   		uint8_t last_n_distances[DISTANCE_SAMPLES] = {0};
+   		for(int i = 0; i < DISTANCE_SAMPLES; i++ ){
+   			circular_buffer_get_nth(distance_buffer, &last_n_distances[i], i);
+   		}
 
-		// find the most recent valid distance
-		// (actually current - 1)
-		int latest_index = 1;
-		int offset_index = latest_index + SAMPLE_OFFSET;
+    	CPU_CRITICAL_EXIT();
+    	uint8_t latest_distance_sample = 0;
+    	uint8_t offset_distance_sample = 0;
+    	// do core calculations for Sonar
+    	if(true){
+    		// find the most recent valid distance
+    		// (actually current - 1)
+    		int latest_index = 1;
+    		int offset_index = latest_index + SAMPLE_OFFSET;
 
-		while(offset_index < (DISTANCE_SAMPLES - SAMPLE_OFFSET -1)){
-			if(sample_window_validator(last_n_distances[latest_index -1],last_n_distances[latest_index],last_n_distances[latest_index + 1]) &&
-					sample_window_validator(last_n_distances[offset_index -1],last_n_distances[offset_index],last_n_distances[offset_index + 1])){
-					// valid sample pair found
-				latest_distance_sample = sample_window_avg(last_n_distances[latest_index -1], last_n_distances[latest_index], last_n_distances[latest_index + 1]);
-				offset_distance_sample = sample_window_avg(last_n_distances[offset_index -1], last_n_distances[offset_index], last_n_distances[offset_index + 1]);
-				break;
-			}else{
-				latest_index++;
-				offset_index++;
+    		while(offset_index < (DISTANCE_SAMPLES - SAMPLE_OFFSET -1)){
+    			if(sample_window_validator(last_n_distances[latest_index -1],last_n_distances[latest_index],last_n_distances[latest_index + 1]) &&
+    					sample_window_validator(last_n_distances[offset_index -1],last_n_distances[offset_index],last_n_distances[offset_index + 1])){
+						// valid sample pair found
+    				latest_distance_sample = sample_window_avg(last_n_distances[latest_index -1], last_n_distances[latest_index], last_n_distances[latest_index + 1]);
+    				offset_distance_sample = sample_window_avg(last_n_distances[offset_index -1], last_n_distances[offset_index], last_n_distances[offset_index + 1]);
+    				break;
+    			}else{
+    				latest_index++;
+    				offset_index++;
 
-			}
-		}
+    			}
+    		}
 
-		// calculate the delta between current and offset
-		int position_delta =  offset_distance_sample - latest_distance_sample;
+    		// calculate the delta between current and offset
+    		int position_delta =  offset_distance_sample - latest_distance_sample;
 
-		// if change is too small disregard
-		if(abs(position_delta) < MIN_DETECTABLE_CHANGE){
-			position_delta = 0;
-		}
+    		// if change is too small disregard
+    		if(abs(position_delta) < MIN_DETECTABLE_CHANGE){
+    			position_delta = 0;
+    		}
 
-		// velocity in inches per second
-		float velocity = (float) position_delta * (1/(SONAR_INTERUPT_PERIOD * SAMPLE_OFFSET));
-
-		//printf("Distance: %i, Delta: %i ,Velocity: %.6f\n", latest_distance_sample, position_delta, velocity);
-		if (err == OS_ERR_NONE)
-		{
-			/*
-			 * You have received a distance measurement. TODO: Implement
-			 */
-		} else {
-			OSQPost(LogQueue, CreateErrorMessage(COLLISION_TASK, OS_Q_PEND, err));
-        }
+    		// velocity in inches per second
+    		float velocity = (float) position_delta * (1/(SONAR_INTERUPT_PERIOD * SAMPLE_OFFSET));
+    		//printf("Distance: %i, Delta: %i ,Velocity: %.6f\n", latest_distance_sample, position_delta, velocity);
+    	}
+    	// If toggle is off then don't do calculations
+    	else{
+    		//Do nothing for the moment
+    	    testingGlobal = 1;
+    	}
+    	if (err == OS_ERR_NONE)
+    	{
+    		/*
+    		 * You have received a distance measurement. TODO: Implement
+    		 */
+    	} else {
+    		OSQPost(LogQueue, CreateErrorMessage(COLLISION_TASK, OS_Q_PEND, err));
+    	}
     }
 }
-
 /*
  * Motor Task
  * Responsible for accruing information from other tasks and sending output
@@ -959,24 +967,56 @@ static void ToggleTask(void *p_arg)
 {
 
 	INT8U err; //, send_err;
-	bool EnableFuzzy = alt_read_byte(SW_BASE) % 2;
-
+	int EnableFuzzy = alt_read_byte(SW_BASE) ;
+	// Switch readings
+	// 0 = fuzzy logic on and sonar on
+	// 1 = fuzzy logic off and sonar on
+	// 2 = fuzzy logic on and sonar off
+	// 3 = fuzzy logic off and sonar off
     for(;;) {
-
-    	// lights will be on if the fuzzy logic is on, and off if fuzzy logic is off
+    	// top half of lights will turn on if fuzzy logic is on
+    	// bottom half of lights will turn on if sonar is on
     	OSTimeDlyHMSM(0,0,0,50);
     	if(EnableFuzzy == 0){
     		alt_write_byte(LEDR_BASE, 0xff);
-    		OSSemPend(FuzzyToggleSemaphore, 0, &err);
+    		OSSemPend(ToggleSemaphore, 0, &err);
     		FuzzyToggle = true;
-    		OSSemPost(FuzzyToggleSemaphore);
+    		SonarToggle = true;
+    		OSSemPost(ToggleSemaphore);
+    	}
+
+    	else if(EnableFuzzy == 1 ){
+    		alt_write_byte(LEDR_BASE, 0xf0);
+    		OSSemPend(ToggleSemaphore, 0, &err);
+    	    FuzzyToggle = false;
+    	    SonarToggle = true;
+    	    OSSemPost(ToggleSemaphore);
+    	}
+
+    	else if(EnableFuzzy == 2){
+    		alt_write_byte(LEDR_BASE, 0x0f);
+    		OSSemPend(ToggleSemaphore, 0, &err);
+    	    FuzzyToggle = true;
+  	   	    SonarToggle = false;
+       	    OSSemPost(ToggleSemaphore);
+
+    	}
+    	else if(EnableFuzzy == 3){
+    		alt_write_byte(LEDR_BASE, 0x00);
+    		OSSemPend(ToggleSemaphore, 0, &err);
+    		FuzzyToggle = false;
+       	    SonarToggle = false;
+       	    OSSemPost(ToggleSemaphore);
+
     	}
     	else{
     		alt_write_byte(LEDR_BASE, 0x00);
-    		OSSemPend(FuzzyToggleSemaphore, 0, &err);
-    	    FuzzyToggle = false;
-    	    OSSemPost(FuzzyToggleSemaphore);
+    		OSSemPend(ToggleSemaphore, 0, &err);
+    		FuzzyToggle = false;
+    		SonarToggle = false;
+    		OSSemPost(ToggleSemaphore);
     	}
     	EnableFuzzy = alt_read_word(SW_BASE);
+    	printf("%d CollisionTask state\n", testingGlobal);
     }
 }
