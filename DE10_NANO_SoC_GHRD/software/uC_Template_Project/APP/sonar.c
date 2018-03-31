@@ -78,7 +78,19 @@ int weighted_avg(int num,...){
    for (int i = 0; i < num; i++) {
 	   sum += va_arg(valist, int) * (num - i);
    }
+
+   va_end ( valist );
    return sum/divisor;
+
+}
+
+// distance required to stop at a given v
+int distance_to_stop(int velocity){
+	if(velocity <= 0)
+		return 0;
+
+	float dist_to_stop = pow(velocity,2) / (2* GRAVITY_CONSTANT *FICTION_COEFFICIENT);
+	return (int) ceil(dist_to_stop);
 
 }
 

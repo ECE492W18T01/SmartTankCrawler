@@ -554,10 +554,11 @@ static void CollisionTask (void *p_arg)
 		for(int i = 0; i < N_VELOCITES_TO_AVG; i++)
 			vel_circular_buffer_get_nth(velocity_buffer, &last_n_velocities[i], i);
 
-		int moving_avg_velocity = weighted_avg(last_n_velocities[0], last_n_velocities[1],last_n_velocities[2],
-													last_n_velocities[3], last_n_velocities[4]);
+		int moving_avg_velocity = weighted_avg(N_VELOCITES_TO_AVG,last_n_velocities[0], last_n_velocities[1],last_n_velocities[2]);
 
-		printf("D: %i, V: %i, MAV: %i\n",latest_distance_sample, cutoff_velocity, moving_avg_velocity);
+		int estimated_stopping_distance = distance_to_stop(moving_avg_velocity);
+
+		printf("D: %i, V: %i, MAV: %i, SD: %i\n",latest_distance_sample, cutoff_velocity, moving_avg_velocity, estimated_stopping_distance);
 
 
 
