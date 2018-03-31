@@ -37,8 +37,17 @@ void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id) {
 
 	INT8U err;
 	uint8_t dist = alt_read_word(SONAR_BASE);
-	dist_circular_buf_put(distance_buffer,dist);
 
+	// if no object is detected then set distance to maximum
+	if(dist == 0){
+		dist = MAXIMUM_DETECTABLE_DISTANCE;
+	}
+
+	// sonar measurements cannot be lower than MINIMUM_DETECTABLE_DISTANCE
+	if(dist < MINIMUM_DETECTABLE_DISTANCE){
+		dist = MINIMUM_DETECTABLE_DISTANCE;
+	}
+	dist_circular_buf_put(distance_buffer,dist);
 
 	OSSemPost(SonarDataAvailableSemaphore);
 	ARM_OSCL_TIMER_1_REG_EOI;
@@ -72,4 +81,5 @@ int weighted_avg(int num,...){
    return sum/divisor;
 
 }
+
 
