@@ -46,14 +46,7 @@ char serial_getc(){
 }
 
 int serial_send(char * print_str){
-	 uart0_printf("%s", print_str);
-    // clear TX buffer
-	 ALT_STATUS_CODE status = uart0_fifo_clear_tx();
-	 if(status == ALT_E_SUCCESS){
-		 return 1;
-	 }else{
-		 return 0;
-	 }
+	 return uart0_printf("%s", print_str);
 }
 
 incoming_msg parse_incomming_msg(char * msg){

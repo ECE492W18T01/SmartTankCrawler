@@ -1,9 +1,9 @@
 // circular buffer implementation from: https://embeddedartistry.com/blog/2017/4/6/circular-buffers-in-cc
 // Adapted by Brian Ofrim
-#include "circular_buf_position.h"
+#include "circular_buf_velocity.h"
 #include <stdbool.h>
 
-int dist_circular_buf_reset(circular_buf_position * cbuf)
+int vel_circular_buf_reset(circular_buf_velocity * cbuf)
 {
     int r = -1;
 
@@ -17,17 +17,17 @@ int dist_circular_buf_reset(circular_buf_position * cbuf)
     return r;
 }
 
-void dist_circular_buf_init(circular_buf_position * cbuf){
+void vel_circular_buf_init(circular_buf_velocity * cbuf){
 	cbuf->head = 0;
 	cbuf->tail = 0;
-	cbuf->size = DISTANCE_HISTORY_LENGTH;
-    for (int i = 0; i < DISTANCE_HISTORY_LENGTH; i++) {
+	cbuf->size = VELOCITY_HISTORY_LENGTH;
+    for (int i = 0; i < VELOCITY_HISTORY_LENGTH; i++) {
     	cbuf->values[i] = 0;
     }
 }
 
 
-int dist_circular_buf_put(circular_buf_position * cbuf, uint8_t data)
+int vel_circular_buf_put(circular_buf_velocity * cbuf, int8_t data)
 {
     int r = -1;
 
@@ -48,11 +48,11 @@ int dist_circular_buf_put(circular_buf_position * cbuf, uint8_t data)
 }
 
 
-int dist_circular_buf_get(circular_buf_position * cbuf, uint8_t * data)
+int vel_circular_buf_get(circular_buf_velocity * cbuf, int8_t * data)
 {
     int r = -1;
 
-    if(cbuf && data && !dist_circular_buf_empty(*cbuf))
+    if(cbuf && data && !vel_circular_buf_empty(*cbuf))
     {
         *data = cbuf->values[cbuf->tail];
         cbuf->tail = (cbuf->tail + 1) % cbuf->size;
@@ -64,16 +64,16 @@ int dist_circular_buf_get(circular_buf_position * cbuf, uint8_t * data)
 }
 
 // made by Brian Ofrim
-int dist_circular_buffer_get_nth(circular_buf_position * cbuf, uint8_t * data, int nth){
+int vel_circular_buffer_get_nth(circular_buf_velocity * cbuf, int8_t * data, int nth){
     int r = -1;
-    nth = nth % (DISTANCE_HISTORY_LENGTH-1);
-    if(cbuf && data && !dist_circular_buf_empty(*cbuf))
+    nth = nth % (VELOCITY_HISTORY_LENGTH-1);
+    if(cbuf && data && !vel_circular_buf_empty(*cbuf))
     {
 
     	int headNthDelta = cbuf->head - nth;
 
     	if(headNthDelta<0){
-    		headNthDelta += DISTANCE_HISTORY_LENGTH; // wrap around
+    		headNthDelta += VELOCITY_HISTORY_LENGTH; // wrap around
     	}
 
     	*data = cbuf->values[headNthDelta];
@@ -84,13 +84,13 @@ int dist_circular_buffer_get_nth(circular_buf_position * cbuf, uint8_t * data, i
 }
 
 
-bool dist_circular_buf_empty(circular_buf_position cbuf)
+bool vel_circular_buf_empty(circular_buf_velocity cbuf)
 {
     // We define empty as head == tail
     return (cbuf.head == cbuf.tail);
 }
 
-bool dist_circular_buf_full(circular_buf_position cbuf)
+bool vel_circular_buf_full(circular_buf_velocity cbuf)
 {
     // We determine "full" case by head being one position behind the tail
     // Note that this means we are wasting one space in the buffer!

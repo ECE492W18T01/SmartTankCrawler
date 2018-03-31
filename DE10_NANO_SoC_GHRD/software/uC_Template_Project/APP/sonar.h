@@ -4,6 +4,7 @@
 #include <cpu.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <math.h>
 #include "fpga_to_hps.h"
 #include <circular_buf_position.h>
 
@@ -16,8 +17,10 @@
 
 void InitDistanceSensorInterrupt (void);
 void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id);
-bool sample_window_validator(uint8_t next,uint8_t current, uint8_t previous);
+bool dist_sample_window_validator(uint8_t next,uint8_t current, uint8_t previous);
 int sample_window_avg(uint8_t next, uint8_t current, uint8_t previous);
+int weighted_avg(int num,...);
+
 
 #define OSCL1_TICKS_PER_50MS 1250000
 #define SONAR_INTERUPT_PERIOD 0.05
@@ -28,5 +31,12 @@ int sample_window_avg(uint8_t next, uint8_t current, uint8_t previous);
 #define MINIMUM_DETECTABLE_DISTANCE 6
 #define MAXIMUM_DETECTABLE_DISTANCE 254
 
+#define INT8_T_ABS_MAX 127
+
+#define N_VELOCITES_TO_AVG 5
+
+#define SIGN_OF(val) ((val < 0 ? -1 : 1))
+
+#define LIMIT_VALUE_SIGNED(val, max) ((abs(val) <= abs(max)) ? val: (abs(max) * SIGN_OF(val)))
 
 #endif

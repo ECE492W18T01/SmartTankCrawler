@@ -74,6 +74,10 @@
 #include "timer.h"
 #include "sonar.h"
 
+// From ../UTIL
+#include <circular_buf_position.h>
+#include <circular_buf_velocity.h>
+
 // Added in to get OS_ENTER/EXIT_CRITCAL working
 // Taken from os_mem.c
 #if OS_CRITICAL_METHOD == 3u                          /* Allocate storage for CPU status register      */
@@ -171,8 +175,8 @@ int8_t globalSteeringAngle;
 bool FuzzyToggle = true;          //starting true, flip the switch to turn off
 bool motorMask = false;
 char* userMessage;
-circular_buf_uint8_t* distance_buffer;
-circular_buf_uint8_t* velocity_buffer;
+circular_buf_position* distance_buffer;
+circular_buf_velocity* velocity_buffer;
 
 /* To access steering Angle:
 OSSemPend(SteeringSemaphore, 0, &err);
@@ -234,7 +238,7 @@ int main ()
 
     BSP_WatchDog_Reset();                                       /* Reset the watchdog as soon as possible.              */
 
-                                                                /* Scatter loading is complete. Now the caches can be activated.*/
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                /* Scatter loading is complete. Now the caches can be activated.*/
     BSP_BranchPredictorEn();                                    /* Enable branch prediction.                            */
     BSP_L2C310Config();                                         /* Configure the L2 cache controller.                   */
     BSP_CachesEn();                                             /* Enable L1 I&D caches + L2 unified cache.             */
@@ -298,11 +302,11 @@ int main ()
         ; /* Handle error. */
     }
 
-    distance_buffer = (circular_buf_uint8_t*)OSMemGet(LargeMemoryStorage, &err);
-    circular_buf_init(distance_buffer);
+    distance_buffer = (circular_buf_position*)OSMemGet(LargeMemoryStorage, &err);
+    dist_circular_buf_init(distance_buffer);
 
-    velocity_buffer = (circular_buf_uint8_t*)OSMemGet(LargeMemoryStorage, &err);
-    circular_buf_init(velocity_buffer);
+    velocity_buffer = (circular_buf_velocity*)OSMemGet(LargeMemoryStorage, &err);
+    vel_circular_buf_init(velocity_buffer);
 
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
@@ -498,12 +502,14 @@ static void CollisionTask (void *p_arg)
     for(;;) {
 
 		OSSemPend(SonarDataAvailableSemaphore, 0, &err);
+
 		CPU_CRITICAL_ENTER();
 		uint8_t last_n_distances[DISTANCE_SAMPLES] = {0};
-		for(int i = 0; i < DISTANCE_SAMPLES; i++ ){
-			 circular_buffer_get_nth(distance_buffer, &last_n_distances[i], i);
-		}
+		for(int i = 0; i < DISTANCE_SAMPLES; i++ )
+			 dist_circular_buffer_get_nth(distance_buffer, &last_n_distances[i], i);
+
 		CPU_CRITICAL_EXIT();
+
 		uint8_t latest_distance_sample = 0;
 		uint8_t offset_distance_sample = 0;
 
@@ -513,8 +519,8 @@ static void CollisionTask (void *p_arg)
 		int offset_index = latest_index + SAMPLE_OFFSET;
 
 		while(offset_index < (DISTANCE_SAMPLES - SAMPLE_OFFSET -1)){
-			if(sample_window_validator(last_n_distances[latest_index -1],last_n_distances[latest_index],last_n_distances[latest_index + 1]) &&
-					sample_window_validator(last_n_distances[offset_index -1],last_n_distances[offset_index],last_n_distances[offset_index + 1])){
+			if(dist_sample_window_validator(last_n_distances[latest_index -1],last_n_distances[latest_index],last_n_distances[latest_index + 1]) &&
+					dist_sample_window_validator(last_n_distances[offset_index -1],last_n_distances[offset_index],last_n_distances[offset_index + 1])){
 					// valid sample pair found
 				latest_distance_sample = sample_window_avg(last_n_distances[latest_index -1], last_n_distances[latest_index], last_n_distances[latest_index + 1]);
 				offset_distance_sample = sample_window_avg(last_n_distances[offset_index -1], last_n_distances[offset_index], last_n_distances[offset_index + 1]);
@@ -535,9 +541,27 @@ static void CollisionTask (void *p_arg)
 		}
 
 		// velocity in inches per second
-		float velocity = (float) position_delta * (1/(SONAR_INTERUPT_PERIOD * SAMPLE_OFFSET));
+		int velocity = position_delta * (1/(SONAR_INTERUPT_PERIOD * SAMPLE_OFFSET));
 
-		//printf("Distance: %i, Delta: %i ,Velocity: %.6f\n", latest_distance_sample, position_delta, velocity);
+		// velocity cutoff
+		int8_t cutoff_velocity = (int8_t) LIMIT_VALUE_SIGNED(velocity, INT8_T_ABS_MAX);
+
+		//store latest velocity
+		vel_circular_buf_put(velocity_buffer,cutoff_velocity);
+
+		int8_t last_n_velocities[N_VELOCITES_TO_AVG];
+
+		for(int i = 0; i < N_VELOCITES_TO_AVG; i++)
+			vel_circular_buffer_get_nth(velocity_buffer, &last_n_velocities[i], i);
+
+		int moving_avg_velocity = weighted_avg(last_n_velocities[0], last_n_velocities[1],last_n_velocities[2],
+													last_n_velocities[3], last_n_velocities[4]);
+
+		printf("D: %i, V: %i, MAV: %i\n",latest_distance_sample, cutoff_velocity, moving_avg_velocity);
+
+
+
+
 		if (err == OS_ERR_NONE)
 		{
 			/*
@@ -811,16 +835,18 @@ static void CommunicationTask (void *p_arg)
 
     for(;;) {
 
-    	OSSemPend(RxDataAvailableSemaphore, 0, &err);
+    	OSSemPend(RxDataAvailableSemaphore, OS_TICKS_PER_SEC/2, &err);
     	if (err == OS_ERR_TIMEOUT) {
     		err = OS_ERR_NONE;
     		// set motor values to 0
-			incoming_msg *outgoing = OSMemGet(StandardMemoryStorage, &err);
 			OSSemPend(UserSemaphore, 0, &err);
+			if (err != OS_ERR_NONE) OSQPost(LogQueue, CreateErrorMessage(COMMUNICATION_TASK, OS_SEM_PEND, err));
 			userSteer = MOTOR_ZERO;
 			userMag = STEERING_ZERO;
+			communications_established = false;
 			OSSemPost(UserSemaphore);
-    	}else{
+    	}
+    	else if(err == OS_ERR_NONE){
     		// now determine what to do with the incoming message
     		if(communications_established == true){
     			// look for end byte
@@ -837,6 +863,7 @@ static void CommunicationTask (void *p_arg)
 
 					// Post to Semaphore
 					OSSemPend(UserSemaphore, 0, &err);
+					if (err != OS_ERR_NONE) OSQPost(LogQueue, CreateErrorMessage(COMMUNICATION_TASK, OS_SEM_PEND, err));
 					userSteer = new_msg.steering_value;
 					userMag = new_msg.motor_level;
 					OSSemPost(UserSemaphore);
@@ -853,17 +880,6 @@ static void CommunicationTask (void *p_arg)
     				bzero(userMessage, RX_FIFO_SIZE);
     			}
     		}
-    	}
-    	if (err == OS_ERR_NONE)
-    	{
-    	//strncpy(localCopy, userMessage, 100);
-    		// First thing copy to a local version so you're not working off a global variable
-
-    		// I just copy the whole 100 characters. I'm assuming you'll having a parsing scheme
-    		// TO-DO: Parse
-
-    	} else {
-    		OSQPost(LogQueue, CreateErrorMessage(COMMUNICATION_TASK, OS_SEM_PEND, err));
     	}
     }
 }
@@ -895,7 +911,7 @@ static void LogTask (void *p_arg)
     			sprintf(outgoing + strlen(outgoing), "fr : %d, ", ((HallSensorMessage*)message)->frontRight);
     			sprintf(outgoing + strlen(outgoing), "bl : %d, ", ((HallSensorMessage*)message)->backLeft);
     			sprintf(outgoing + strlen(outgoing), "br : %d ", ((HallSensorMessage*)message)->backRight);
-    			sprintf(outgoing + strlen(outgoing), "} }%s", MESSAGE_END_STR);
+    			sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
     			// Send the message to the Pi.
     			serial_send(outgoing);
     			break;
@@ -912,7 +928,7 @@ static void LogTask (void *p_arg)
     	    	sprintf(outgoing + strlen(outgoing), "bl : %f, ", ((MotorChangeMessage*)message)->backLeft);
     	    	sprintf(outgoing + strlen(outgoing), "br : %f, ", ((MotorChangeMessage*)message)->backRight);
     	    	sprintf(outgoing + strlen(outgoing), "sS : %d ", ((MotorChangeMessage*)message)->steeringServo);
-    	    	sprintf(outgoing + strlen(outgoing), "} }%s", MESSAGE_END_STR);
+    	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
     	    	// Send the message to the Pi.
     	    	serial_send(outgoing);
     			break;
@@ -944,7 +960,7 @@ static void LogTask (void *p_arg)
     		sprintf(outgoing + strlen(outgoing), "taskID : %d, ", incoming->taskID);
     		sprintf(outgoing + strlen(outgoing), "sourceID : %d, ", incoming->sourceID);
     		sprintf(outgoing + strlen(outgoing), "error : %d ", incoming->error);
-    		sprintf(outgoing + strlen(outgoing), "} }%s", MESSAGE_END_STR);
+    		sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
     		// Send the message to the Pi.
     		serial_send(outgoing);
     	};

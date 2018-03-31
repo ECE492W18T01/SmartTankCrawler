@@ -1,6 +1,7 @@
 // Created by Brain Ofrim
 #include <lib_def.h>
 #include <math.h>
+#include <stdarg.h>
 
 #include <ucos_ii.h>
 #include "globals.h"
@@ -36,14 +37,14 @@ void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id) {
 
 	INT8U err;
 	uint8_t dist = alt_read_word(SONAR_BASE);
-	circular_buf_put(distance_buffer,dist);
+	dist_circular_buf_put(distance_buffer,dist);
 
 
 	OSSemPost(SonarDataAvailableSemaphore);
 	ARM_OSCL_TIMER_1_REG_EOI;
 }
 
-bool sample_window_validator(uint8_t next, uint8_t current, uint8_t previous){
+bool dist_sample_window_validator(uint8_t next, uint8_t current, uint8_t previous){
 	if(abs(current - next) <= DISTANCE_FILTER_MAX && abs(current - previous) <= DISTANCE_FILTER_MAX ){
 		return true;
 	}
@@ -56,4 +57,19 @@ int sample_window_avg(uint8_t next, uint8_t current, uint8_t previous){
 	return ((next + current + previous) / 3);
 }
 
+
+// modified from https://www.tutorialspoint.com/cprogramming/c_variable_arguments.htm
+int weighted_avg(int num,...){
+	va_list valist;
+	va_start(valist, num);
+	int sum = 0;
+	int divisor = (num*(num + 1))/2;
+   /* initialize valist for num number of arguments */
+
+   for (int i = 0; i < num; i++) {
+	   sum += va_arg(valist, int) * (num - i);
+   }
+   return sum/divisor;
+
+}
 
