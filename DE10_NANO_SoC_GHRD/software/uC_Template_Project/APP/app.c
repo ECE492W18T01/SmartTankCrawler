@@ -569,11 +569,8 @@ static void CollisionTask (void *p_arg)
 		if (stopTally == 3) {
 
 			OS_ENTER_CRITICAL();
+			stop_all_motors();
 			MoveBackServo(BackServoMax);
-			update_motor_control(0, FRONT_LEFT_MOTOR);
-			update_motor_control(0, FRONT_RIGHT_MOTOR);
-			update_motor_control(0, REAR_LEFT_MOTOR);
-			update_motor_control(0, REAR_RIGHT_MOTOR);
 			OS_EXIT_CRITICAL();
 
 			OSSemPend(MaskSemaphore, OS_TICKS_PER_SEC/100, &err);

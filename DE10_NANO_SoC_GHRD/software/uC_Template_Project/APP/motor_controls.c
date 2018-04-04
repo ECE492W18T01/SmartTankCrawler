@@ -7,3 +7,10 @@ void update_motor_control(float drive_val, int motor_position) {
 	//printf("Motor %d: %f, %d\n", motor_position, drive_val, (int8_t)(drive_val * OUTPUT_ABSOLUTE_MAX));
 	alt_write_byte(MOTOR_ADDRESSES[motor_position], (int8_t)(drive_val * OUTPUT_ABSOLUTE_MAX));
 }
+
+void stop_all_motors(){
+	update_motor_control(0, FRONT_LEFT_MOTOR);
+	update_motor_control(0, FRONT_RIGHT_MOTOR);
+	update_motor_control(0, REAR_LEFT_MOTOR);
+	update_motor_control(0, REAR_RIGHT_MOTOR);
+}
