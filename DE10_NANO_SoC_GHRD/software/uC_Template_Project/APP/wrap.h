@@ -53,6 +53,8 @@
 // Steering rod 60 degrees left turn.
 #define FrontServoMax 0x14
 
+#define FrontServoCen 0x0a
+
 // Numerical labels for motors
 #define FRONTLEFT 0
 #define FRONTRIGHT 1

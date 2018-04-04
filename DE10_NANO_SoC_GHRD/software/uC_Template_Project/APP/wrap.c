@@ -18,7 +18,11 @@ void MoveFrontServo(int8_t hex ) {
 	}
 
 	else if (hex >= 60) {
-		alt_write_byte(STEER_SERVO_BASE, 0x00);
+		alt_write_byte(STEER_SERVO_BASE, FrontServoMin);
+	}
+
+	else if (hex < 11 && hex > -11) {
+		alt_write_byte(STEER_SERVO_BASE, FrontServoCen);
 	}
 
 	else {

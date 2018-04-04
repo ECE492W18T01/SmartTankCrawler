@@ -257,7 +257,7 @@ int main ()
     globalSteeringAngle = 0;
     userSteer = 0;
     userMag = 0;
-    MoveFrontServo(globalSteeringAngle);
+    MoveFrontServo(FrontServoCen);
     MoveBackServo(BackServoMin);
 
     //Array of pointers that the Queues will use. Should never be touched again.
@@ -483,12 +483,7 @@ static void EmergencyTask (void *p_arg)
 	//int8_t x = 64;
     for(;;) {
     	OSTimeDlyHMSM(0,0,1,0);
-//    	MoveFrontServo(x);
-//    	x--;
-//    	if (x < -64) {
-//    		x = 64;
-//    	}
-    } //Task does nothing currently
+    }
 }
 
 
@@ -575,6 +570,14 @@ static void CollisionTask (void *p_arg)
 
 			OSSemPend(MaskSemaphore, OS_TICKS_PER_SEC/100, &err);
 			motorMask = true;
+
+			if (err == OS_ERR_NONE) {
+				OSSemPost(MaskSemaphore);
+			}
+
+			OSTimeDlyHMSM(0, 0, 2, 0);
+			OSSemPend(MaskSemaphore, OS_TICKS_PER_SEC/100, &err);
+			motorMask = false;
 
 			if (err == OS_ERR_NONE) {
 				OSSemPost(MaskSemaphore);
@@ -698,6 +701,8 @@ static void MotorTask (void *p_arg)
 			update_motor_control(indMotorVals[3], REAR_RIGHT_MOTOR);
 			OS_EXIT_CRITICAL();
 
+			printf("Steer: %d\n", actualSteeringAngle);
+
 			MotorChangeMessage *mOutput = OSMemGet(StandardMemoryStorage, &err);
 			mOutput->frontLeft = indMotorVals[0];
 			mOutput->frontRight = indMotorVals[1];
@@ -803,11 +808,11 @@ static void FuzzyTask (void *p_arg) {
                 outgoing.backRight = fuzzyOutput[3];
                 outgoing.steeringServo = fuzzyOutput[4];
 
-                printf("%f, %f, %f, %f, %f\n", fuzzyOutput[0],
-                		fuzzyOutput[1],
-						fuzzyOutput[2],
-						fuzzyOutput[3],
-						fuzzyOutput[4]);
+                //printf("%f, %f, %f, %f, %f\n", fuzzyOutput[0],
+                //		fuzzyOutput[1],
+				//		fuzzyOutput[2],
+				//		fuzzyOutput[3],
+				//		fuzzyOutput[4]);
 
 
                 // Put the temporary memory borrowed by calculateMotorModifiers back.
@@ -863,7 +868,7 @@ static void CommunicationTask (void *p_arg)
 
     for(;;) {
 
-    	OSSemPend(RxDataAvailableSemaphore, OS_TICKS_PER_SEC/2, &err);
+    	OSSemPend(RxDataAvailableSemaphore, 0, &err);//OS_TICKS_PER_SEC/2, &err);
     	if (err == OS_ERR_TIMEOUT) {
     		err = OS_ERR_NONE;
     		// set motor values to 0
@@ -892,7 +897,7 @@ static void CommunicationTask (void *p_arg)
 					// Post to Semaphore
 					OSSemPend(UserSemaphore, 0, &err);
 					if (err != OS_ERR_NONE) OSQPost(LogQueue, CreateErrorMessage(COMMUNICATION_TASK, OS_SEM_PEND, err));
-					userSteer = new_msg.steering_value;
+					userSteer = new_msg.steering_value * 0.75; //TODO possibly change
 					userMag = new_msg.motor_level;
 					OSSemPost(UserSemaphore);
     			}
