@@ -175,6 +175,7 @@ int8_t globalSteeringAngle;
 bool FuzzyToggle = true;          //starting true, flip the switch to turn off
 bool motorMask = false;
 char* userMessage;
+bool enable_sonar;
 circular_buf_position* distance_buffer;
 circular_buf_velocity* velocity_buffer;
 
@@ -493,11 +494,19 @@ static void EmergencyTask (void *p_arg)
 
 
 #define DISTANCE_SAMPLES 20
+
+
 #define SAMPLE_OFFSET 6
+#define FIRST_DISTANCE_SAMPLE 1
+#define SECOND_DISTANCE_SAMPLE FIRST_DISTANCE_SAMPLE + SAMPLE_OFFSET
 
 static void CollisionTask (void *p_arg)
 {
 	INT8U err;
+
+	// let values accumulate to a while
+	OSTimeDlyHMSM(0,0,1,0);
+	enable_sonar = true;
 
     for(;;) {
 
@@ -513,24 +522,8 @@ static void CollisionTask (void *p_arg)
 		uint8_t latest_distance_sample = 0;
 		uint8_t offset_distance_sample = 0;
 
-		// find the most recent valid distance
-		// (actually current - 1)
-		int latest_index = 1;
-		int offset_index = latest_index + SAMPLE_OFFSET;
-
-		while(offset_index < (DISTANCE_SAMPLES - SAMPLE_OFFSET -1)){
-			if(dist_sample_window_validator(last_n_distances[latest_index -1],last_n_distances[latest_index],last_n_distances[latest_index + 1]) &&
-					dist_sample_window_validator(last_n_distances[offset_index -1],last_n_distances[offset_index],last_n_distances[offset_index + 1])){
-					// valid sample pair found
-				latest_distance_sample = sample_window_avg(last_n_distances[latest_index -1], last_n_distances[latest_index], last_n_distances[latest_index + 1]);
-				offset_distance_sample = sample_window_avg(last_n_distances[offset_index -1], last_n_distances[offset_index], last_n_distances[offset_index + 1]);
-				break;
-			}else{
-				latest_index++;
-				offset_index++;
-
-			}
-		}
+		latest_distance_sample = sample_window_avg(last_n_distances[FIRST_DISTANCE_SAMPLE -1 ], last_n_distances[FIRST_DISTANCE_SAMPLE], last_n_distances[FIRST_DISTANCE_SAMPLE +1]);
+		offset_distance_sample = sample_window_avg(last_n_distances[SECOND_DISTANCE_SAMPLE-1],last_n_distances[SECOND_DISTANCE_SAMPLE], last_n_distances[SECOND_DISTANCE_SAMPLE + 1]);
 
 		// calculate the delta between current and offset
 		int position_delta =  offset_distance_sample - latest_distance_sample;
@@ -554,13 +547,16 @@ static void CollisionTask (void *p_arg)
 		for(int i = 0; i < N_VELOCITES_TO_AVG; i++)
 			vel_circular_buffer_get_nth(velocity_buffer, &last_n_velocities[i], i);
 
-		int moving_avg_velocity = weighted_avg(N_VELOCITES_TO_AVG,last_n_velocities[0], last_n_velocities[1],last_n_velocities[2]);
+		int moving_avg_velocity = normal_avg(N_VELOCITES_TO_AVG, last_n_velocities[0], last_n_velocities[1],last_n_velocities[2]);
 
 		int estimated_stopping_distance = distance_to_stop(moving_avg_velocity);
+		int estimated_stopping_distance_safety = estimated_stopping_distance * STOPPING_SAFETY_FACTOR;
 
-		printf("D: %i, V: %i, MAV: %i, SD: %i\n",latest_distance_sample, cutoff_velocity, moving_avg_velocity, estimated_stopping_distance);
+		printf("D: %i, V: %i, MAV: %i, SD: %i, SDSF: %i\n",latest_distance_sample, cutoff_velocity, moving_avg_velocity, estimated_stopping_distance,estimated_stopping_distance_safety);
 
-
+		if(latest_distance_sample <= STOPPING_LIMIT && estimated_stopping_distance_safety >= latest_distance_sample){
+			printf("STOP!!\n");
+		}
 
 
 		if (err == OS_ERR_NONE)

@@ -11,6 +11,7 @@
 #include "sonar.h"
 #include "timer.h"
 
+
 // From Nancy's EClass code
 void InitDistanceSensorInterrupt(void) {
 
@@ -35,7 +36,9 @@ void InitDistanceSensorInterrupt(void) {
 
 void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id) {
 
-	INT8U err;
+
+	INT8U err = OS_ERR_NONE;
+	 OS_SEM_DATA *p_sem_data;
 	uint8_t dist = alt_read_word(SONAR_BASE);
 
 	// if no object is detected then set distance to maximum
@@ -49,7 +52,10 @@ void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id) {
 	}
 	dist_circular_buf_put(distance_buffer,dist);
 
-	OSSemPost(SonarDataAvailableSemaphore);
+	if(enable_sonar == true){
+		OSSemPost(SonarDataAvailableSemaphore);
+	}
+
 	ARM_OSCL_TIMER_1_REG_EOI;
 }
 
@@ -66,6 +72,11 @@ int sample_window_avg(uint8_t next, uint8_t current, uint8_t previous){
 	return ((next + current + previous) / 3);
 }
 
+int sample_window_avg_2(uint8_t current, uint8_t previous){
+	return ((current + previous) / 2);
+}
+
+
 
 // modified from https://www.tutorialspoint.com/cprogramming/c_variable_arguments.htm
 int weighted_avg(int num,...){
@@ -81,6 +92,21 @@ int weighted_avg(int num,...){
 
    va_end ( valist );
    return sum/divisor;
+
+}
+
+// modified from https://www.tutorialspoint.com/cprogramming/c_variable_arguments.htm
+int normal_avg(int num,...){
+	va_list valist;
+	   /* initialize valist for num number of arguments */
+	va_start(valist, num);
+	int sum = 0;
+	for (int i = 0; i < num; i++) {
+	   sum += va_arg(valist, int);
+	}
+
+   va_end ( valist );
+   return sum/num;
 
 }
 
