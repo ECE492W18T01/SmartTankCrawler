@@ -255,11 +255,10 @@ int main ()
 
     // Set the global steering angle to 0 on start.
     globalSteeringAngle = 0;
-    MoveBackServo(BackServoMax);
     userSteer = 0;
     userMag = 0;
-    //MoveFrontServo(globalSteeringAngle);
-    //MoveBackServo(BackServoMax);
+    MoveFrontServo(globalSteeringAngle);
+    MoveBackServo(BackServoMin);
 
     //Array of pointers that the Queues will use. Should never be touched again.
     void *LogMessageArray[100];
@@ -496,7 +495,7 @@ static void EmergencyTask (void *p_arg)
 #define DISTANCE_SAMPLES 20
 
 
-#define SAMPLE_OFFSET 6
+#define SAMPLE_OFFSET 4
 #define FIRST_DISTANCE_SAMPLE 1
 #define SECOND_DISTANCE_SAMPLE FIRST_DISTANCE_SAMPLE + SAMPLE_OFFSET
 
@@ -505,8 +504,10 @@ static void CollisionTask (void *p_arg)
 	INT8U err;
 
 	// let values accumulate to a while
-	OSTimeDlyHMSM(0,0,1,0);
+	OSTimeDlyHMSM(0,0,1,500);
 	enable_sonar = true;
+
+	int8_t stopTally = 0;
 
     for(;;) {
 
@@ -547,7 +548,7 @@ static void CollisionTask (void *p_arg)
 		for(int i = 0; i < N_VELOCITES_TO_AVG; i++)
 			vel_circular_buffer_get_nth(velocity_buffer, &last_n_velocities[i], i);
 
-		int moving_avg_velocity = normal_avg(N_VELOCITES_TO_AVG, last_n_velocities[0], last_n_velocities[1],last_n_velocities[2]);
+		int moving_avg_velocity = normal_avg(N_VELOCITES_TO_AVG, last_n_velocities[0], last_n_velocities[1], last_n_velocities[2]);
 
 		int estimated_stopping_distance = distance_to_stop(moving_avg_velocity);
 		int estimated_stopping_distance_safety = estimated_stopping_distance * STOPPING_SAFETY_FACTOR;
@@ -556,8 +557,41 @@ static void CollisionTask (void *p_arg)
 
 		if(latest_distance_sample <= STOPPING_LIMIT && estimated_stopping_distance_safety >= latest_distance_sample){
 			printf("STOP!!\n");
+
+			stopTally ++;
 		}
 
+		else {
+			stopTally = 0;
+			MoveBackServo(BackServoMin);
+		}
+
+		if (stopTally == 3) {
+
+			OS_ENTER_CRITICAL();
+			MoveBackServo(BackServoMax);
+			update_motor_control(0, FRONT_LEFT_MOTOR);
+			update_motor_control(0, FRONT_RIGHT_MOTOR);
+			update_motor_control(0, REAR_LEFT_MOTOR);
+			update_motor_control(0, REAR_RIGHT_MOTOR);
+			OS_EXIT_CRITICAL();
+
+			OSSemPend(MaskSemaphore, OS_TICKS_PER_SEC/100, &err);
+			motorMask = true;
+
+			if (err == OS_ERR_NONE) {
+				OSSemPost(MaskSemaphore);
+			}
+
+		}
+
+		else if (stopTally == 2) {
+			MoveBackServo(BackServoMax / 3);
+		}
+
+		else if (stopTally == 1) {
+			MoveBackServo(BackServoMax / 2);
+		}
 
 		if (err == OS_ERR_NONE)
 		{

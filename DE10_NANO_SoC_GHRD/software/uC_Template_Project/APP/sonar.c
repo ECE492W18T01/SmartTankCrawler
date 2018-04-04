@@ -21,7 +21,7 @@ void InitDistanceSensorInterrupt(void) {
 
 	ARM_OSCL_TIMER_1_REG_CONTROL &= ARM_OSCL_TIMER_1_INT_UNMASKED;
 
-	ARM_OSCL_TIMER_1_REG_LOADCOUNT = OSCL1_TICKS_PER_50MS;
+	ARM_OSCL_TIMER_1_REG_LOADCOUNT = OSCL1_TICKS_PER_100MS;
 
 	BSP_IntVectSet   (202u,
 	                  14,	    // prio

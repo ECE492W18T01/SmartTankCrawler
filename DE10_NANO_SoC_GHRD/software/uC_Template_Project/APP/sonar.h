@@ -25,7 +25,8 @@ int distance_to_stop(int velocity);
 int sample_window_avg_2(uint8_t current, uint8_t previous);
 
 #define OSCL1_TICKS_PER_50MS 1250000
-#define SONAR_INTERUPT_PERIOD 0.05
+#define OSCL1_TICKS_PER_100MS 2500000
+#define SONAR_INTERUPT_PERIOD 0.1
 #define DISTANCE_FILTER_MAX 4
 
 #define MIN_DETECTABLE_CHANGE 2
@@ -42,7 +43,7 @@ int sample_window_avg_2(uint8_t current, uint8_t previous);
 
 #define STOPPING_SAFETY_FACTOR 1 // parameter to very when testing
 
-#define STOPPING_LIMIT 40 // do not stop at distances less than this. parameter to very when testing
+#define STOPPING_LIMIT 42 // do not stop at distances less than this. parameter to very when testing
 
 #define SIGN_OF(val) ((val < 0 ? -1 : 1))
 
