@@ -1,5 +1,5 @@
 Fitter report for DE10_NANO_SoC_GHRD
-Wed Apr 04 12:15:23 2018
+Thu Apr 05 10:43:59 2018
 Quartus Prime Version 17.0.2 Build 602 07/19/2017 SJ Standard Edition
 
 
@@ -67,7 +67,7 @@ agreement for further details.
 +-----------------------------------------------------------------------------------+
 ; Fitter Summary                                                                    ;
 +---------------------------------+-------------------------------------------------+
-; Fitter Status                   ; Successful - Wed Apr 04 12:15:23 2018           ;
+; Fitter Status                   ; Successful - Thu Apr 05 10:43:59 2018           ;
 ; Quartus Prime Version           ; 17.0.2 Build 602 07/19/2017 SJ Standard Edition ;
 ; Revision Name                   ; DE10_NANO_SoC_GHRD                              ;
 ; Top-level Entity Name           ; DE10_NANO_SoC_GHRD                              ;
@@ -158,14 +158,14 @@ agreement for further details.
 ; Number detected on machine ; 8           ;
 ; Maximum allowed            ; 4           ;
 ;                            ;             ;
-; Average used               ; 1.20        ;
+; Average used               ; 1.19        ;
 ; Maximum used               ; 4           ;
 ;                            ;             ;
 ; Usage by Processor         ; % Time Used ;
 ;     Processor 1            ; 100.0%      ;
-;     Processor 2            ;   8.0%      ;
-;     Processor 3            ;   6.4%      ;
-;     Processor 4            ;   6.0%      ;
+;     Processor 2            ;   7.5%      ;
+;     Processor 3            ;   5.9%      ;
+;     Processor 4            ;   5.6%      ;
 +----------------------------+-------------+
 
 
@@ -4440,7 +4440,7 @@ Warning (15705): Ignored locations or region assignments to the following nodes
     Warning (15706): Node "SW_1" is assigned to location or region, but does not exist in design
     Warning (15706): Node "SW_2" is assigned to location or region, but does not exist in design
     Warning (15706): Node "SW_3" is assigned to location or region, but does not exist in design
-Info (11798): Fitter preparation operations ending: elapsed time is 00:00:22
+Info (11798): Fitter preparation operations ending: elapsed time is 00:00:24
 Info (170189): Fitter placement preparation operations beginning
 Info (14951): The Fitter is using Advanced Physical Optimization.
 Info (170190): Fitter placement preparation operations ending: elapsed time is 00:00:11
@@ -4453,12 +4453,12 @@ Info (170195): Router estimated average interconnect usage is 1% of the availabl
 Info (170199): The Fitter performed an Auto Fit compilation.  Optimizations were skipped to reduce compilation time.
     Info (170201): Optimizations that may affect the design's routability were skipped
 Info (170194): Fitter routing operations ending: elapsed time is 00:00:11
-Info (11888): Total time spent on timing analysis during the Fitter is 8.81 seconds.
+Info (11888): Total time spent on timing analysis during the Fitter is 8.97 seconds.
 Info (334003): Started post-fitting delay annotation
 Info (334004): Delay annotation completed successfully
 Info (334003): Started post-fitting delay annotation
 Info (334004): Delay annotation completed successfully
-Info (11801): Fitter post-fit operations ending: elapsed time is 00:00:23
+Info (11801): Fitter post-fit operations ending: elapsed time is 00:00:24
 Warning (171167): Found invalid Fitter assignments. See the Ignored Assignments panel in the Fitter Compilation Report for more information.
 Warning (169064): Following 7 pins have no output enable or a GND or VCC output enable - later changes to this connectivity may change fitting results
     Info (169065): Pin HDMI_I2C_SCL has a permanently disabled output enable File: C:/Users/kgmills/Desktop/Project/SmartTankCrawler/DE10_NANO_SoC_GHRD/de10_nano_soc_ghrd.v Line: 19
@@ -4551,10 +4551,10 @@ Info (169186): Following groups of pins have the same dynamic on-chip terminatio
         Info (169066): Type bi-directional pin HPS_DDR3_DQS_P[3] uses the Differential 1.5-V SSTL Class I I/O standard File: C:/Users/kgmills/Desktop/Project/SmartTankCrawler/DE10_NANO_SoC_GHRD/de10_nano_soc_ghrd.v Line: 44
 Info (144001): Generated suppressed messages file C:/Users/kgmills/Desktop/Project/SmartTankCrawler/DE10_NANO_SoC_GHRD/output_files/DE10_NANO_SoC_GHRD.fit.smsg
 Info: Quartus Prime Fitter was successful. 0 errors, 419 warnings
-    Info: Peak virtual memory: 3321 megabytes
-    Info: Processing ended: Wed Apr 04 12:15:25 2018
-    Info: Elapsed time: 00:01:56
-    Info: Total CPU time (on all processors): 00:03:46
+    Info: Peak virtual memory: 3316 megabytes
+    Info: Processing ended: Thu Apr 05 10:44:01 2018
+    Info: Elapsed time: 00:02:00
+    Info: Total CPU time (on all processors): 00:03:49
 
 
 +----------------------------+

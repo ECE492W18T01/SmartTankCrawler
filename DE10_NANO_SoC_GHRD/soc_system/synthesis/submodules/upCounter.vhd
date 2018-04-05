@@ -25,7 +25,7 @@ entity upCounter is
 end entity upCounter;
 
 architecture rtl of upCounter is
-	signal poscounter, negcounter: unsigned(7 downto 0) := "00000001";
+	signal poscounter, negcounter: unsigned(7 downto 0) := "00000000";
 	
 	SIGNAL flipflops   : STD_LOGIC_VECTOR(1 DOWNTO 0); --input flip flops
 	SIGNAL counter_set : STD_LOGIC;                    --sync reset to zero
