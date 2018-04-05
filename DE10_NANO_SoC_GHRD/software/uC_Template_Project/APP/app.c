@@ -74,6 +74,8 @@
 #include "timer.h"
 #include "sonar.h"
 
+#include <alt_bridge_manager.h>
+
 // From ../UTIL
 #include <circular_buf_position.h>
 #include <circular_buf_velocity.h>
@@ -90,8 +92,8 @@
 *********************************************************************************************************
 */
 #define APP_TASK_PRIO 4
-#define EMERGENCY_TASK_PRIORITY 5
-#define COLLISION_TASK_PRIO 7
+#define EMERGENCY_TASK_PRIORITY 7
+#define COLLISION_TASK_PRIO 5
 #define MOTOR_TASK_PRIO 8
 #define FUZZY_TASK_PRIO 9
 #define COMMUNICATION_TASK_PRIO 10
@@ -252,6 +254,9 @@ int main ()
     BSP_Init();
 
     OSInit();
+
+    ALT_BRIDGE_t lw_bridge = ALT_BRIDGE_LWH2F;
+    ALT_STATUS_CODE err2 = alt_bridge_init(lw_bridge, NULL, NULL);
 
     // Set the global steering angle to 0 on start.
     globalSteeringAngle = 0;
@@ -499,7 +504,7 @@ static void CollisionTask (void *p_arg)
 	INT8U err;
 
 	// let values accumulate to a while
-	OSTimeDlyHMSM(0,0,1,500);
+	OSTimeDlyHMSM(0,0,1,0);
 	enable_sonar = true;
 
 	int8_t stopTally = 0;
@@ -548,10 +553,10 @@ static void CollisionTask (void *p_arg)
 		int estimated_stopping_distance = distance_to_stop(moving_avg_velocity);
 		int estimated_stopping_distance_safety = estimated_stopping_distance * STOPPING_SAFETY_FACTOR;
 
-		printf("D: %i, V: %i, MAV: %i, SD: %i, SDSF: %i\n",latest_distance_sample, cutoff_velocity, moving_avg_velocity, estimated_stopping_distance,estimated_stopping_distance_safety);
+		//printf("D: %i, V: %i, MAV: %i, SD: %i, SDSF: %i\n",latest_distance_sample, cutoff_velocity, moving_avg_velocity, estimated_stopping_distance,estimated_stopping_distance_safety);
 
 		if(latest_distance_sample <= STOPPING_LIMIT && estimated_stopping_distance_safety >= latest_distance_sample){
-			printf("STOP!!\n");
+			//printf("STOP!!\n");
 
 			stopTally ++;
 		}
@@ -701,7 +706,7 @@ static void MotorTask (void *p_arg)
 			update_motor_control(indMotorVals[3], REAR_RIGHT_MOTOR);
 			OS_EXIT_CRITICAL();
 
-			printf("Steer: %d\n", actualSteeringAngle);
+			//printf("Steer: %d\n", actualSteeringAngle);
 
 			MotorChangeMessage *mOutput = OSMemGet(StandardMemoryStorage, &err);
 			mOutput->frontLeft = indMotorVals[0];
@@ -777,11 +782,11 @@ static void FuzzyTask (void *p_arg) {
     		localSteeringAngle = globalSteeringAngle;
     		OSSemPost(SteeringSemaphore);
 
-    		// Calculate relative speeds, new - old.
-            wheelSpeeds[0] = newFrontLeft - oldFrontLeft;
-            wheelSpeeds[1] = newFrontRight - oldFrontRight;
-            wheelSpeeds[2] = newRearLeft - oldRearLeft;
-            wheelSpeeds[3] = newRearRight - oldRearRight;
+    		// Calculate relative speeds, new - old; the + 1 exists to nullify divide by zero errors.
+            wheelSpeeds[0] = newFrontLeft - oldFrontLeft + 1;
+            wheelSpeeds[1] = newFrontRight - oldFrontRight + 1;
+            wheelSpeeds[2] = newRearLeft - oldRearLeft + 1;
+            wheelSpeeds[3] = newRearRight - oldRearRight + 1;
 
             // Decide whether or not we even want to access the Fuzzy Logic Matrix.
             if ((getMinWheelDiff(wheelSpeeds) < speedThres && abs(localSteeringAngle) < lowAngle) || !FuzzyToggle) {
@@ -899,6 +904,7 @@ static void CommunicationTask (void *p_arg)
 					if (err != OS_ERR_NONE) OSQPost(LogQueue, CreateErrorMessage(COMMUNICATION_TASK, OS_SEM_PEND, err));
 					userSteer = new_msg.steering_value * 0.75; //TODO possibly change
 					userMag = new_msg.motor_level;
+
 					OSSemPost(UserSemaphore);
     			}
     		}else{

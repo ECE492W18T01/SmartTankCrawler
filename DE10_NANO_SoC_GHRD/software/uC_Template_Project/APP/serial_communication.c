@@ -56,7 +56,6 @@ incoming_msg parse_incomming_msg(char * msg){
 
 	    incoming_msg new_msg;
 
-
 	    motor_level_str = strtok(msg,DELIMINATING_STR);
 	    steering_value_str = strtok(NULL,DELIMINATING_STR);
 	    // only use characters before the end of message character

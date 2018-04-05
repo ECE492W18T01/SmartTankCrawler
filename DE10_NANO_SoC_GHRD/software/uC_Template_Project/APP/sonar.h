@@ -26,7 +26,7 @@ int sample_window_avg_2(uint8_t current, uint8_t previous);
 
 #define OSCL1_TICKS_PER_50MS 1250000
 #define OSCL1_TICKS_PER_100MS 2500000
-#define SONAR_INTERUPT_PERIOD 0.1
+#define SONAR_INTERUPT_PERIOD 0.05
 #define DISTANCE_FILTER_MAX 4
 
 #define MIN_DETECTABLE_CHANGE 2
