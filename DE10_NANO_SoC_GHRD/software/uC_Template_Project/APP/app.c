@@ -490,9 +490,8 @@ static void EmergencyTask (void *p_arg)
 #define DISTANCE_SAMPLES 20
 
 
-#define SAMPLE_OFFSET 4
-#define FIRST_DISTANCE_SAMPLE 1
-#define SECOND_DISTANCE_SAMPLE FIRST_DISTANCE_SAMPLE + SAMPLE_OFFSET
+#define SAMPLE_OFFSET 3
+#define STOP_TALLY_LIMIT 4
 
 static void CollisionTask (void *p_arg)
 {
@@ -508,26 +507,16 @@ static void CollisionTask (void *p_arg)
 
 		OSSemPend(SonarDataAvailableSemaphore, 0, &err);
 
-		CPU_CRITICAL_ENTER();
-		uint8_t last_n_distances[DISTANCE_SAMPLES] = {0};
-		for(int i = 0; i < DISTANCE_SAMPLES; i++ )
-			 dist_circular_buffer_get_nth(distance_buffer, &last_n_distances[i], i);
-
-		CPU_CRITICAL_EXIT();
-
 		uint8_t latest_distance_sample = 0;
 		uint8_t offset_distance_sample = 0;
 
-		latest_distance_sample = sample_window_avg(last_n_distances[FIRST_DISTANCE_SAMPLE -1 ], last_n_distances[FIRST_DISTANCE_SAMPLE], last_n_distances[FIRST_DISTANCE_SAMPLE +1]);
-		offset_distance_sample = sample_window_avg(last_n_distances[SECOND_DISTANCE_SAMPLE-1],last_n_distances[SECOND_DISTANCE_SAMPLE], last_n_distances[SECOND_DISTANCE_SAMPLE + 1]);
+		 CPU_CRITICAL_ENTER();
+		 dist_circular_buffer_get_nth(distance_buffer, &latest_distance_sample, 0);
+		 dist_circular_buffer_get_nth(distance_buffer, &offset_distance_sample, SAMPLE_OFFSET);
+		 CPU_CRITICAL_EXIT();
 
 		// calculate the delta between current and offset
 		int position_delta =  offset_distance_sample - latest_distance_sample;
-
-		// if change is too small disregard
-		if(abs(position_delta) < MIN_DETECTABLE_CHANGE){
-			position_delta = 0;
-		}
 
 		// velocity in inches per second
 		int velocity = position_delta * (1/(SONAR_INTERUPT_PERIOD * SAMPLE_OFFSET));
@@ -538,31 +527,22 @@ static void CollisionTask (void *p_arg)
 		//store latest velocity
 		vel_circular_buf_put(velocity_buffer,cutoff_velocity);
 
-		int8_t last_n_velocities[N_VELOCITES_TO_AVG];
-
-		for(int i = 0; i < N_VELOCITES_TO_AVG; i++)
-			vel_circular_buffer_get_nth(velocity_buffer, &last_n_velocities[i], i);
-
-		int moving_avg_velocity = normal_avg(N_VELOCITES_TO_AVG, last_n_velocities[0], last_n_velocities[1], last_n_velocities[2]);
-
-		int estimated_stopping_distance = distance_to_stop(moving_avg_velocity);
+		int estimated_stopping_distance = distance_to_stop(cutoff_velocity);
 		int estimated_stopping_distance_safety = estimated_stopping_distance * STOPPING_SAFETY_FACTOR;
 
-		printf("D: %i, V: %i, MAV: %i, SD: %i, SDSF: %i\n",latest_distance_sample, cutoff_velocity, moving_avg_velocity, estimated_stopping_distance,estimated_stopping_distance_safety);
+		//printf("D: %i, OD: %i,del: %i V: %i, SD: %i, SDSF: %i\n",latest_distance_sample, offset_distance_sample, position_delta, cutoff_velocity, estimated_stopping_distance,estimated_stopping_distance_safety);
 
 		if(latest_distance_sample <= STOPPING_LIMIT && estimated_stopping_distance_safety >= latest_distance_sample){
-			printf("STOP!!\n");
-
+			//printf("STOP!!\n");
 			stopTally ++;
 		}
-
-		else {
-			stopTally = 0;
-			MoveBackServo(BackServoMin);
+		else if(stopTally > 0){ // no collision detected decrement stop tally
+			stopTally--;
 		}
 
-		if (stopTally == 3) {
-
+		if (stopTally == STOP_TALLY_LIMIT) {
+			//printf("STOP Tally hit!!\n");
+			stopTally = 0;
 			OS_ENTER_CRITICAL();
 			stop_all_motors();
 			MoveBackServo(BackServoMax);
@@ -583,14 +563,10 @@ static void CollisionTask (void *p_arg)
 				OSSemPost(MaskSemaphore);
 			}
 
-		}
-
-		else if (stopTally == 2) {
-			MoveBackServo(BackServoMax / 3);
-		}
-
-		else if (stopTally == 1) {
-			MoveBackServo(BackServoMax / 2);
+		}else if (stopTally > 1) {
+			MoveBackServo(BackServoMax * (STOP_TALLY_LIMIT - stopTally) / (STOP_TALLY_LIMIT -1));
+		}else{
+			MoveBackServo(BackServoMin);
 		}
 
 		if (err == OS_ERR_NONE)
@@ -701,7 +677,7 @@ static void MotorTask (void *p_arg)
 			update_motor_control(indMotorVals[3], REAR_RIGHT_MOTOR);
 			OS_EXIT_CRITICAL();
 
-			printf("Steer: %d\n", actualSteeringAngle);
+			//printf("Steer: %d\n", actualSteeringAngle);
 
 			MotorChangeMessage *mOutput = OSMemGet(StandardMemoryStorage, &err);
 			mOutput->frontLeft = indMotorVals[0];
@@ -897,7 +873,7 @@ static void CommunicationTask (void *p_arg)
 					// Post to Semaphore
 					OSSemPend(UserSemaphore, 0, &err);
 					if (err != OS_ERR_NONE) OSQPost(LogQueue, CreateErrorMessage(COMMUNICATION_TASK, OS_SEM_PEND, err));
-					userSteer = new_msg.steering_value * 0.75; //TODO possibly change
+					userSteer = new_msg.steering_value; //TODO possibly change
 					userMag = new_msg.motor_level;
 					OSSemPost(UserSemaphore);
     			}

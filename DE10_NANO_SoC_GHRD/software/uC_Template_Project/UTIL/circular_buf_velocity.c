@@ -70,7 +70,7 @@ int vel_circular_buffer_get_nth(circular_buf_velocity * cbuf, int8_t * data, int
     if(cbuf && data && !vel_circular_buf_empty(*cbuf))
     {
 
-    	int headNthDelta = cbuf->head - nth;
+    	int headNthDelta = cbuf->head - 1 - nth;
 
     	if(headNthDelta<0){
     		headNthDelta += VELOCITY_HISTORY_LENGTH; // wrap around

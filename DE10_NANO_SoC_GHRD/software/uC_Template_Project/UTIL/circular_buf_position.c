@@ -70,7 +70,7 @@ int dist_circular_buffer_get_nth(circular_buf_position * cbuf, uint8_t * data, i
     if(cbuf && data && !dist_circular_buf_empty(*cbuf))
     {
 
-    	int headNthDelta = cbuf->head - nth;
+    	int headNthDelta = cbuf->head - 1 - nth;
 
     	if(headNthDelta<0){
     		headNthDelta += DISTANCE_HISTORY_LENGTH; // wrap around
