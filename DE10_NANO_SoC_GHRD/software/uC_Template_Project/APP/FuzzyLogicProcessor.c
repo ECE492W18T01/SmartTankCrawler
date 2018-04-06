@@ -50,8 +50,8 @@ int computeAxleDeviation(uint8_t left, uint8_t right, int expected) {
 		numerator = (right * axleRatio) / left;
 	} 
 
-	int difference = numerator - axleRatio;
-	float error = (difference * adjustForFS) / expected;
+	int difference = numerator - expected;
+	float error = (difference * adjustForFS) / axleRatio;
 	return boundOutputs(error) + shiftIndex;
 }
 
@@ -68,8 +68,8 @@ int computeOverallDeviation(uint8_t fl, uint8_t fr, uint8_t rl, uint8_t rr, int 
 	int actualDenomentator = rl + rr;
 	int actualFraction = actualNumerator / actualDenomentator;
 
-	int difference = (actualFraction - overallRatio) * adjustForFS;
-	float error = difference / expected;
+	int difference = (actualFraction - expected) * adjustForFS;
+	float error = difference / overallRatio;
 
 	return boundOutputs(error) + shiftIndex;
 }
