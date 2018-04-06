@@ -847,7 +847,7 @@ static void CommunicationTask (void *p_arg)
 
     for(;;) {
 
-    	OSSemPend(RxDataAvailableSemaphore, 0, &err);//OS_TICKS_PER_SEC/2, &err);
+    	OSSemPend(RxDataAvailableSemaphore, OS_TICKS_PER_SEC/2, &err);
     	if (err == OS_ERR_TIMEOUT) {
     		err = OS_ERR_NONE;
     		// set motor values to 0
@@ -900,6 +900,7 @@ static void CommunicationTask (void *p_arg)
 
 static void LogTask (void *p_arg)
 {
+
 	INT8U err;
 	LogMessage *incoming;
 	void *message;
@@ -960,7 +961,7 @@ static void LogTask (void *p_arg)
     	    	sprintf(outgoing + strlen(outgoing), "sS : %d ", ((MotorChangeMessage*)message)->steeringServo);
     	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
     	    	// Send the message to the Pi.
-    	    	serial_send(outgoing);
+    	    	//serial_send(outgoing);
     			break;
 
     		case TOGGLE_MESSAGE:
@@ -1075,7 +1076,11 @@ static void ToggleTask(void *p_arg)
     	}
 
     	if (prev != curr) {
-    		OSQPost(LogQueue, CreateLogMessage(TOGGLE_MESSAGE, &myToggle));
+
+    		toggleMessage *_t = OSMemGet(StandardMemoryStorage, &err);
+    		_t->brake = myToggle.brake;
+    		_t->fuzzy = myToggle.fuzzy;
+    		OSQPost(LogQueue, CreateLogMessage(TOGGLE_MESSAGE, _t));
     	}
 
     	prev = curr;
