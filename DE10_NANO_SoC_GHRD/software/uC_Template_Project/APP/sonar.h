@@ -47,7 +47,7 @@ int sample_window_avg_2(uint8_t current, uint8_t previous);
 
 #define STOPPING_SAFETY_FACTOR 1.25 // parameter to very when testing
 
-#define STOPPING_LIMIT 60 // do not stop at distances less than this. parameter to very when testing
+#define STOPPING_LIMIT 42 // do not stop at distances less than this. parameter to very when testing
 
 #define SIGN_OF(val) ((val < 0 ? -1 : 1))
 
