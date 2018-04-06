@@ -126,6 +126,7 @@
 #define DISTANCE_MESSAGE 3
 #define STATUS_MESSAGE 4
 #define MOTOR_OUTPUT_MESSAGE 5
+#define TOGGLE_MESSAGE 6
 
 #define OS_SEM_PEND 0
 #define OS_Q_PEND 1
@@ -142,6 +143,7 @@
 typedef struct LogMessage LogMessage;
 typedef struct HallSensorMessage HallSensorMessage;
 typedef struct MotorChangeMessage MotorChangeMessage;
+typedef struct toggleMessage toggleMessage;
 
 struct LogMessage {
 	INT8U taskID;
@@ -164,6 +166,11 @@ struct MotorChangeMessage {
     float backLeft;
     float backRight;
     int8_t steeringServo;
+};
+
+struct toggleMessage {
+	bool fuzzy;
+	bool brake;
 };
 
 
