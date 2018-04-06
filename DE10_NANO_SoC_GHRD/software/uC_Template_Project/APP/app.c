@@ -493,10 +493,7 @@ static void EmergencyTask (void *p_arg)
 
 
 #define DISTANCE_SAMPLES 20
-
-
 #define SAMPLE_OFFSET 3
-#define STOP_TALLY_LIMIT 5
 
 static void CollisionTask (void *p_arg)
 {
@@ -548,7 +545,7 @@ static void CollisionTask (void *p_arg)
 			stop_tally--;
 		}
 
-		if (stop_tally == STOP_TALLY_LIMIT) {
+		if (stop_tally == tally_threshold) {
 			//printf("STOP Tally hit!!\n");
 			stop_tally = 0;
 			OS_ENTER_CRITICAL();
@@ -572,7 +569,7 @@ static void CollisionTask (void *p_arg)
 			}
 
 		}else if (stop_tally > 1) {
-			MoveBackServo(BackServoMax * (STOP_TALLY_LIMIT - stop_tally) / (STOP_TALLY_LIMIT -1));
+			MoveBackServo(BackServoMax * (tally_threshold - stop_tally) / (tally_threshold -1));
 		}else{
 			MoveBackServo(BackServoMin);
 		}
@@ -993,24 +990,48 @@ static void ToggleTask(void *p_arg)
 {
 
 	INT8U err; //, send_err;
-	bool EnableFuzzy = alt_read_byte(SW_BASE) % 2;
+	int EnableFuzzy = alt_read_byte(SW_BASE) ;
+	bool ftoggle; //= alt_read_byte(SW_BASE) &0b1;
+	bool stoggle; //= alt_read_byte(SW_BASE) &0b10;
 
     for(;;) {
 
-    	// lights will be on if the fuzzy logic is on, and off if fuzzy logic is off
-    	OSTimeDlyHMSM(0,0,0,50);
-    	if(EnableFuzzy == 0){
-    		alt_write_byte(LEDR_BASE, 0xff);
+    	ftoggle = alt_read_byte(SW_BASE) & 0b1;
+    	stoggle = alt_read_byte(SW_BASE) & 0b10;
+
+    	if(!ftoggle && !stoggle){
     		OSSemPend(FuzzyToggleSemaphore, 0, &err);
     		FuzzyToggle = true;
-    		OSSemPost(FuzzyToggleSemaphore);
+        	OSSemPost(FuzzyToggleSemaphore);
+    		enable_sonar = true;
+    		alt_write_byte(LEDR_BASE, 0xff);
     	}
-    	else{
-    		alt_write_byte(LEDR_BASE, 0x00);
+
+    	else if(!stoggle){
     		OSSemPend(FuzzyToggleSemaphore, 0, &err);
-    	    FuzzyToggle = false;
-    	    OSSemPost(FuzzyToggleSemaphore);
+    		FuzzyToggle = false;
+        	OSSemPost(FuzzyToggleSemaphore);
+    		enable_sonar = true;
+    		alt_write_byte(LEDR_BASE, 0xf0);
     	}
-    	EnableFuzzy = alt_read_word(SW_BASE);
+
+    	else if (!ftoggle) {
+    		enable_sonar = false;
+    		OSSemPend(FuzzyToggleSemaphore, 0, &err);
+    		FuzzyToggle = true;
+        	OSSemPost(FuzzyToggleSemaphore);
+
+    		alt_write_byte(LEDR_BASE, 0x0f);
+    	}
+
+    	else {
+    		enable_sonar = false;
+    		OSSemPend(FuzzyToggleSemaphore, 0, &err);
+    		FuzzyToggle = false;
+        	OSSemPost(FuzzyToggleSemaphore);
+    		alt_write_byte(LEDR_BASE, 0x00);
+    	}
+    	// lights will be on if the fuzzy logic is on, and off if fuzzy logic is off
+    	OSTimeDlyHMSM(0,0,0,50);
     }
 }
