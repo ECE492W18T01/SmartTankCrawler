@@ -239,7 +239,7 @@ soc_system u0(
 					.green_leds_conn_export(LED[7: 0]), 
 
 					// DE10-Nano's Switches, Using only one switch.
-					.switch_conn_export(SW[1: 0]),
+					.switch_conn_export(SW[2: 0]),
 					
 					// Servo's 0 (Steering) and 1 (E-Brake)
 					.pwmservo_0_conduit_end_export(GPIO_1_30),           
