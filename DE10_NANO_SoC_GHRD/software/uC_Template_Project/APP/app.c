@@ -506,7 +506,9 @@ static void CollisionTask (void *p_arg)
 	OSTimeDlyHMSM(0,0,1,0);
 	enable_sonar = true;
 
-	int8_t stopTally = 0;
+	int8_t stop_tally = 0;
+
+	int8_t tally_threshold = HIGHER_TALLY_THRESHOLD;
 
     for(;;) {
 
@@ -519,6 +521,9 @@ static void CollisionTask (void *p_arg)
 		 dist_circular_buffer_get_nth(distance_buffer, &latest_distance_sample, 0);
 		 dist_circular_buffer_get_nth(distance_buffer, &offset_distance_sample, SAMPLE_OFFSET);
 		 CPU_CRITICAL_EXIT();
+
+		// set the tally threshold based on distance
+		tally_threshold = (latest_distance_sample < LOWER_DISTANCE_THRESHOLD) ? LOWER_TALLY_THRESHOLD : HIGHER_TALLY_THRESHOLD;
 
 		// calculate the delta between current and offset
 		int position_delta =  offset_distance_sample - latest_distance_sample;
@@ -537,15 +542,15 @@ static void CollisionTask (void *p_arg)
 
 		if(latest_distance_sample <= STOPPING_LIMIT && estimated_stopping_distance_safety >= latest_distance_sample){
 			//printf("STOP!!\n");
-			stopTally ++;
+			stop_tally ++;
 		}
-		else if(stopTally > 0){ // no collision detected decrement stop tally
-			stopTally--;
+		else if(stop_tally > 0){ // no collision detected decrement stop tally
+			stop_tally--;
 		}
 
-		if (stopTally == STOP_TALLY_LIMIT) {
+		if (stop_tally == STOP_TALLY_LIMIT) {
 			//printf("STOP Tally hit!!\n");
-			stopTally = 0;
+			stop_tally = 0;
 			OS_ENTER_CRITICAL();
 			stop_all_motors();
 			MoveBackServo(BackServoMax);
@@ -566,8 +571,8 @@ static void CollisionTask (void *p_arg)
 				OSSemPost(MaskSemaphore);
 			}
 
-		}else if (stopTally > 1) {
-			MoveBackServo(BackServoMax * (STOP_TALLY_LIMIT - stopTally) / (STOP_TALLY_LIMIT -1));
+		}else if (stop_tally > 1) {
+			MoveBackServo(BackServoMax * (STOP_TALLY_LIMIT - stop_tally) / (STOP_TALLY_LIMIT -1));
 		}else{
 			MoveBackServo(BackServoMin);
 		}

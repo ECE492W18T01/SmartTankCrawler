@@ -41,7 +41,11 @@ int sample_window_avg_2(uint8_t current, uint8_t previous);
 
 #define N_VELOCITES_TO_AVG 3
 
-#define STOPPING_SAFETY_FACTOR 1.2 // parameter to very when testing
+#define LOWER_DISTANCE_THRESHOLD 18 // under this distance use LOWER_TALLY_THRESHOLD
+#define LOWER_TALLY_THRESHOLD 3
+#define HIGHER_TALLY_THRESHOLD 5
+
+#define STOPPING_SAFETY_FACTOR 1.25 // parameter to very when testing
 
 #define STOPPING_LIMIT 60 // do not stop at distances less than this. parameter to very when testing
 
