@@ -78,7 +78,6 @@
 
 // From ../UTIL
 #include <circular_buf_position.h>
-#include <circular_buf_velocity.h>
 
 // Added in to get OS_ENTER/EXIT_CRITCAL working
 // Taken from os_mem.c
@@ -171,7 +170,6 @@ bool motorMask = false;
 char* userMessage;
 bool enable_sonar;
 circular_buf_position* distance_buffer;
-circular_buf_velocity* velocity_buffer;
 
 /* To access steering Angle:
 OSSemPend(SteeringSemaphore, 0, &err);
@@ -302,8 +300,6 @@ int main ()
     distance_buffer = (circular_buf_position*)OSMemGet(LargeMemoryStorage, &err);
     dist_circular_buf_init(distance_buffer);
 
-    velocity_buffer = (circular_buf_velocity*)OSMemGet(LargeMemoryStorage, &err);
-    vel_circular_buf_init(velocity_buffer);
 
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
@@ -523,8 +519,6 @@ static void CollisionTask (void *p_arg)
 		// velocity cutoff
 		int8_t cutoff_velocity = (int8_t) LIMIT_VALUE_SIGNED(velocity, INT8_T_ABS_MAX);
 
-		//store latest velocity
-		vel_circular_buf_put(velocity_buffer,cutoff_velocity);
 
 		int estimated_stopping_distance = distance_to_stop(cutoff_velocity);
 		int estimated_stopping_distance_safety = estimated_stopping_distance * STOPPING_SAFETY_FACTOR;
