@@ -127,14 +127,6 @@ CPU_STK ToggleTaskStk[TASK_STACK_SIZE];
 
 /*
 *********************************************************************************************************
-*                                 GLOBAL COMMUNICATION STATE VARIABLES
-*********************************************************************************************************
-*/
-
-static bool communications_established = false;
-
-/*
-*********************************************************************************************************
 *                                      LOCAL FUNCTION PROTOTYPES
 *********************************************************************************************************
 */
@@ -842,8 +834,7 @@ static void FuzzyTask (void *p_arg) {
 static void CommunicationTask (void *p_arg)
 {
 	INT8U err;
-
-	communications_established = false;
+	bool communications_established = false;
 	//Get memory IncomingMessageStorage-->incomingMessage
 	bzero(userMessage, MSG_BUFFER_LEN);
 

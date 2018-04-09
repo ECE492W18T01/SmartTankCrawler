@@ -4,13 +4,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <hwlib.h>
+#include <os_cpu.h>
+
 #include "alt_uart.h"
 #include "lib_def.h"
 #include "bsp_int.h"
 #include "serial_communication.h"
 #include "uart0_support.h"
-#include <watchdog.h>
-#include <os_cpu.h>
 #include "globals.h"
 
 bool serial_communication_init(){

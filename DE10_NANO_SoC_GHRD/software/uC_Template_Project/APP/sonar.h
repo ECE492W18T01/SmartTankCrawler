@@ -17,12 +17,7 @@
 
 void InitDistanceSensorInterrupt (void);
 void DistanceSensor_ISR_Handler(CPU_INT32U cpu_id);
-bool dist_sample_window_validator(uint8_t next,uint8_t current, uint8_t previous);
-int sample_window_avg(uint8_t next, uint8_t current, uint8_t previous);
-int weighted_avg(int num,...);
-int normal_avg(int num,...);
 int distance_to_stop(int velocity);
-int sample_window_avg_2(uint8_t current, uint8_t previous);
 
 #define OSCL1_TICKS_PER_50MS 1250000
 #define OSCL1_TICKS_PER_100MS 2500000
