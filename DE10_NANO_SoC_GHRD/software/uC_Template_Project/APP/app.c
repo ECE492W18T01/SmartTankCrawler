@@ -613,7 +613,7 @@ static void MotorTask (void *p_arg)
 
     	// Only pend for so long - Change timeout value to be define, but the number now is 1/4 of a second.
     	// Subject to change alongside timeouts for other queues.
-    	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, OS_TICKS_PER_SEC / 4, &err);
+    	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, OS_TICKS_PER_SEC / 8, &err);
 
     	// We timed out, set the static struct's parameters to zero. Aka zero fuzzy mods.
     	if (err == OS_ERR_TIMEOUT) {
@@ -684,8 +684,6 @@ static void MotorTask (void *p_arg)
 			mOutput->steeringServo = actualSteeringAngle;
 
 			OSQPost(LogQueue, CreateLogMessage(MOTOR_OUTPUT_MESSAGE, mOutput));
-
-
 
 		} else {
 			OSQPost(LogQueue, CreateErrorMessage(MOTOR_TASK, OS_Q_PEND, err));
@@ -840,7 +838,7 @@ static void CommunicationTask (void *p_arg)
 
     for(;;) {
 
-    	OSSemPend(RxDataAvailableSemaphore, 0, &err);//OS_TICKS_PER_SEC/2, &err);
+    	OSSemPend(RxDataAvailableSemaphore, OS_TICKS_PER_SEC/2, &err);
     	if (err == OS_ERR_TIMEOUT) {
     		err = OS_ERR_NONE;
     		// set motor values to 0
@@ -893,6 +891,7 @@ static void CommunicationTask (void *p_arg)
 
 static void LogTask (void *p_arg)
 {
+
 	INT8U err;
 	LogMessage *incoming;
 	void *message;
@@ -942,6 +941,30 @@ static void LogTask (void *p_arg)
     		// These are the values being sent to the FPGA.
     		case MOTOR_OUTPUT_MESSAGE:
 
+    	    	message = (MotorChangeMessage*)(incoming->message);
+    	    	// Format the message as a JSON item.
+    	    	sprintf(outgoing + strlen(outgoing), "%s{ ", MESSAGE_START_STR );
+    	    	sprintf(outgoing + strlen(outgoing), "MessageType: %d , MessageData : { ", MOTOR_OUTPUT_MESSAGE );
+    	    	sprintf(outgoing + strlen(outgoing), "fl : %f, ", ((MotorChangeMessage*)message)->frontLeft);
+    	    	sprintf(outgoing + strlen(outgoing), "fr : %f, ", ((MotorChangeMessage*)message)->frontRight);
+    	    	sprintf(outgoing + strlen(outgoing), "bl : %f, ", ((MotorChangeMessage*)message)->backLeft);
+    	    	sprintf(outgoing + strlen(outgoing), "br : %f, ", ((MotorChangeMessage*)message)->backRight);
+    	    	sprintf(outgoing + strlen(outgoing), "sS : %d ", ((MotorChangeMessage*)message)->steeringServo);
+    	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
+    	    	// Send the message to the Pi.
+    	    	//serial_send(outgoing);
+    			break;
+
+    		case TOGGLE_MESSAGE:
+    	    	message = (toggleMessage*)(incoming->message);
+    	    	// Format the message as a JSON item.
+    	    	sprintf(outgoing + strlen(outgoing), "%s{ ", MESSAGE_START_STR );
+    	    	sprintf(outgoing + strlen(outgoing), "MessageType: %d , MessageData : { ", TOGGLE_MESSAGE );
+    	    	sprintf(outgoing + strlen(outgoing), "brake : %d, ", ((toggleMessage*)message)->brake);
+    	    	sprintf(outgoing + strlen(outgoing), "fuzzy : %d ", ((toggleMessage*)message)->fuzzy);
+    	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
+    	    	// Send the message to the Pi.
+    	    	serial_send(outgoing);
     			break;
 
     		case DISTANCE_MESSAGE:
@@ -982,8 +1005,11 @@ static void ToggleTask(void *p_arg)
 
 	INT8U err; //, send_err;
 	int EnableFuzzy = alt_read_byte(SW_BASE) ;
-	bool ftoggle; //= alt_read_byte(SW_BASE) &0b1;
-	bool stoggle; //= alt_read_byte(SW_BASE) &0b10;
+	bool ftoggle, stoggle;
+	toggleMessage myToggle;
+
+	int prev = 0;
+	int curr = 0;
 
     for(;;) {
 
@@ -996,6 +1022,11 @@ static void ToggleTask(void *p_arg)
         	OSSemPost(FuzzyToggleSemaphore);
     		enable_sonar = true;
     		alt_write_byte(LEDR_BASE, 0xff);
+    		curr = 0;
+
+    		myToggle.brake = true;
+    		myToggle.fuzzy = true;
+
     	}
 
     	else if(!stoggle){
@@ -1004,6 +1035,10 @@ static void ToggleTask(void *p_arg)
         	OSSemPost(FuzzyToggleSemaphore);
     		enable_sonar = true;
     		alt_write_byte(LEDR_BASE, 0xf0);
+    		curr = 1;
+
+    		myToggle.brake = true;
+    		myToggle.fuzzy = false;
     	}
 
     	else if (!ftoggle) {
@@ -1013,6 +1048,10 @@ static void ToggleTask(void *p_arg)
         	OSSemPost(FuzzyToggleSemaphore);
 
     		alt_write_byte(LEDR_BASE, 0x0f);
+    		curr = 2;
+
+    		myToggle.brake = false;
+    		myToggle.fuzzy = true;
     	}
 
     	else {
@@ -1021,7 +1060,21 @@ static void ToggleTask(void *p_arg)
     		FuzzyToggle = false;
         	OSSemPost(FuzzyToggleSemaphore);
     		alt_write_byte(LEDR_BASE, 0x00);
+    		curr = 3;
+
+    		myToggle.brake = false;
+    		myToggle.fuzzy = false;
     	}
+
+    	if (prev != curr) {
+
+    		toggleMessage *_t = OSMemGet(StandardMemoryStorage, &err);
+    		_t->brake = myToggle.brake;
+    		_t->fuzzy = myToggle.fuzzy;
+    		OSQPost(LogQueue, CreateLogMessage(TOGGLE_MESSAGE, _t));
+    	}
+
+    	prev = curr;
     	// lights will be on if the fuzzy logic is on, and off if fuzzy logic is off
     	OSTimeDlyHMSM(0,0,0,50);
     }
