@@ -33,9 +33,9 @@ typedef struct incoming_msg{
 	int8_t steering_value;
 }incoming_msg;
 
-bool serial_communication_init();
-int rx_fifo_level();
-char serial_getc();
+bool serial_communication_init(void);
+int rx_fifo_level(void);
+char serial_getc(void);
 int serial_send(char * print_str);
 incoming_msg parse_incomming_msg(char * msg);
 bool read_rx_buffer(char* incoming_data_buffer, uint32_t *characters_read);
