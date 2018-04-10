@@ -896,8 +896,7 @@ static void LogTask (void *p_arg)
     			sprintf(outgoing + strlen(outgoing), "bl : %d, ", ((HallSensorMessage*)message)->backLeft);
     			sprintf(outgoing + strlen(outgoing), "br : %d ", ((HallSensorMessage*)message)->backRight);
     			sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
-    			// Send the message to the Pi.
-    			serial_send(outgoing);
+
     			break;
 
     		// This is the Fuzzy Set output.
@@ -913,8 +912,7 @@ static void LogTask (void *p_arg)
     	    	sprintf(outgoing + strlen(outgoing), "br : %f, ", ((MotorChangeMessage*)message)->backRight);
     	    	sprintf(outgoing + strlen(outgoing), "sS : %d ", ((MotorChangeMessage*)message)->steeringServo);
     	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
-    	    	// Send the message to the Pi.
-    	    	serial_send(outgoing);
+
     			break;
 
     		// These are the values being sent to the FPGA.
@@ -930,8 +928,6 @@ static void LogTask (void *p_arg)
     	    	sprintf(outgoing + strlen(outgoing), "br : %f, ", ((MotorChangeMessage*)message)->backRight);
     	    	sprintf(outgoing + strlen(outgoing), "sS : %d ", ((MotorChangeMessage*)message)->steeringServo);
     	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
-    	    	// Send the message to the Pi.
-    	    	//serial_send(outgoing);
     			break;
 
     		case TOGGLE_MESSAGE:
@@ -943,7 +939,6 @@ static void LogTask (void *p_arg)
     	    	sprintf(outgoing + strlen(outgoing), "fuzzy : %d ", ((toggleMessage*)message)->fuzzy);
     	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
     	    	// Send the message to the Pi.
-    	    	serial_send(outgoing);
     			break;
 
     		case DISTANCE_MESSAGE:
@@ -951,7 +946,6 @@ static void LogTask (void *p_arg)
     	    	sprintf(outgoing + strlen(outgoing), "MessageType: %d , MessageData : { ", DISTANCE_MESSAGE );
     	    	sprintf(outgoing + strlen(outgoing), "Distance : %d ", *(uint8_t*)(incoming->message));
     	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
-    	    	serial_send(outgoing);
     			break;
 
     		default:
@@ -960,6 +954,7 @@ static void LogTask (void *p_arg)
     		}
 
     	// Put back the embedded message memory after using it above.
+
     	OSMemPut(StandardMemoryStorage, incoming->message);
 
     	} else {
@@ -972,8 +967,13 @@ static void LogTask (void *p_arg)
     		sprintf(outgoing + strlen(outgoing), "error : %d ", incoming->error);
     		sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
     		// Send the message to the Pi.
-    		serial_send(outgoing);
     	};
+    	// Send the message to the Pi.
+    	OS_ENTER_CRITICAL();
+    	serial_send(outgoing);
+    	OS_EXIT_CRITICAL();
+
+
     	// Put back the incoming message memory. The embedded message was put back above.
     	OSMemPut(StandardMemoryStorage, incoming);
     }
