@@ -41,6 +41,7 @@
 
 #define		ARM_OSCL_TIMER_1_REG_EOI		(*((volatile CPU_REG32 *) (ARM_OSCL_TIMER_1_BASE + 0xC)))
 
+#define 	FuzzyTaskTimer					12500000
 
 /*    QSYS Interval Timer Memory Map and Features*/
 

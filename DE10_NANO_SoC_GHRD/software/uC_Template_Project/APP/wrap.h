@@ -192,4 +192,13 @@ void MoveBackServo(int8_t hex);
 // Function for controlling front, steering servo.
 void MoveFrontServo(int8_t hex);
 
+// Function for generating error and log messages, use wrappers below.
+LogMessage *_message_generator(INT8U taskID, INT8U sourceID, INT8U error, INT8U messageType, void *message);
+
+// Function for creating error messages
+LogMessage *CreateErrorMessage(INT8U taskID, INT8U sourceID, INT8U error);
+
+// Function for creating log messages
+LogMessage *CreateLogMessage(INT8U messageType, void *message);
+
 #endif

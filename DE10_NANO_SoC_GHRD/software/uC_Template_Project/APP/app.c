@@ -24,7 +24,7 @@
 *
 *                                            CYCLONE V SOC
 *
-* Filename      : app.h (used to be app.c)
+* Filename      : app.c
 * Version       : V1.00
 * Programmer(s) : JBL
 * Modifications	: Nancy Minderman nancy.minderman@ualberta.ca, Brendan Bruner bbruner@ualberta.ca
@@ -33,11 +33,17 @@
 *
 *				  Keith Mills kgmills@ualberta.ca
 *				  Reworked for project, testing of components, for usage on the DE10-Nano.
+*				  Later programmed Motor Task and Fuzzy Task
 *
 *				  Joshua Robertson jcrobert@ualberta.ca
 *				  Further reworked to add our necessary tasks, queues, and other data structures.
-*********************************************************************************************************
-* Note(s)       : none.
+*
+*				  Brian Ofrim bofrim@ualberta.ca
+*				  Sonar Task
+*
+*				  Fredric Mendi fmendi@ualberta.ca
+*				  Toggle Task
+*
 *********************************************************************************************************
 */
 
@@ -91,13 +97,12 @@
 *********************************************************************************************************
 */
 #define APP_TASK_PRIO 4
-#define EMERGENCY_TASK_PRIORITY 7
 #define COLLISION_TASK_PRIO 5
-#define MOTOR_TASK_PRIO 8
-#define FUZZY_TASK_PRIO 9
-#define COMMUNICATION_TASK_PRIO 10
-#define LOG_TASK_PRIO 11
-#define TOGGLE_TASK_PRIO 12           // maybe change later to higher prio, if necessary
+#define MOTOR_TASK_PRIO 6
+#define FUZZY_TASK_PRIO 7
+#define COMMUNICATION_TASK_PRIO 8
+#define LOG_TASK_PRIO 9
+#define TOGGLE_TASK_PRIO 10
 
 #define TASK_STACK_SIZE 4096
 
@@ -116,7 +121,6 @@
 */
 
 CPU_STK AppTaskStartStk[TASK_STACK_SIZE];
-CPU_STK EmgTaskStk[TASK_STACK_SIZE];
 CPU_STK ColTaskStk[TASK_STACK_SIZE];
 CPU_STK MotorTaskStk[TASK_STACK_SIZE];
 CPU_STK FuzzyTaskStk[TASK_STACK_SIZE];
@@ -131,7 +135,6 @@ CPU_STK ToggleTaskStk[TASK_STACK_SIZE];
 */
 
 static  void  AppTaskStart              (void        *p_arg);
-static  void  EmergencyTask             (void        *p_arg);
 static  void  CollisionTask             (void        *p_arg);
 static  void  MotorTask                 (void        *p_arg);
 static  void  FuzzyTask                 (void        *p_arg);
@@ -224,7 +227,6 @@ INT8U LargeMemory[16][256];
 *                   Initialization.
 *********************************************************************************************************
 */
-
 int main ()
 {
     INT8U os_err;
@@ -245,15 +247,15 @@ int main ()
 
     OSInit();
 
-    ALT_BRIDGE_t lw_bridge = ALT_BRIDGE_LWH2F;
-    ALT_STATUS_CODE err2 = alt_bridge_init(lw_bridge, NULL, NULL);
+    ALT_BRIDGE_t lw_bridge = ALT_BRIDGE_LWH2F; // Code from Tutorial for Flashing to SD Card
+    ALT_STATUS_CODE err2 = alt_bridge_init(lw_bridge, NULL, NULL); // Placed here before I/O calls
 
     // Set the global steering angle to 0 on start.
     globalSteeringAngle = 0;
     userSteer = 0;
     userMag = 0;
-    MoveFrontServo(FrontServoCen);
-    MoveBackServo(BackServoMin);
+    MoveFrontServo(FrontServoCen); // 'Center Steering Rod'
+    MoveBackServo(BackServoMin); // Raise back servo up.
 
     //Array of pointers that the Queues will use. Should never be touched again.
     void *LogMessageArray[100];
@@ -304,6 +306,8 @@ int main ()
     if (err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
+
+    // Watchdog task.
     os_err = OSTaskCreateExt((void (*)(void *)) AppTaskStart,   /* Create the start task.                               */
                              (void          * ) 0,
                              (OS_STK        * )&AppTaskStartStk[TASK_STACK_SIZE - 1],
@@ -317,19 +321,7 @@ int main ()
     if (os_err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
-    os_err = OSTaskCreateExt((void (*)(void *)) EmergencyTask,   /* Create the start task.                               */
-                             (void          * ) 0,
-                             (OS_STK        * )&EmgTaskStk[TASK_STACK_SIZE - 1],
-                             (INT8U           ) EMERGENCY_TASK_PRIORITY,
-                             (INT16U          ) EMERGENCY_TASK_PRIORITY,  // reuse prio for ID
-                             (OS_STK        * )&EmgTaskStk[0],
-                             (INT32U          ) TASK_STACK_SIZE,
-                             (void          * )0,
-                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
-
-    if (os_err != OS_ERR_NONE) {
-        ; /* Handle error. */
-    }
+    // Collision Task
     os_err = OSTaskCreateExt((void (*)(void *)) CollisionTask,   /* Create the start task.                               */
                              (void          * ) 0,
                              (OS_STK        * )&ColTaskStk[TASK_STACK_SIZE - 1],
@@ -343,6 +335,8 @@ int main ()
     if (os_err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
+
+    // Motor Driver Task
     os_err = OSTaskCreateExt((void (*)(void *)) MotorTask,   /* Create the start task.                               */
                              (void          * ) 0,
                              (OS_STK        * )&MotorTaskStk[TASK_STACK_SIZE - 1],
@@ -356,6 +350,8 @@ int main ()
     if (os_err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
+
+    // Fuzzy Logic Task
     os_err = OSTaskCreateExt((void (*)(void *)) FuzzyTask,   /* Create the start task.                               */
                              (void          * ) 0,
                              (OS_STK        * )&FuzzyTaskStk[TASK_STACK_SIZE - 1],
@@ -369,6 +365,8 @@ int main ()
     if (os_err != OS_ERR_NONE) {
         ; /* Handle error. */
     }
+
+    // Communication Task
     os_err = OSTaskCreateExt((void (*)(void *)) CommunicationTask,   /* Create the start task.                               */
                              (void          * ) 0,
                              (OS_STK        * )&ComTaskStk[TASK_STACK_SIZE - 1],
@@ -383,6 +381,7 @@ int main ()
          ; /* Handle error. */
      }
 
+    // Logging Task
     os_err = OSTaskCreateExt((void (*)(void *)) LogTask,   /* Create the start task.                               */
                              (void          * ) 0,
                              (OS_STK        * )&LogTaskStk[TASK_STACK_SIZE - 1],
@@ -397,15 +396,16 @@ int main ()
         ; /* Handle error. */
     }
 
+    // Switch Toggle Task
     os_err = OSTaskCreateExt((void (*)(void *)) ToggleTask,   /* Create the start task.                               */
-                                 (void          * ) 0,
-                                 (OS_STK        * )&ToggleTaskStk[TASK_STACK_SIZE - 1],
-                                 (INT8U           ) TOGGLE_TASK_PRIO,
-                                 (INT16U          ) TOGGLE_TASK_PRIO,  // reuse prio for ID
-                                 (OS_STK        * )&ToggleTaskStk[0],
-                                 (INT32U          ) TASK_STACK_SIZE,
-                                 (void          * )0,
-                                 (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
+                             (void          * ) 0,
+                             (OS_STK        * )&ToggleTaskStk[TASK_STACK_SIZE - 1],
+                             (INT8U           ) TOGGLE_TASK_PRIO,
+                             (INT16U          ) TOGGLE_TASK_PRIO,  // reuse prio for ID
+                             (OS_STK        * )&ToggleTaskStk[0],
+                             (INT32U          ) TASK_STACK_SIZE,
+                             (void          * )0,
+                             (INT16U          )(OS_TASK_OPT_STK_CLR | OS_TASK_OPT_STK_CHK));
 
     if (os_err != OS_ERR_NONE) {
             ; /* Handle error. */
@@ -422,38 +422,15 @@ int main ()
 *********************************************************************************************************
 *                                           App_TaskStart()
 *
-* Description : Startup task example code.
+* Description : Pats the watchdog every second
 *
 * Arguments   : p_arg       Argument passed by 'OSTaskCreate()'.
 *
 * Returns     : none.
 *
 * Created by  : main().
-*
-* Notes       : (1) The ticker MUST be initialised AFTER multitasking has started.
 *********************************************************************************************************
 */
-
-// TODO externalize below functions
-LogMessage *_message_generator(INT8U taskID, INT8U sourceID, INT8U error, INT8U messageType, void *message) {
-	INT8U err;
-	LogMessage *outgoing = OSMemGet(StandardMemoryStorage, &err);
-	outgoing->taskID = taskID;
-	outgoing->sourceID = sourceID;
-	outgoing->error = error;
-	outgoing->messageType = messageType;
-	outgoing->message = message;
-	return outgoing;
-}
-
-LogMessage *CreateErrorMessage(INT8U taskID, INT8U sourceID, INT8U error) {
-	return _message_generator(taskID, sourceID, error, 0, 0);
-}
-
-LogMessage *CreateLogMessage(INT8U messageType, void *message) {
-	return _message_generator(0, 0, OS_ERR_NONE, messageType, message);
-}
-
 static  void  AppTaskStart (void *p_arg)
 {
 
@@ -468,21 +445,20 @@ static  void  AppTaskStart (void *p_arg)
     }
 }
 
-static void EmergencyTask (void *p_arg)
-{
-//	INT8U err;
-//	char *TaskName = "EmergencyTask";
-//	LogMessage *errorMessage;
-	//int8_t x = 64;
-    for(;;) {
-    	OSTimeDlyHMSM(0,0,1,0);
-    }
-}
-
-
-#define DISTANCE_SAMPLES 20
-#define SAMPLE_OFFSET 3
-
+/*
+*********************************************************************************************************
+*                                           CollisionTask
+*
+* Description : Reads from the Sonar and determines whether or not to deploy the emergency brake/halt motors
+*
+* Arguments   : p_arg       Argument passed by 'OSTaskCreate()'.
+*
+* Returns     : none.
+*
+* Created by  : main().
+*
+*********************************************************************************************************
+*/
 static void CollisionTask (void *p_arg)
 {
 	INT8U err;
@@ -576,6 +552,22 @@ static void CollisionTask (void *p_arg)
  * Responsible for accruing information from other tasks and sending output
  * instructions to the PWMs for the H_bridges and steering servo.
  */
+/*
+*********************************************************************************************************
+*                                           MotorTask
+*
+* Description : Gets motor magnitudes from Fuzzy Task and Communication Task. Responsible for writing
+* to DC motor PWM VHDL Components and steering servo.
+* Control of motors can be masked by a global (semaphore protected) boolean set/unset by CollisionTask
+*
+* Arguments   : p_arg       Argument passed by 'OSTaskCreate()'.
+*
+* Returns     : none.
+*
+* Created by  : main().
+*
+*********************************************************************************************************
+*/
 static void MotorTask (void *p_arg)
 {
 	INT8U err; //, send_err;
@@ -685,14 +677,24 @@ static void MotorTask (void *p_arg)
     }
 }
 
-/**
- * Fuzzy Task
- * Gets information from Hall Sensors at a 2Hz rate.
- * Processes information to determine relative speeds.
- * Accesses global variable on steering for lookup table, does not modify though.
- * Uses Fuzzy Logic LUTs to determine fuzzy modifiers.
- * Sends to Motor Task.
- */
+/*
+*********************************************************************************************************
+*                                           FuzzyTask
+*
+* Description : Gets information from Hall Sensors at a 2Hz rate.
+* Processes information to determine relative speeds.
+* Accesses global variable on steering for lookup table, does not modify though.
+* Uses Fuzzy Logic LUTs to determine fuzzy modifiers.
+* Sends to Motor Task.
+*
+* Arguments   : p_arg       Argument passed by 'OSTaskCreate()'.
+*
+* Returns     : none.
+*
+* Created by  : main().
+*
+*********************************************************************************************************
+*/
 static void FuzzyTask (void *p_arg) {
 	INT8U err;
 //	char *TaskName = "FuzzyTask";
@@ -714,7 +716,6 @@ static void FuzzyTask (void *p_arg) {
 	uint8_t oldRearRight = 0;
 
 	// Initialize the wheelspeeds.
-	// TODO potential source of problem.
 	uint8_t wheelSpeeds[4] = {0};
 
 	// Local variable for steering, we only access the semaphore once.
@@ -823,6 +824,21 @@ static void FuzzyTask (void *p_arg) {
     }
 }
 
+/*
+*********************************************************************************************************
+*                                           CommunicationTask
+*
+* Description : Receives instructions from Raspberry Pi.
+* Capable of timing out if it doesn't receive an instruction and shut down the motors.
+*
+* Arguments   : p_arg       Argument passed by 'OSTaskCreate()'.
+*
+* Returns     : none.
+*
+* Created by  : main().
+*
+*********************************************************************************************************
+*/
 static void CommunicationTask (void *p_arg)
 {
 	INT8U err;
@@ -861,7 +877,7 @@ static void CommunicationTask (void *p_arg)
 					// Post to Semaphore
 					OSSemPend(UserSemaphore, 0, &err);
 					if (err != OS_ERR_NONE) OSQPost(LogQueue, CreateErrorMessage(COMMUNICATION_TASK, OS_SEM_PEND, err));
-					userSteer = new_msg.steering_value; //TODO possibly change
+					userSteer = new_msg.steering_value;
 					userMag = new_msg.motor_level;
 
 					OSSemPost(UserSemaphore);
@@ -882,7 +898,20 @@ static void CommunicationTask (void *p_arg)
     }
 }
 
-
+/*
+*********************************************************************************************************
+*                                           LogTask
+*
+* Description : Accumulates messages from other tasks and sends back to Pi to be posted by website
+*
+* Arguments   : p_arg       Argument passed by 'OSTaskCreate()'.
+*
+* Returns     : none.
+*
+* Created by  : main().
+*
+*********************************************************************************************************
+*/
 static void LogTask (void *p_arg)
 {
 
@@ -994,6 +1023,21 @@ static void LogTask (void *p_arg)
 
 }
 
+/*
+*********************************************************************************************************
+*                                           ToggleTask
+*
+* Description : On a timer, checks the state of the DIP switches and disables/enables
+* FuzzyTask and CollisionTask
+*
+* Arguments   : p_arg       Argument passed by 'OSTaskCreate()'.
+*
+* Returns     : none.
+*
+* Created by  : main().
+*
+*********************************************************************************************************
+*/
 static void ToggleTask(void *p_arg)
 {
 

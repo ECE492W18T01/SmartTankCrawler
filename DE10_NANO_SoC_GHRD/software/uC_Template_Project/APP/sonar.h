@@ -48,4 +48,7 @@ int distance_to_stop(int velocity);
 
 #define LIMIT_VALUE_SIGNED(val, max) ((abs(val) <= abs(max)) ? val: (abs(max) * SIGN_OF(val)))
 
+#define DISTANCE_SAMPLES 20
+#define SAMPLE_OFFSET 3
+
 #endif

@@ -31,3 +31,22 @@ void MoveFrontServo(int8_t hex ) {
 		alt_write_byte(STEER_SERVO_BASE, (-hex + adder) / divider);
 	}
 }
+
+LogMessage *_message_generator(INT8U taskID, INT8U sourceID, INT8U error, INT8U messageType, void *message) {
+	INT8U err;
+	LogMessage *outgoing = OSMemGet(StandardMemoryStorage, &err);
+	outgoing->taskID = taskID;
+	outgoing->sourceID = sourceID;
+	outgoing->error = error;
+	outgoing->messageType = messageType;
+	outgoing->message = message;
+	return outgoing;
+}
+
+LogMessage *CreateErrorMessage(INT8U taskID, INT8U sourceID, INT8U error) {
+	return _message_generator(taskID, sourceID, error, 0, 0);
+}
+
+LogMessage *CreateLogMessage(INT8U messageType, void *message) {
+	return _message_generator(0, 0, OS_ERR_NONE, messageType, message);
+}
