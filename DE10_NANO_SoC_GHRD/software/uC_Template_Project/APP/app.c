@@ -605,7 +605,7 @@ static void MotorTask (void *p_arg)
 		userDriveSpeed = userMag;
 		OSSemPost(UserSemaphore);
 
-    	// Only pend for so long - Change timeout value to be define, but the number now is 1/4 of a second.
+    	// Only pend for so long - Change timeout value to be define, but the number now is 1/8 of a second.
     	// Subject to change alongside timeouts for other queues.
     	incoming = (MotorChangeMessage*)OSQPend(MotorQueue, OS_TICKS_PER_SEC / 8, &err);
 

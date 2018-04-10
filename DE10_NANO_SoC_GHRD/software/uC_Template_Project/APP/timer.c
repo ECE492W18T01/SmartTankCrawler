@@ -39,7 +39,7 @@ void InitHallSensorInterrupt(void) {
 	//12500000 should be 2Hz
 	//125000000 should be every five seconds, or 0.2 Hz
 
-	ARM_OSCL_TIMER_0_REG_LOADCOUNT = 250000000; // 250000000 of the oscl_clk should be one second
+	ARM_OSCL_TIMER_0_REG_LOADCOUNT = 12500000; // 250000000 of the oscl_clk should be one second
 
 
 	BSP_IntVectSet   (201u,   // 201 is source for oscl_timer 0
