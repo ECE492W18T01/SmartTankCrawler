@@ -17,6 +17,8 @@
  * but filter said input so that it does not cause weird behaviour.
  *
  * 4. Provide data structures for the information passing between tasks
+ *
+ * 5. Store most of the constants used in App.c
  */
 
 #ifndef wrap_H
@@ -41,6 +43,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/*
+*********************************************************************************************************
+*										Qsys Components
+*********************************************************************************************************
+*/
 // Full Clockwise.
 #define BackServoMin 0x00
 
@@ -61,11 +68,6 @@
 #define REARLEFT 2
 #define REARRIGHT 3
 
-/*
-*********************************************************************************************************
-*										Qsys Components
-*********************************************************************************************************
-*/
 // Green FPGA Leds
 // Type:  Input
 // Width: Byte
@@ -119,7 +121,12 @@
 #define R_RIGHT_ADD 0x00000119
 #define R_RIGHT_BASE FPGA_TO_HPS_LW_ADDR(R_RIGHT_ADD)
 
-
+/*
+*********************************************************************************************************
+*										App.c constants
+*********************************************************************************************************
+*/
+// Log task labels
 #define ERROR_MESSAGE 0
 #define HALL_SENSOR_MESSAGE 1
 #define MOTOR_CHANGE_MESSAGE 2
@@ -128,6 +135,7 @@
 #define MOTOR_OUTPUT_MESSAGE 5
 #define TOGGLE_MESSAGE 6
 
+// Semaphore and memory OS constructs
 #define OS_SEM_PEND 0
 #define OS_Q_PEND 1
 #define OS_MEM_GET 2
@@ -140,6 +148,57 @@
 #define MOTOR_TASK 5
 #define TOGGLE_TASK 6
 
+// main constants
+#define initSteeringAngle 0
+#define initUserMag		  0
+#define LogMessageSize	  100
+#define StdMessageSize 	  10
+#define initSemWith       1
+#define initSemWithout    0
+
+// Collision Task Constants
+#define brakeTimeDelaySec 2
+#define fakeOutThreshold  1
+
+// Motor Task Constants
+#define staticFuzzyInit	0
+#define numMotorFloat	4
+#define initUserSpeed	0
+#define motorCommTO		0
+#define motorFuzzTO		8
+#define steerDivisor    6
+
+// Fuzzy Task Constants
+#define initOldWheels   0
+#define fuzzyIntTO		0
+#define diffAvoidDiv0	1
+#define nullFuzzy		0
+
+// Communication Task Constants
+#define SerialTO		2
+#define initTOmillisec  500
+
+// Log Task Constants
+#define bufferSize 		256
+
+// Toggle Task Constants
+#define fuzzyANDConst   0b1
+#define servoANDConst   0b10
+#define bothOn		    0
+#define onlyBrake		1
+#define	onlyFuzzy		2
+#define bothOff			3
+#define toggleTimeDlyMS 50
+#define LEDSONALL		0xff
+#define LEDSBrake		0xf0
+#define LEDSFuzzy		0x0f
+#define LEDSOFFALL		0x00
+
+/*
+*********************************************************************************************************
+*										App.c Structures
+*********************************************************************************************************
+*/
 typedef struct LogMessage LogMessage;
 typedef struct HallSensorMessage HallSensorMessage;
 typedef struct MotorChangeMessage MotorChangeMessage;
