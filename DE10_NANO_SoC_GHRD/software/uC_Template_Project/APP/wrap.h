@@ -245,6 +245,17 @@ extern int8_t globalSteeringAngle;
 extern OS_MEM *StandardMemoryStorage;
 extern OS_MEM *LargeMemoryStorage;
 
+
+/*
+*********************************************************************************************************
+*										App.c Structures
+*********************************************************************************************************
+*/
+
+#define steeringMaxAngle 60
+#define steeringThres	 11
+#define steerFormulaAdd	 60
+#define steerFormulaDiv	 6
 // Function for controlling rear, emergency brake servo.
 void MoveBackServo(int8_t hex);
 

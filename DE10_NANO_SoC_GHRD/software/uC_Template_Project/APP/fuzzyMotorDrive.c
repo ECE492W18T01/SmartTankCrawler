@@ -7,10 +7,10 @@ void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, float* motorVa
 	if (stopMask){
 		// using Brian's wrapper function for the motors
 		// kill power to motors (give no PWM signal to wheels)
-		motorVals[0] = 0;
-		motorVals[1] = 0;
-		motorVals[2] = 0;
-		motorVals[3] = 0;
+		motorVals[0] = coast;
+		motorVals[1] = coast;
+		motorVals[2] = coast;
+		motorVals[3] = coast;
 		return;
 	}
 
@@ -19,7 +19,7 @@ void driveMotors(float driveSpeed, MotorChangeMessage *fuzzyMods, float* motorVa
 	int8_t dir = driveSpeed / magnitude;
 
     // Index to motoDriveR.
-    int8_t steeringIndex = abs(steering) / 6;
+    int8_t steeringIndex = abs(steering) / steerDivisor;
     // Relative speed ratios, assuming a right turn (steering > 0)
     // The speeds from greatest to least are fl > rl > rr >fr
     float fl = magnitude;
@@ -82,5 +82,5 @@ float rescaleInput(float input) {
 	// y = m*x + b
 	// 1.0 = m*1 + b
 	// 0.5 = m*0 + b
-	return 0.5 * input + 0.5;
+	return slope * input + intercept;
 }

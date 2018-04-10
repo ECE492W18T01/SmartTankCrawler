@@ -19,6 +19,7 @@
 #include <math.h>
 #include "slipLessSteeringRatios.h"
 #include "fMatrices_servoFuzzyThree.h"
+#include "wrap.h"
 
 // Front and Rear Axle Multiplier, Overall Multiplier, two numbers to adjust the calculation
 // Results so that they can be used as indices to access the decision matrices.
@@ -28,6 +29,11 @@
 #define shiftIndex   10
 #define speedThres   5
 #define lowAngle     25
+#define upperIndex   10
+#define lowerIndex	 -10
+#define midPoint     0
+#define leftRightDet 0
+#define numFSEntries 5
 
 // This function takes the calculation of one of the two below functions
 // And "cleans it, somewhat", by rounding it and fitting it within the range of

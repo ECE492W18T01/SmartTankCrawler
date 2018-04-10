@@ -26,7 +26,7 @@
 #define across         	2
 
 // Killswitch command. Set all motors to zero.
-#define kill           	0
+#define coast           0
 
 // If we're travelling forward the input to driveMotors, driveSpeed is more than 1
 #define forward        	0
@@ -38,6 +38,9 @@
 
 // 0 is ahead, greater than 0 is a right turn, less than zero is a left turn.
 #define straightAngle 	0
+
+#define slope			0.42
+#define intercept		0.58
 
 /*
  * driveMotors

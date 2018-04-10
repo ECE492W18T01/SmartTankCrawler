@@ -1,5 +1,4 @@
 #include "FuzzyLogicProcessor.h"
-#include "wrap.h"
 /*
  * ECE 492
  * Wi18
@@ -16,15 +15,15 @@
 // Anything in between is rounded towards the larger
 // value in absolute terms. 
 int boundOutputs(float error) {
-	if (error > 10) {
-		return 10;
+	if (error > upperIndex) {
+		return upperIndex;
 	}
 
-	else if (error < -10) {
-		return -10;
+	else if (error < lowerIndex) {
+		return lowerIndex;
 	}
 
-	else if (error < 0) {
+	else if (error < midPoint) {
 		return (int)floor(error);
 	}
 
@@ -43,7 +42,7 @@ int boundOutputs(float error) {
 int computeAxleDeviation(uint8_t left, uint8_t right, int expected) {
 
 	int numerator = 0;
-	if (expected > 0) {
+	if (expected > leftRightDet) {
 		numerator = (left * axleRatio) / right;
 	}
 	else {
@@ -81,7 +80,7 @@ float* calculateMotorModifiers(uint8_t wheelSpeeds[4], int8_t steeringAngle) {
 	int8_t absoluteSteering = abs(steeringAngle);
 	int8_t direction = steeringAngle / absoluteSteering;
 
-	int8_t index = absoluteSteering/6;
+	int8_t index = absoluteSteering / steerDivisor;
 
 	int frontAxleDeviation = computeAxleDeviation(wheelSpeeds[0], wheelSpeeds[1],
 		direction * SLIPRATIOS[index][1]);
@@ -93,14 +92,14 @@ float* calculateMotorModifiers(uint8_t wheelSpeeds[4], int8_t steeringAngle) {
 
 	float* fsOutputs = OSMemGet(StandardMemoryStorage, &err);
 
-	for (int i = 0; i < 5; i++) {
+	for (int i = 0; i < numFSEntries; i++) {
 		fsOutputs[i] = FUZZYLOOKUP[overallDeviation][rearAxleDeviation][frontAxleDeviation][i];
 	}
 
 	return fsOutputs;
 }
 
-int getMinWheelDiff(uint8_t wheelSpeeds[4]) {
+int getMinWheelDiff(uint8_t wheelSpeeds[numMotorFloat]) {
 
 	int min = wheelSpeeds[0];
 	if (wheelSpeeds[1] < min) {

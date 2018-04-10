@@ -13,22 +13,20 @@ void MoveBackServo(int8_t hex) {
 
 void MoveFrontServo(int8_t hex ) {
 
-	if (hex <= -60) {
+	if (hex <= -steeringMaxAngle) {
 		alt_write_byte(STEER_SERVO_BASE, FrontServoMax);
 	}
 
-	else if (hex >= 60) {
+	else if (hex >= steeringMaxAngle) {
 		alt_write_byte(STEER_SERVO_BASE, FrontServoMin);
 	}
 
-	else if (hex < 11 && hex > -11) {
+	else if (hex < steeringThres && hex > -steeringThres) {
 		alt_write_byte(STEER_SERVO_BASE, FrontServoCen);
 	}
 
 	else {
-		int8_t adder = 60;
-		int8_t divider = 6;
-		alt_write_byte(STEER_SERVO_BASE, (-hex + adder) / divider);
+		alt_write_byte(STEER_SERVO_BASE, (-hex + steerFormulaAdd) / steerFormulaDiv);
 	}
 }
 
