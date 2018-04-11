@@ -127,13 +127,13 @@
 *********************************************************************************************************
 */
 // Log task labels
-#define ERROR_MESSAGE 0
-#define HALL_SENSOR_MESSAGE 1
-#define MOTOR_CHANGE_MESSAGE 2
-#define DISTANCE_MESSAGE 3
-#define STATUS_MESSAGE 4
-#define MOTOR_OUTPUT_MESSAGE 5
-#define TOGGLE_MESSAGE 6
+#define ERROR_MESSAGE 0 // Not implemented
+#define HALL_SENSOR_MESSAGE 1 // Hall Sensor Readings
+#define MOTOR_CHANGE_MESSAGE 2 // This is what the Fuzzy Set is outputing
+#define DISTANCE_MESSAGE 3 // Distance as mentioned by Sonar
+#define STATUS_MESSAGE 4 // Not implemented
+#define MOTOR_OUTPUT_MESSAGE 5 // What the HPS is outputing to the FPGA
+#define TOGGLE_MESSAGE 6 // DIP Switch config
 
 // Semaphore and memory OS constructs
 #define OS_SEM_PEND 0

@@ -750,10 +750,10 @@ static void FuzzyTask (void *p_arg) {
 
             // Created a message to send to the Log Task
             HallSensorMessage *hsm = OSMemGet(StandardMemoryStorage, &err);
-            hsm->frontLeft = wheelSpeeds[0];
-            hsm->frontRight = wheelSpeeds[1];
-            hsm->backLeft = wheelSpeeds[2];
-            hsm->backRight = wheelSpeeds[3];
+            hsm->frontLeft = wheelSpeeds[0] - diffAvoidDiv0;
+            hsm->frontRight = wheelSpeeds[1] - diffAvoidDiv0;
+            hsm->backLeft = wheelSpeeds[2] - diffAvoidDiv0;
+            hsm->backRight = wheelSpeeds[3] - diffAvoidDiv0;
 
             err = OSQPost(LogQueue, CreateLogMessage(HALL_SENSOR_MESSAGE, hsm));
 
@@ -890,11 +890,11 @@ static void LogTask (void *p_arg)
     			message = (HallSensorMessage*)(incoming->message);
     			// Format the message as a JSON item.
     			sprintf(outgoing + strlen(outgoing), "%s{ ", MESSAGE_START_STR );
-    			sprintf(outgoing + strlen(outgoing), "MessageType: %d , MessageData : { ", HALL_SENSOR_MESSAGE );
-    			sprintf(outgoing + strlen(outgoing), "fl : %d, ", ((HallSensorMessage*)message)->frontLeft);
-    			sprintf(outgoing + strlen(outgoing), "fr : %d, ", ((HallSensorMessage*)message)->frontRight);
-    			sprintf(outgoing + strlen(outgoing), "bl : %d, ", ((HallSensorMessage*)message)->backLeft);
-    			sprintf(outgoing + strlen(outgoing), "br : %d ", ((HallSensorMessage*)message)->backRight);
+    			sprintf(outgoing + strlen(outgoing), "\"MessageType\": %d , \"MessageData\" : { ", HALL_SENSOR_MESSAGE );
+    			sprintf(outgoing + strlen(outgoing), "\"fl\" : %d, ", ((HallSensorMessage*)message)->frontLeft);
+    			sprintf(outgoing + strlen(outgoing), "\"fr\" : %d, ", ((HallSensorMessage*)message)->frontRight);
+    			sprintf(outgoing + strlen(outgoing), "\"bl\" : %d, ", ((HallSensorMessage*)message)->backLeft);
+    			sprintf(outgoing + strlen(outgoing), "\"br\" : %d ", ((HallSensorMessage*)message)->backRight);
     			sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
 
     			break;
@@ -905,12 +905,12 @@ static void LogTask (void *p_arg)
     	    	message = (MotorChangeMessage*)(incoming->message);
     	    	// Format the message as a JSON item.
     	    	sprintf(outgoing + strlen(outgoing), "%s{ ", MESSAGE_START_STR );
-    	    	sprintf(outgoing + strlen(outgoing), "MessageType: %d , MessageData : { ", MOTOR_CHANGE_MESSAGE );
-    	    	sprintf(outgoing + strlen(outgoing), "fl : %f, ", ((MotorChangeMessage*)message)->frontLeft);
-    	    	sprintf(outgoing + strlen(outgoing), "fr : %f, ", ((MotorChangeMessage*)message)->frontRight);
-    	    	sprintf(outgoing + strlen(outgoing), "bl : %f, ", ((MotorChangeMessage*)message)->backLeft);
-    	    	sprintf(outgoing + strlen(outgoing), "br : %f, ", ((MotorChangeMessage*)message)->backRight);
-    	    	sprintf(outgoing + strlen(outgoing), "sS : %d ", ((MotorChangeMessage*)message)->steeringServo);
+    	    	sprintf(outgoing + strlen(outgoing), "\"MessageType\": %d , \"MessageData\" : { ", MOTOR_CHANGE_MESSAGE );
+    	    	sprintf(outgoing + strlen(outgoing), "\"fl\" : %f, ", ((MotorChangeMessage*)message)->frontLeft);
+    	    	sprintf(outgoing + strlen(outgoing), "\"fr\" : %f, ", ((MotorChangeMessage*)message)->frontRight);
+    	    	sprintf(outgoing + strlen(outgoing), "\"bl\" : %f, ", ((MotorChangeMessage*)message)->backLeft);
+    	    	sprintf(outgoing + strlen(outgoing), "\"br\" : %f, ", ((MotorChangeMessage*)message)->backRight);
+    	    	sprintf(outgoing + strlen(outgoing), "\"sS\" : %d ", ((MotorChangeMessage*)message)->steeringServo);
     	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
 
     			break;
@@ -921,12 +921,12 @@ static void LogTask (void *p_arg)
     	    	message = (MotorChangeMessage*)(incoming->message);
     	    	// Format the message as a JSON item.
     	    	sprintf(outgoing + strlen(outgoing), "%s{ ", MESSAGE_START_STR );
-    	    	sprintf(outgoing + strlen(outgoing), "MessageType: %d , MessageData : { ", MOTOR_OUTPUT_MESSAGE );
-    	    	sprintf(outgoing + strlen(outgoing), "fl : %f, ", ((MotorChangeMessage*)message)->frontLeft);
-    	    	sprintf(outgoing + strlen(outgoing), "fr : %f, ", ((MotorChangeMessage*)message)->frontRight);
-    	    	sprintf(outgoing + strlen(outgoing), "bl : %f, ", ((MotorChangeMessage*)message)->backLeft);
-    	    	sprintf(outgoing + strlen(outgoing), "br : %f, ", ((MotorChangeMessage*)message)->backRight);
-    	    	sprintf(outgoing + strlen(outgoing), "sS : %d ", ((MotorChangeMessage*)message)->steeringServo);
+    	    	sprintf(outgoing + strlen(outgoing), "\"MessageType\": %d , \"MessageData\" : { ", MOTOR_OUTPUT_MESSAGE );
+    	    	sprintf(outgoing + strlen(outgoing), "\"fl\" : %f, ", ((MotorChangeMessage*)message)->frontLeft);
+    	    	sprintf(outgoing + strlen(outgoing), "\"fr\" : %f, ", ((MotorChangeMessage*)message)->frontRight);
+    	    	sprintf(outgoing + strlen(outgoing), "\"bl\" : %f, ", ((MotorChangeMessage*)message)->backLeft);
+    	    	sprintf(outgoing + strlen(outgoing), "\"br\" : %f, ", ((MotorChangeMessage*)message)->backRight);
+    	    	sprintf(outgoing + strlen(outgoing), "\"sS\" : %d ", ((MotorChangeMessage*)message)->steeringServo);
     	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
     			break;
 
@@ -934,17 +934,17 @@ static void LogTask (void *p_arg)
     	    	message = (toggleMessage*)(incoming->message);
     	    	// Format the message as a JSON item.
     	    	sprintf(outgoing + strlen(outgoing), "%s{ ", MESSAGE_START_STR );
-    	    	sprintf(outgoing + strlen(outgoing), "MessageType: %d , MessageData : { ", TOGGLE_MESSAGE );
-    	    	sprintf(outgoing + strlen(outgoing), "brake : %d, ", ((toggleMessage*)message)->brake);
-    	    	sprintf(outgoing + strlen(outgoing), "fuzzy : %d ", ((toggleMessage*)message)->fuzzy);
+    	    	sprintf(outgoing + strlen(outgoing), "\"MessageType\": %d , \"MessageData\" : { ", TOGGLE_MESSAGE );
+    	    	sprintf(outgoing + strlen(outgoing), "\"brake\" : %d, ", ((toggleMessage*)message)->brake);
+    	    	sprintf(outgoing + strlen(outgoing), "\"fuzzy\" : %d ", ((toggleMessage*)message)->fuzzy);
     	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
     	    	// Send the message to the Pi.
     			break;
 
     		case DISTANCE_MESSAGE:
     	    	sprintf(outgoing + strlen(outgoing), "%s{ ", MESSAGE_START_STR );
-    	    	sprintf(outgoing + strlen(outgoing), "MessageType: %d , MessageData : { ", DISTANCE_MESSAGE );
-    	    	sprintf(outgoing + strlen(outgoing), "Distance : %d ", *(uint8_t*)(incoming->message));
+    	    	sprintf(outgoing + strlen(outgoing), "\"MessageType\": %d , \"MessageData\" : { ", DISTANCE_MESSAGE );
+    	    	sprintf(outgoing + strlen(outgoing), "\"Distance\" : %d ", *(uint8_t*)(incoming->message));
     	    	sprintf(outgoing + strlen(outgoing), "} }%s\n", MESSAGE_END_STR);
     			break;
 
