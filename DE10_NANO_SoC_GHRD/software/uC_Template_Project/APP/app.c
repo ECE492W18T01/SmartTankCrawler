@@ -944,7 +944,6 @@ static void LogTask (void *p_arg)
     	    	sprintf(outgoing + strlen(outgoing), "%s", MESSAGE_START_STR );
     	    	sprintf(outgoing + strlen(outgoing), "%d,", DISTANCE_MESSAGE );
     	    	sprintf(outgoing + strlen(outgoing), "%d", *(uint8_t*)(incoming->message));
-    	    	printf("%d\n", *(uint8_t*)(incoming->message));
     	    	sprintf(outgoing + strlen(outgoing), "%s\n", MESSAGE_END_STR);
     			break;
 
