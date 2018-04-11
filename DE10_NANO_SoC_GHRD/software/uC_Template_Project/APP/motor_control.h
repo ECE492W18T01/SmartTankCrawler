@@ -40,6 +40,6 @@
 #define OUTPUT_ABSOLUTE_MAX 127
 
 void update_motor_control(float drive_val, int motor_position);
-void stop_all_motors();
+void stop_all_motors(void);
 
 #endif
